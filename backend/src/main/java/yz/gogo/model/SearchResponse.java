@@ -9,7 +9,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @Getter
-public class Response {
+public class SearchResponse {
     private String key;
     private int page;
     private List<Entry> entries;

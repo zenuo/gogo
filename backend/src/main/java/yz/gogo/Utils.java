@@ -6,7 +6,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import yz.gogo.model.Entry;
+import yz.gogo.model.SearchResponse;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -21,7 +23,7 @@ final class Utils {
      * @param page page number
      * @return document instance if succeed, null otherwise
      */
-    static Document request(final String key, final int page) {
+    static Document request(final String key, final int page) throws IOException {
         if (page < 0) {
             throw new IllegalArgumentException("page must be greater than zero!");
         }
@@ -29,29 +31,22 @@ final class Utils {
         final String url = String.format(Constants.GOOGLE_SEARCH_URL_TEMPLATE,
                 URLEncoder.encode(key, StandardCharsets.UTF_8),
                 start);
-        try {
-            return Jsoup.connect(url)
-                    .header("User-Agent", Constants.USER_AGENT)
-                    .timeout(Constants.TIME_OUT)
-                    .get();
-        } catch (Exception e) {
-            log.error("request {}", key, e);
-            return null;
-        }
+        return Jsoup.connect(url)
+                .header("User-Agent", Constants.USER_AGENT)
+                .timeout(Constants.TIME_OUT)
+                .get();
     }
 
     /**
      * Get entries of google search result
+     *
      * @param key  keyword
      * @param page page number
      * @return entries if succeed, null otherwise
      */
-    static List<Entry> search(final String key, final int page) {
+    static List<Entry> search(final String key, final int page) throws IOException {
         //document
         final Document document = request(key, page);
-        if (document == null) {
-            return null;
-        }
         final Element srg = document.getElementsByClass("srg").first();
         if (srg == null) {
             return null;
@@ -80,5 +75,41 @@ final class Utils {
             }
             return builder.build();
         }).collect(Collectors.toList());
+    }
+
+    /**
+     * Do search and searchResponse
+     *
+     * @param key  keyword
+     * @param page page number
+     * @return searchResponse instance
+     */
+    static SearchResponse searchResponse(final String key, final int page) {
+        //builder
+        final SearchResponse.SearchResponseBuilder builder = SearchResponse.builder();
+        builder.key(key);
+        builder.page(page);
+        try {
+            final List<Entry> entries = search(key, page);
+            builder.entries(entries);
+        } catch (Exception e) {
+            log.error("searchResponse {}, {}", key, page, e);
+            builder.error(e.getMessage());
+        }
+        return builder.build();
+    }
+
+    /**
+     * write an object to json
+     * @param object the object you want to write
+     * @return json string
+     */
+    static String toJson(final Object object) {
+        try {
+            return Constants.MAPPER.writeValueAsString(object);
+        } catch (Exception e) {
+            log.error("toJson", e);
+            return null;
+        }
     }
 }
