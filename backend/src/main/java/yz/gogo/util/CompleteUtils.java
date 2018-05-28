@@ -20,6 +20,7 @@ public final class CompleteUtils {
 
     /**
      * Make the request of google search complete
+     *
      * @param key keyword
      * @return document instance if succeed
      * @throws IOException io exception occurred
@@ -36,6 +37,7 @@ public final class CompleteUtils {
 
     /**
      * Get lints of google search complete result
+     *
      * @param key keyword
      * @return lint list
      * @throws IOException io exception occurred
@@ -56,14 +58,13 @@ public final class CompleteUtils {
     /**
      * Do complete and response
      *
-     * @param key  keyword
+     * @param key keyword
      * @return response instance
      */
     public static CompleteResponse response(final String key) {
-        if (key == null || key.equals("")) {
-            return CompleteResponse.builder()
-                    .error("keyword must not empty!")
-                    .build();
+        //check arguments
+        if (key.equals("")) {
+            return CompleteResponse.builder().error("keyword must not empty!").build();
         }
         //builder
         final CompleteResponse.CompleteResponseBuilder builder = CompleteResponse.builder();

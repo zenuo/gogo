@@ -25,9 +25,6 @@ public final class SearchUtils {
      * @return document instance if succeed, null otherwise
      */
     public static Document request(final String key, final int page) throws IOException {
-        if (page < 0) {
-            throw new IllegalArgumentException("page must be greater than zero!");
-        }
         final int start = (page - 1) * 10;
         final String url = String.format(Constants.GOOGLE_SEARCH_URL_TEMPLATE,
                 URLEncoder.encode(key, StandardCharsets.UTF_8),
@@ -86,6 +83,13 @@ public final class SearchUtils {
      * @return response instance
      */
     public static SearchResponse response(final String key, final int page) {
+        //check arguments
+        if (key.equals("")) {
+            return SearchResponse.builder().error("keyword must not empty!").build();
+        }
+        if (page < 0) {
+            return SearchResponse.builder().error("page must be greater than zero!").build();
+        }
         //builder
         final SearchResponse.SearchResponseBuilder builder = SearchResponse.builder();
         builder.key(key);
