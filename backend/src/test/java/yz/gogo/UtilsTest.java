@@ -27,7 +27,7 @@ public class UtilsTest {
 
     @Test
     public void response() {
-        final SearchResponse searchResponse = Utils.searchResponse("udp", 2);
+        final SearchResponse searchResponse = Utils.response("udp", 2);
         final String json = Utils.toJson(searchResponse);
         System.out.println(json);
     }

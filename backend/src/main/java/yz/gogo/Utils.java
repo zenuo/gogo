@@ -78,13 +78,13 @@ final class Utils {
     }
 
     /**
-     * Do search and searchResponse
+     * Do search and response
      *
      * @param key  keyword
      * @param page page number
-     * @return searchResponse instance
+     * @return response instance
      */
-    static SearchResponse searchResponse(final String key, final int page) {
+    static SearchResponse response(final String key, final int page) {
         //builder
         final SearchResponse.SearchResponseBuilder builder = SearchResponse.builder();
         builder.key(key);
@@ -93,7 +93,7 @@ final class Utils {
             final List<Entry> entries = search(key, page);
             builder.entries(entries);
         } catch (Exception e) {
-            log.error("searchResponse {}, {}", key, page, e);
+            log.error("response {}, {}", key, page, e);
             builder.error(e.getMessage());
         }
         return builder.build();
