@@ -11,5 +11,6 @@ import java.util.List;
 @Getter
 public class CompleteResponse {
     private String key;
-    private List<String> lint;
+    private List<String> lints;
+    private String error;
 }

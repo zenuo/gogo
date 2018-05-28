@@ -4,6 +4,7 @@ import org.jsoup.nodes.Document;
 import org.junit.Test;
 import yz.gogo.model.Entry;
 import yz.gogo.model.SearchResponse;
+import yz.gogo.util.JsonUtils;
 import yz.gogo.util.SearchUtils;
 
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class SearchUtilsTest {
     @Test
     public void response() {
         final SearchResponse searchResponse = SearchUtils.response("udp", 2);
-        final String json = SearchUtils.toJson(searchResponse);
+        final String json = JsonUtils.toJson(searchResponse);
         System.out.println(json);
     }
 }
