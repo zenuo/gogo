@@ -1,10 +1,11 @@
-package yz.gogo;
+package yz.gogo.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import yz.gogo.Constants;
 import yz.gogo.model.Entry;
 import yz.gogo.model.SearchResponse;
 
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-final class Utils {
+public final class SearchUtils {
     /**
      * Make the request of google search
      *
@@ -23,7 +24,7 @@ final class Utils {
      * @param page page number
      * @return document instance if succeed, null otherwise
      */
-    static Document request(final String key, final int page) throws IOException {
+    public static Document request(final String key, final int page) throws IOException {
         if (page < 0) {
             throw new IllegalArgumentException("page must be greater than zero!");
         }
@@ -44,7 +45,7 @@ final class Utils {
      * @param page page number
      * @return entries if succeed, null otherwise
      */
-    static List<Entry> search(final String key, final int page) throws IOException {
+    public static List<Entry> search(final String key, final int page) throws IOException {
         //document
         final Document document = request(key, page);
         final Element srg = document.getElementsByClass("srg").first();
@@ -84,7 +85,7 @@ final class Utils {
      * @param page page number
      * @return response instance
      */
-    static SearchResponse response(final String key, final int page) {
+    public static SearchResponse response(final String key, final int page) {
         //builder
         final SearchResponse.SearchResponseBuilder builder = SearchResponse.builder();
         builder.key(key);
@@ -104,7 +105,7 @@ final class Utils {
      * @param object the object you want to write
      * @return json string
      */
-    static String toJson(final Object object) {
+    public static String toJson(final Object object) {
         try {
             return Constants.MAPPER.writeValueAsString(object);
         } catch (Exception e) {
