@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
@@ -27,26 +28,24 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) {
         if (msg.method() != HttpMethod.GET) {
             response(ctx,
-                    msg.protocolVersion(),
+                    msg,
                     JsonUtils.toJson(Map.of("error", "the http method should be GET only")),
-                    HttpResponseStatus.BAD_REQUEST,
-                    HttpUtil.isKeepAlive(msg));
+                    HttpResponseStatus.BAD_REQUEST);
         } else {
             final QueryStringDecoder decoder = new QueryStringDecoder(msg.uri());
-            log.info("Request {}", msg.uri());
+            log.info("Request {}, keep alive {}", msg.uri(), HttpUtil.isKeepAlive(msg));
             switch (decoder.path()) {
                 case "/api/search":
-                    search(ctx, msg.protocolVersion(), decoder, HttpUtil.isKeepAlive(msg));
+                    search(ctx, msg, decoder);
                     break;
                 case "/api/complete":
-                    complete(ctx, msg.protocolVersion(), decoder, HttpUtil.isKeepAlive(msg));
+                    complete(ctx, msg, decoder);
                     break;
                 default:
                     response(ctx,
-                            msg.protocolVersion(),
+                            msg,
                             JsonUtils.toJson(Map.of("error", "the path should be '/api/search' or '/api/complete'")),
-                            HttpResponseStatus.BAD_GATEWAY,
-                            HttpUtil.isKeepAlive(msg));
+                            HttpResponseStatus.BAD_GATEWAY);
             }
         }
     }
@@ -55,26 +54,23 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
      * handle search
      */
     private void search(final ChannelHandlerContext ctx,
-                        final HttpVersion version,
-                        final QueryStringDecoder decoder,
-                        final boolean close) {
+                        final FullHttpRequest msg,
+                        final QueryStringDecoder decoder) {
         final List<String> keys = decoder.parameters().get("q");
         if (keys == null || keys.get(0).equals("")) {
             response(ctx,
-                    version,
+                    msg,
                     JsonUtils.toJson(Map.of("error", "the keyword should not be empty")),
-                    HttpResponseStatus.BAD_REQUEST,
-                    close);
+                    HttpResponseStatus.BAD_REQUEST);
         } else {
             final List<String> pages = decoder.parameters().get("p");
             final SearchResponse response = SearchUtils.response(
                     keys.get(0),
                     pages == null || pages.get(0).equals("") ? 0 : Integer.parseInt(pages.get(0)));
             response(ctx,
-                    version,
+                    msg,
                     JsonUtils.toJson(response),
-                    response.getStatus(),
-                    close);
+                    response.getStatus());
         }
     }
 
@@ -82,23 +78,20 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
      * handle search
      */
     private void complete(final ChannelHandlerContext ctx,
-                          final HttpVersion version,
-                          final QueryStringDecoder decoder,
-                          final boolean close) {
+                          final FullHttpRequest msg,
+                          final QueryStringDecoder decoder) {
         final List<String> keys = decoder.parameters().get("q");
         if (keys == null || keys.get(0).equals("")) {
             response(ctx,
-                    version,
+                    msg,
                     JsonUtils.toJson(Map.of("error", "the keyword should not be empty")),
-                    HttpResponseStatus.BAD_REQUEST,
-                    close);
+                    HttpResponseStatus.BAD_REQUEST);
         } else {
             final CompleteResponse response = CompleteUtils.response(keys.get(0));
             response(ctx,
-                    version,
+                    msg,
                     JsonUtils.toJson(response),
-                    response.getStatus(),
-                    close);
+                    response.getStatus());
         }
     }
 
@@ -106,17 +99,22 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
      * Responses client
      */
     private void response(final ChannelHandlerContext ctx,
-                          final HttpVersion version,
+                          final FullHttpRequest msg,
                           final String body,
-                          final HttpResponseStatus status,
-                          final boolean close) {
+                          final HttpResponseStatus status) {
         final DefaultFullHttpResponse response = new DefaultFullHttpResponse(
-                version,
+                msg.protocolVersion(),
                 status,
                 body == null ? Unpooled.buffer() : Unpooled.copiedBuffer(body.getBytes(StandardCharsets.UTF_8)));
         response.headers().add("Content-Type", "application/json; charset=UTF-8");
+        response.headers().add("Server", "gogo/0.1");
+        final boolean keepAlive = HttpUtil.isKeepAlive(msg);
+        if (keepAlive) {
+            response.headers().add("Connection", "Keep-Alive");
+        }
         ctx.writeAndFlush(response);
-        if (close) {
+        log.info("response");
+        if (!keepAlive) {
             ctx.close();
         }
     }
