@@ -1,5 +1,6 @@
 package yz.gogo.util;
 
+import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -84,11 +85,10 @@ public final class SearchUtils {
      */
     public static SearchResponse response(final String key, final int page) {
         //check arguments
-        if (key.equals("")) {
-            return SearchResponse.builder().error("keyword must not empty!").build();
-        }
         if (page < 0) {
-            return SearchResponse.builder().error("page must be greater than zero!").build();
+            return SearchResponse.builder().error("page must be greater than zero!")
+                    .status(HttpResponseStatus.BAD_REQUEST)
+                    .build();
         }
         //builder
         final SearchResponse.SearchResponseBuilder builder = SearchResponse.builder();
@@ -96,10 +96,11 @@ public final class SearchUtils {
         builder.page(page);
         try {
             final List<Entry> entries = search(key, page);
-            builder.entries(entries);
+            builder.entries(entries).status(HttpResponseStatus.OK);
         } catch (Exception e) {
             log.error("response {}, {}", key, page, e);
-            builder.error(e.getMessage());
+            builder.error(e.getMessage())
+                    .status(HttpResponseStatus.GATEWAY_TIMEOUT);
         }
         return builder.build();
     }

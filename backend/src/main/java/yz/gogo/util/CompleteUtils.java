@@ -1,6 +1,7 @@
 package yz.gogo.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -62,19 +63,16 @@ public final class CompleteUtils {
      * @return response instance
      */
     public static CompleteResponse response(final String key) {
-        //check arguments
-        if (key.equals("")) {
-            return CompleteResponse.builder().error("keyword must not empty!").build();
-        }
         //builder
         final CompleteResponse.CompleteResponseBuilder builder = CompleteResponse.builder();
         builder.key(key);
         try {
             final List<String> lints = complete(key);
-            builder.lints(lints);
+            builder.lints(lints).status(HttpResponseStatus.OK);
         } catch (Exception e) {
             log.error("complete {}", key, e);
-            builder.error(e.getMessage());
+            builder.error(e.getMessage())
+            .status(HttpResponseStatus.GATEWAY_TIMEOUT)            ;
         }
         return builder.build();
     }
