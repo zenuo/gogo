@@ -11,7 +11,10 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
+import yz.gogo.Constants;
 import yz.gogo.model.CompleteResponse;
 import yz.gogo.model.SearchResponse;
 import yz.gogo.util.CompleteUtils;
@@ -106,16 +109,27 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
                 msg.protocolVersion(),
                 status,
                 body == null ? Unpooled.buffer() : Unpooled.copiedBuffer(body.getBytes(StandardCharsets.UTF_8)));
-        response.headers().add("Content-Type", "application/json; charset=UTF-8");
+        response.headers().add("Content-Type", "application/json; charset=utf-8");
         response.headers().add("Server", "gogo/0.1");
         final boolean keepAlive = HttpUtil.isKeepAlive(msg);
         if (keepAlive) {
             response.headers().add("Connection", "Keep-Alive");
+            response.headers().add("Keep-Alive", "timeout=5, max=1000");
         }
-        ctx.writeAndFlush(response);
+        ctx.write(response);
+        ctx.writeAndFlush(Constants.NEW_LINE);
         log.info("response");
         if (!keepAlive) {
             ctx.close();
+        }
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof IdleStateEvent) {
+            if (((IdleStateEvent)evt).state() == IdleState.ALL_IDLE) {
+                ctx.close();
+            }
         }
     }
 }

@@ -34,4 +34,9 @@ public final class Constants {
      * object mapper
      */
     public static final ObjectMapper MAPPER = new ObjectMapper();
+
+    /**
+     * new line
+     */
+    public static final String NEW_LINE = "\r\n";
 }

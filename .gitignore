@@ -2,3 +2,4 @@ gogo.iml
 target
 .idea
 log
+*.jar
