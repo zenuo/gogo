@@ -4,7 +4,7 @@ import sys
 import time
 
 __PID_COMMAND = "ps -ef | grep gogo.jar | grep -v grep | awk '{print $2}'"
-__START_COMMAND = 'nohup java -Dport=8080 -Dgoogle.search.host=http://176.122.157.73:5050 -jar gogo.jar > /dev/null 2>&1 &'
+__START_COMMAND = 'nohup java -Dport=5001 -jar gogo.jar > /dev/null 2>&1 &'
 __STOP_COMMAND = 'kill %s'
 __HELP = 'Arguments:\n    start\n    restart\n    stop\n'
 
