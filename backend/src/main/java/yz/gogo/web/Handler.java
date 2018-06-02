@@ -28,25 +28,25 @@ import java.util.Map;
 @Slf4j
 public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) {
-        if (msg.method() != HttpMethod.GET) {
+    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) {
+        if (request.method() != HttpMethod.GET) {
             response(ctx,
-                    msg,
+                    request,
                     JsonUtils.toJson(Map.of("error", "the http method should be GET only")),
                     HttpResponseStatus.BAD_REQUEST);
         } else {
-            final QueryStringDecoder decoder = new QueryStringDecoder(msg.uri());
-            log.info("Request {}, keep alive {}", msg.uri(), HttpUtil.isKeepAlive(msg));
+            final QueryStringDecoder decoder = new QueryStringDecoder(request.uri());
+            log.info("Request {}, keep alive {}", request.uri(), HttpUtil.isKeepAlive(request));
             switch (decoder.path()) {
                 case "/api/search":
-                    search(ctx, msg, decoder);
+                    search(ctx, request, decoder);
                     break;
                 case "/api/complete":
-                    complete(ctx, msg, decoder);
+                    complete(ctx, request, decoder);
                     break;
                 default:
                     response(ctx,
-                            msg,
+                            request,
                             JsonUtils.toJson(Map.of("error", "the path should be '/api/search' or '/api/complete'")),
                             HttpResponseStatus.BAD_GATEWAY);
             }
@@ -57,12 +57,12 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
      * handle search
      */
     private void search(final ChannelHandlerContext ctx,
-                        final FullHttpRequest msg,
+                        final FullHttpRequest request,
                         final QueryStringDecoder decoder) {
         final List<String> keys = decoder.parameters().get("q");
         if (keys == null || keys.get(0).equals("")) {
             response(ctx,
-                    msg,
+                    request,
                     JsonUtils.toJson(Map.of("error", "the keyword should not be empty")),
                     HttpResponseStatus.BAD_REQUEST);
         } else {
@@ -71,7 +71,7 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
                     keys.get(0),
                     pages == null || pages.get(0).equals("") ? 0 : Integer.parseInt(pages.get(0)));
             response(ctx,
-                    msg,
+                    request,
                     JsonUtils.toJson(response),
                     response.getStatus());
         }
@@ -81,18 +81,18 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
      * handle search
      */
     private void complete(final ChannelHandlerContext ctx,
-                          final FullHttpRequest msg,
+                          final FullHttpRequest request,
                           final QueryStringDecoder decoder) {
         final List<String> keys = decoder.parameters().get("q");
         if (keys == null || keys.get(0).equals("")) {
             response(ctx,
-                    msg,
+                    request,
                     JsonUtils.toJson(Map.of("error", "the keyword should not be empty")),
                     HttpResponseStatus.BAD_REQUEST);
         } else {
             final CompleteResponse response = CompleteUtils.response(keys.get(0));
             response(ctx,
-                    msg,
+                    request,
                     JsonUtils.toJson(response),
                     response.getStatus());
         }
@@ -102,22 +102,22 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
      * Responses client
      */
     private void response(final ChannelHandlerContext ctx,
-                          final FullHttpRequest msg,
+                          final FullHttpRequest request,
                           final String body,
                           final HttpResponseStatus status) {
         final DefaultFullHttpResponse response = new DefaultFullHttpResponse(
-                msg.protocolVersion(),
+                request.protocolVersion(),
                 status,
                 body == null ? Unpooled.buffer() : Unpooled.copiedBuffer(body.getBytes(StandardCharsets.UTF_8)));
         response.headers().add("Content-Type", "application/json; charset=utf-8");
         response.headers().add("Server", "gogo/0.1");
-        final boolean keepAlive = HttpUtil.isKeepAlive(msg);
+        response.headers().add("Access-Control-Allow-Origin", "*");
+        final boolean keepAlive = HttpUtil.isKeepAlive(request);
         if (keepAlive) {
             response.headers().add("Connection", "Keep-Alive");
             response.headers().add("Keep-Alive", "timeout=5, max=1000");
         }
-        ctx.write(response);
-        ctx.writeAndFlush(Constants.NEW_LINE);
+        ctx.writeAndFlush(response);
         log.info("response");
         if (!keepAlive) {
             ctx.close();
@@ -125,7 +125,7 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
     }
 
     @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
         if (evt instanceof IdleStateEvent) {
             if (((IdleStateEvent)evt).state() == IdleState.ALL_IDLE) {
                 ctx.close();

@@ -13,7 +13,7 @@ import yz.gogo.model.SearchResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,7 +26,7 @@ public final class SearchUtils {
      * @return document instance if succeed, null otherwise
      */
     public static Document request(final String key, final int page) throws IOException {
-        final int start = (page - 1) * 10;
+        final int start = page > 1 ? (page - 1) * 10: 0;
         final String url = String.format(Constants.GOOGLE_SEARCH_URL_TEMPLATE,
                 URLEncoder.encode(key, StandardCharsets.UTF_8),
                 start);
@@ -43,37 +43,60 @@ public final class SearchUtils {
      * @param page page number
      * @return entries if succeed, null otherwise
      */
-    public static List<Entry> search(final String key, final int page) throws IOException {
+    public static SearchResponse search(final String key, final int page) {
+        //builder
+        final SearchResponse.SearchResponseBuilder builder = SearchResponse.builder();
+        builder.key(key);
+        builder.page(page);
         //document
-        final Document document = request(key, page);
+        final Document document;
+        try {
+            document = request(key, page);
+        } catch (IOException e) {
+            log.error("request, {}, {}", key, page);
+            return builder.status(HttpResponseStatus.INTERNAL_SERVER_ERROR)
+                    .error(e.getMessage())
+                    .build();
+        }
         final Element srg = document.getElementsByClass("srg").first();
         if (srg == null) {
-            return null;
+            return patternChanged(builder);
         }
         //results
         final Elements results = srg.getElementsByClass("rc");
         if (results.isEmpty()) {
-            return null;
+            return patternChanged(builder);
         }
-        return results.stream().map(result -> {
+        //stats
+        final Element resultStats = document.getElementById("resultStats");
+        if (resultStats != null) {
+            final Matcher matcher = Constants.STATS_RESULTS_PATTERN
+                    .matcher(resultStats.text());
+            if (matcher.find() && matcher.groupCount() == 2) {
+                builder.amount(Integer.valueOf(matcher.group(1).replaceAll(",", "")));
+                builder.elapsed(Float.valueOf(matcher.group(2)));
+            }
+        }
+        builder.entries(results.stream().map(result -> {
             //builder
-            final Entry.EntryBuilder builder = Entry.builder();
+            final Entry.EntryBuilder entryBuilder = Entry.builder();
             //name and url
             final Element nameAndUrl = result.getElementsByClass("r")
                     .first()
                     .children()
                     .first();
             if (nameAndUrl != null) {
-                builder.name(nameAndUrl.text());
-                builder.url(nameAndUrl.attr("href"));
+                entryBuilder.name(nameAndUrl.text());
+                entryBuilder.url(nameAndUrl.attr("href"));
             }
             //description
             final Element desc = result.getElementsByClass("st").first();
             if (desc != null) {
-                builder.desc(desc.text());
+                entryBuilder.desc(desc.text());
             }
-            return builder.build();
-        }).collect(Collectors.toList());
+            return entryBuilder.build();
+        }).collect(Collectors.toList()));
+        return builder.status(HttpResponseStatus.OK).build();
     }
 
     /**
@@ -90,18 +113,12 @@ public final class SearchUtils {
                     .status(HttpResponseStatus.BAD_REQUEST)
                     .build();
         }
-        //builder
-        final SearchResponse.SearchResponseBuilder builder = SearchResponse.builder();
-        builder.key(key);
-        builder.page(page);
-        try {
-            final List<Entry> entries = search(key, page);
-            builder.entries(entries).status(HttpResponseStatus.OK);
-        } catch (Exception e) {
-            log.error("response {}, {}", key, page, e);
-            builder.error(e.getMessage())
-                    .status(HttpResponseStatus.GATEWAY_TIMEOUT);
-        }
-        return builder.build();
+        return search(key, page);
+    }
+
+    public static SearchResponse patternChanged(final SearchResponse.SearchResponseBuilder builder) {
+        return builder.status(HttpResponseStatus.INTERNAL_SERVER_ERROR)
+                .error("google search page pattern changed, please contact developer")
+                .build();
     }
 }

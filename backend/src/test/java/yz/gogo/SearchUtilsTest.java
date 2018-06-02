@@ -9,6 +9,7 @@ import yz.gogo.util.SearchUtils;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Matcher;
 
 public class SearchUtilsTest {
     @Test
@@ -21,9 +22,9 @@ public class SearchUtilsTest {
 
     @Test
     public void search() throws IOException {
-        final List<Entry> entries = SearchUtils.search("udp", 1);
-        if (entries != null) {
-            entries.forEach(e -> System.out.println(e.getName()));
+        final SearchResponse response = SearchUtils.search("udp", 1);
+        if (response.getEntries() != null) {
+            response.getEntries().forEach(e -> System.out.println(e.getName()));
         }
     }
 
@@ -32,5 +33,14 @@ public class SearchUtilsTest {
         final SearchResponse searchResponse = SearchUtils.response("udp", 2);
         final String json = JsonUtils.toJson(searchResponse);
         System.out.println(json);
+    }
+
+    @Test
+    public void stats() {
+        final Matcher matcher = Constants.STATS_RESULTS_PATTERN.matcher("About 41,400,000 results (0.31 seconds)");
+        System.out.println(matcher.find());
+        System.out.println(matcher.groupCount());
+        System.out.println(matcher.group(1));
+        System.out.println(matcher.group(2));
     }
 }

@@ -2,6 +2,8 @@ package yz.gogo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.regex.Pattern;
+
 /**
  * Some constants
  */
@@ -36,7 +38,8 @@ public final class Constants {
     public static final ObjectMapper MAPPER = new ObjectMapper();
 
     /**
-     * new line
+     * pattern of statistics result
      */
-    public static final String NEW_LINE = "\r\n";
+    public static final Pattern STATS_RESULTS_PATTERN =
+            Pattern.compile("About (.+?) results \\((.+?) seconds\\)");
 }
