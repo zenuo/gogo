@@ -1,4 +1,4 @@
-package yz.gogo;
+package yz.gogo.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -21,7 +21,6 @@ public final class Constants {
             "/complete/search?client=psy-ab&q=%s";
 
 
-
     /**
      * user agent
      */
@@ -42,4 +41,28 @@ public final class Constants {
      */
     public static final Pattern STATS_RESULTS_PATTERN =
             Pattern.compile("About (.+?) results \\((.+?) seconds\\)");
+
+    public static String INDEX_PAGE_HTML = "<!DOCTYPE html>\n" +
+            "<html lang=\"en\">\n" +
+            "<head>\n" +
+            "<meta charset=\"utf-8\" />\n" +
+            "<title>Gogo</title>\n" +
+            "<style>\n" +
+            "body{text-align:center}.main{margin:0 auto;width:50%}footer{padding-top:40px;font-size:15px}" +
+            "</style>\n" +
+            "</head>\n" +
+            "\n" +
+            "<body>\n" +
+            "<div class=\"main\">\n" +
+            "<h1>Gogo</h1>\n" +
+            "<form action=\"/search\" method=\"GET\" onsubmit=\"return q.value!=''\">\n" +
+            "<input name=\"q\" autocomplete=\"off\" autofocus=\"autofocus\" type=\"text\">\n" +
+            "<button value=\"Search\" type=\"submit\">Go</button>\n" +
+            "</form>\n" +
+            "</div>\n" +
+            "<footer>\n" +
+            "Powered by &copy;Google Search\n" +
+            "</footer>\n" +
+            "</body>\n" +
+            "</html>";
 }

@@ -8,7 +8,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
-import yz.gogo.web.Initializer;
+import yz.gogo.core.Initializer;
 
 @Slf4j
 public class Main {
@@ -29,7 +29,7 @@ public class Main {
 
             final Channel channel = bootstrap.bind("0.0.0.0", PORT).sync().channel();
 
-            log.info("Open your web browser and navigate to http://127.0.0.1:" + PORT + '/');
+            log.info("Open your web browser and navigate to http://localhost:" + PORT + '/');
 
             //阻塞至通道关闭
             channel.closeFuture().sync();

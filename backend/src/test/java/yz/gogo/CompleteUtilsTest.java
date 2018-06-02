@@ -3,6 +3,7 @@ package yz.gogo;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
+import yz.gogo.core.Constants;
 import yz.gogo.model.CompleteResponse;
 import yz.gogo.util.CompleteUtils;
 import yz.gogo.util.JsonUtils;

@@ -6,7 +6,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import yz.gogo.Constants;
+import yz.gogo.core.Constants;
 import yz.gogo.model.Entry;
 import yz.gogo.model.SearchResponse;
 
@@ -73,7 +73,7 @@ public final class SearchUtils {
             final Matcher matcher = Constants.STATS_RESULTS_PATTERN
                     .matcher(resultStats.text());
             if (matcher.find() && matcher.groupCount() == 2) {
-                builder.amount(Integer.valueOf(matcher.group(1).replaceAll(",", "")));
+                builder.amount(Long.valueOf(matcher.group(1).replaceAll(",", "")));
                 builder.elapsed(Float.valueOf(matcher.group(2)));
             }
         }
@@ -116,7 +116,7 @@ public final class SearchUtils {
         return search(key, page);
     }
 
-    public static SearchResponse patternChanged(final SearchResponse.SearchResponseBuilder builder) {
+    private static SearchResponse patternChanged(final SearchResponse.SearchResponseBuilder builder) {
         return builder.status(HttpResponseStatus.INTERNAL_SERVER_ERROR)
                 .error("google search page pattern changed, please contact developer")
                 .build();

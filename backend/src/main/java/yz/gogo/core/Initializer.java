@@ -1,4 +1,4 @@
-package yz.gogo.web;
+package yz.gogo.core;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;

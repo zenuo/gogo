@@ -1,7 +1,7 @@
 package yz.gogo.util;
 
 import lombok.extern.slf4j.Slf4j;
-import yz.gogo.Constants;
+import yz.gogo.core.Constants;
 
 @Slf4j
 public class JsonUtils {

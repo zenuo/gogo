@@ -2,13 +2,12 @@ package yz.gogo;
 
 import org.jsoup.nodes.Document;
 import org.junit.Test;
-import yz.gogo.model.Entry;
+import yz.gogo.core.Constants;
 import yz.gogo.model.SearchResponse;
 import yz.gogo.util.JsonUtils;
 import yz.gogo.util.SearchUtils;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.regex.Matcher;
 
 public class SearchUtilsTest {

@@ -14,7 +14,7 @@ import java.util.List;
 public class SearchResponse {
     private String key;
     private int page;
-    private Integer amount;
+    private Long amount;
     private Float elapsed;
     private List<Entry> entries;
     private String error;

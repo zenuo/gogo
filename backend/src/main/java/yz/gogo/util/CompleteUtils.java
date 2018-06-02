@@ -5,7 +5,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import yz.gogo.Constants;
+import yz.gogo.core.Constants;
 import yz.gogo.model.CompleteResponse;
 
 import java.io.IOException;
