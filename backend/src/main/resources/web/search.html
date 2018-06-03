@@ -3,15 +3,60 @@
 
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width; maximum-scale=1; minimum-scale=1;" />
     <title>Gogo - %s</title>
     <style>
-        body{width:800px;padding-left:10px}.search{padding-top:5px;padding-bottom:5px}.logo{float:left;padding-left:5px;padding-right:10px;color:black;text-decoration:none;}.entry{padding-top:5px;padding-bottom:10px}.name{color:#434dce;text-decoration:none;font-size:18px}.url{color:#20b2aa;font-style:italic;font-size:14px}.desc{font-size:16px}.next{padding-top:5px}
+        body {
+            width: 800px;
+            padding-left: 10px;
+        }
+
+        .search {
+            padding-top: 5px;
+            padding-bottom: 5px
+        }
+
+        .logo {
+            float: left;
+            padding-left: 5px;
+            padding-right: 10px;
+            color: black;
+            text-decoration: none;
+        }
+
+        .entry {
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+        .name {
+            color: #434dce;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .url {
+            color: #12968f;
+            font-size: 14px;
+        }
+
+        .desc {
+            font-size: 16px;
+        }
+
+        .next {
+            padding-top: 5px;
+        }
     </style>
 </head>
 
 <body>
     <div class="search">
-        <a href="/"><span class="logo"><b>Gogo</b></span></a>
+        <a href="/">
+            <span class="logo">
+                <b>Gogo</b>
+            </span>
+        </a>
         <form action="/search" method="GET" onsubmit="return q.value!=''">
             <input name="q" autocomplete="off" type="text" value="%s">
             <button type="submit">Go</button>
@@ -38,7 +83,9 @@
     </div>
 
     <div class="next">
-        <a href="/search?q=%s&p=%d"><button>Next</button></a>
+        <a href="/search?q=%s&p=%d">
+            <button>Next</button>
+        </a>
     </div>
 </body>
 

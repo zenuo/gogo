@@ -13,7 +13,7 @@ public class SearchPageBuilder {
 
     private static final String HTML_BEFORE_INPUT = "</title>\n" +
             "<style>\n" +
-            "body{width:800px;padding-left:10px}.search{padding-top:5px;padding-bottom:5px}.logo{float:left;padding-left:5px;padding-right:10px;color:black;text-decoration:none;}.entry{padding-top:5px;padding-bottom:10px}.name{color:#434dce;text-decoration:none;font-size:18px}.url{color:#20b2aa;font-style:italic;font-size:14px}.desc{font-size:16px}.next{padding-top:5px}\n" +
+            "body{width:800px;padding-left:10px}.search{padding-top:5px;padding-bottom:5px}.logo{float:left;padding-left:5px;padding-right:10px;color:#000;text-decoration:none}.entry{padding-top:5px;padding-bottom:5px}.name{color:#434dce;text-decoration:none;font-size:18px}.url{color:#12968f;font-size:14px}.desc{font-size:16px}.next{padding-top:5px}\n" +
             "</style>\n" +
             "</head>\n" +
             "\n" +

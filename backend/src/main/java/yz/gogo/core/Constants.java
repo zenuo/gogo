@@ -42,27 +42,5 @@ public final class Constants {
     public static final Pattern STATS_RESULTS_PATTERN =
             Pattern.compile("About (.+?) results \\((.+?) seconds\\)");
 
-    public static String INDEX_PAGE_HTML = "<!DOCTYPE html>\n" +
-            "<html lang=\"en\">\n" +
-            "<head>\n" +
-            "<meta charset=\"utf-8\" />\n" +
-            "<title>Gogo</title>\n" +
-            "<style>\n" +
-            "body{text-align:center}.main{margin:0 auto;width:50%}footer{padding-top:40px;font-size:15px}" +
-            "</style>\n" +
-            "</head>\n" +
-            "\n" +
-            "<body>\n" +
-            "<div class=\"main\">\n" +
-            "<h1>Gogo</h1>\n" +
-            "<form action=\"/search\" method=\"GET\" onsubmit=\"return q.value!=''\">\n" +
-            "<input name=\"q\" autocomplete=\"off\" autofocus=\"autofocus\" type=\"text\">\n" +
-            "<button value=\"Search\" type=\"submit\">Go</button>\n" +
-            "</form>\n" +
-            "</div>\n" +
-            "<footer>\n" +
-            "Powered by &copy;Google Search\n" +
-            "</footer>\n" +
-            "</body>\n" +
-            "</html>";
+    static String INDEX_PAGE_HTML = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /> <title>Gogo</title> <style> body { text-align: center; } h1 { font-size: 50px; } footer { font-size: 15px; } .main { margin: 0 auto; width: 50%; padding-bottom: 50px; } </style></head><body> <div class=\"main\"> <h1>Gogo</h1> <form action=\"/search\" method=\"GET\" onsubmit=\"return q.value!=''\"> <input name=\"q\" autocomplete=\"off\" autofocus=\"autofocus\" type=\"text\"> <button value=\"Search\" type=\"submit\">Go</button> </form> </div> <footer> Powered by &copy;Google Search </footer></body></html>";
 }
