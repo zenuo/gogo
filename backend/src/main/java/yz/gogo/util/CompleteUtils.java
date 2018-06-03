@@ -72,7 +72,7 @@ public final class CompleteUtils {
         } catch (Exception e) {
             log.error("complete {}", key, e);
             builder.error(e.getMessage())
-            .status(HttpResponseStatus.GATEWAY_TIMEOUT)            ;
+                    .status(HttpResponseStatus.GATEWAY_TIMEOUT);
         }
         return builder.build();
     }

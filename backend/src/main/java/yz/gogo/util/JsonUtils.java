@@ -11,6 +11,7 @@ public class JsonUtils {
 
     /**
      * write an object to json
+     *
      * @param object the object you want to write
      * @return json string
      */

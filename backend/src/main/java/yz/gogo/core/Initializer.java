@@ -12,7 +12,7 @@ public class Initializer extends ChannelInitializer<SocketChannel> {
     @Override
     protected void initChannel(SocketChannel ch) {
         final ChannelPipeline pipeline = ch.pipeline();
-        pipeline.addLast(new IdleStateHandler(0,0,30))
+        pipeline.addLast(new IdleStateHandler(0, 0, 30))
                 .addLast(new HttpServerCodec())
                 .addLast(new HttpObjectAggregator(65536))
                 .addLast(new ChunkedWriteHandler())

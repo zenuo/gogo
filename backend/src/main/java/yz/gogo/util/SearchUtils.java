@@ -16,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.stream.Collectors;
 
 @Slf4j
 public final class SearchUtils {
@@ -28,7 +27,7 @@ public final class SearchUtils {
      * @return document instance if succeed, null otherwise
      */
     public static Document request(final String key, final int page) throws IOException {
-        final int start = page > 1 ? (page - 1) * 10: 0;
+        final int start = page > 1 ? (page - 1) * 10 : 0;
         final String url = String.format(Constants.GOOGLE_SEARCH_URL_TEMPLATE,
                 URLEncoder.encode(key, StandardCharsets.UTF_8),
                 start);
@@ -62,7 +61,7 @@ public final class SearchUtils {
         }
         final Elements srgs = document.getElementsByClass("srg");
         final List<Entry> entries = new ArrayList<>();
-        for (Element srg: srgs) {
+        for (Element srg : srgs) {
             if (srg == null) {
                 return patternChanged(builder);
             }
@@ -81,7 +80,7 @@ public final class SearchUtils {
                     builder.elapsed(Float.valueOf(matcher.group(2)));
                 }
             }
-            for (Element result: results) {
+            for (Element result : results) {
                 //builder
                 final Entry.EntryBuilder entryBuilder = Entry.builder();
                 //name and url
