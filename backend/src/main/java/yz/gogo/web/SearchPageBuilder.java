@@ -13,13 +13,13 @@ public class SearchPageBuilder {
 
     private static final String HTML_BEFORE_INPUT = "</title>\n" +
             "<style>\n" +
-            "body{width:800px;padding-left:10px}.search{padding-top:5px;padding-bottom:5px}.logo{float:left;padding-left:10px;padding-right:10px}.entry{padding-top:5px;padding-bottom:10px}.name{color:#434dce;text-decoration:none;font-size:18px}.url{color:#20b2aa;font-style:italic;font-size:14px}.desc{font-size:16px}.next{padding-top:5px}\n" +
+            "body{width:800px;padding-left:10px}.search{padding-top:5px;padding-bottom:5px}.logo{float:left;padding-left:5px;padding-right:10px;color:black;text-decoration:none;}.entry{padding-top:5px;padding-bottom:10px}.name{color:#434dce;text-decoration:none;font-size:18px}.url{color:#20b2aa;font-style:italic;font-size:14px}.desc{font-size:16px}.next{padding-top:5px}\n" +
             "</style>\n" +
             "</head>\n" +
             "\n" +
             "<body>\n" +
             "<div class=\"search\">\n" +
-            "<span class=\"logo\"><b>Gogo</b></span>\n" +
+            "<a href=\"/\"><span class=\"logo\"><b>Gogo</b></span></a>\n" +
             "<form action=\"/search\" method=\"GET\" onsubmit=\"return q.value!=''\">\n" +
             "<input name=\"q\" autocomplete=\"off\" type=\"text\" value=\"";
 
@@ -87,7 +87,7 @@ class NextBuilder {
 
     private static final String HTML_BEFORE_PAGE = "&p=";
 
-    private static final String HTML_TAIL = "\">Next</a>\n" +
+    private static final String HTML_TAIL = "\"><button>Next</button></a>\n" +
             "</div>";
 
     static void build(

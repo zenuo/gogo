@@ -13,6 +13,8 @@ import yz.gogo.model.SearchResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
@@ -58,44 +60,48 @@ public final class SearchUtils {
                     .error(e.getMessage())
                     .build();
         }
-        final Element srg = document.getElementsByClass("srg").first();
-        if (srg == null) {
-            return patternChanged(builder);
-        }
-        //results
-        final Elements results = srg.getElementsByClass("rc");
-        if (results.isEmpty()) {
-            return patternChanged(builder);
-        }
-        //stats
-        final Element resultStats = document.getElementById("resultStats");
-        if (resultStats != null) {
-            final Matcher matcher = Constants.STATS_RESULTS_PATTERN
-                    .matcher(resultStats.text());
-            if (matcher.find() && matcher.groupCount() == 2) {
-                builder.amount(Long.valueOf(matcher.group(1).replaceAll(",", "")));
-                builder.elapsed(Float.valueOf(matcher.group(2)));
+        final Elements srgs = document.getElementsByClass("srg");
+        final List<Entry> entries = new ArrayList<>();
+        for (Element srg: srgs) {
+            if (srg == null) {
+                return patternChanged(builder);
+            }
+            //results
+            final Elements results = srg.getElementsByClass("rc");
+            if (results.isEmpty()) {
+                return patternChanged(builder);
+            }
+            //stats
+            final Element resultStats = document.getElementById("resultStats");
+            if (resultStats != null) {
+                final Matcher matcher = Constants.STATS_RESULTS_PATTERN
+                        .matcher(resultStats.text());
+                if (matcher.find() && matcher.groupCount() == 2) {
+                    builder.amount(Long.valueOf(matcher.group(1).replaceAll(",", "")));
+                    builder.elapsed(Float.valueOf(matcher.group(2)));
+                }
+            }
+            for (Element result: results) {
+                //builder
+                final Entry.EntryBuilder entryBuilder = Entry.builder();
+                //name and url
+                final Element nameAndUrl = result.getElementsByClass("r")
+                        .first()
+                        .children()
+                        .first();
+                if (nameAndUrl != null) {
+                    entryBuilder.name(nameAndUrl.text());
+                    entryBuilder.url(nameAndUrl.attr("href"));
+                }
+                //description
+                final Element desc = result.getElementsByClass("st").first();
+                if (desc != null) {
+                    entryBuilder.desc(desc.text());
+                }
+                entries.add(entryBuilder.build());
             }
         }
-        builder.entries(results.stream().map(result -> {
-            //builder
-            final Entry.EntryBuilder entryBuilder = Entry.builder();
-            //name and url
-            final Element nameAndUrl = result.getElementsByClass("r")
-                    .first()
-                    .children()
-                    .first();
-            if (nameAndUrl != null) {
-                entryBuilder.name(nameAndUrl.text());
-                entryBuilder.url(nameAndUrl.attr("href"));
-            }
-            //description
-            final Element desc = result.getElementsByClass("st").first();
-            if (desc != null) {
-                entryBuilder.desc(desc.text());
-            }
-            return entryBuilder.build();
-        }).collect(Collectors.toList()));
+        builder.entries(entries);
         return builder.status(HttpResponseStatus.OK).build();
     }
 
@@ -108,7 +114,7 @@ public final class SearchUtils {
      */
     public static SearchResponse response(final String key, final int page) {
         //check arguments
-        if (page < 0) {
+        if (page < 1) {
             return SearchResponse.builder().error("page must be greater than zero!")
                     .status(HttpResponseStatus.BAD_REQUEST)
                     .build();

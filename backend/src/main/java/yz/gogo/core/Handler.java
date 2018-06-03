@@ -106,7 +106,7 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
             final List<String> pages = decoder.parameters().get("p");
             final SearchResponse response = SearchUtils.response(
                     keys.get(0),
-                    pages == null || pages.get(0).equals("") ? 0 : Integer.parseInt(pages.get(0)));
+                    pages == null || pages.get(0).equals("") ? 1 : Integer.parseInt(pages.get(0)));
             if (type == ResponseType.API) {
                 response(ctx,
                         request,
