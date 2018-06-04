@@ -59,45 +59,43 @@ public final class SearchUtils {
                     .error(e.getMessage())
                     .build();
         }
-        final Elements srgs = document.getElementsByClass("srg");
+        final Elements results = document.getElementsByClass("rc");
+        if (results.isEmpty()) {
+            return patternChanged(builder);
+        }
         final List<Entry> entries = new ArrayList<>();
-        for (Element srg : srgs) {
-            if (srg == null) {
-                return patternChanged(builder);
+        //stats
+        final Element resultStats = document.getElementById("resultStats");
+        if (resultStats != null) {
+            final Matcher matcher = Constants.STATS_RESULTS_PATTERN
+                    .matcher(resultStats.text());
+            if (matcher.find() && matcher.groupCount() == 2) {
+                builder.amount(Long.valueOf(matcher.group(1).replaceAll(",", "")));
+                builder.elapsed(Float.valueOf(matcher.group(2)));
             }
-            //results
-            final Elements results = srg.getElementsByClass("rc");
-            if (results.isEmpty()) {
-                return patternChanged(builder);
-            }
-            //stats
-            final Element resultStats = document.getElementById("resultStats");
-            if (resultStats != null) {
-                final Matcher matcher = Constants.STATS_RESULTS_PATTERN
-                        .matcher(resultStats.text());
-                if (matcher.find() && matcher.groupCount() == 2) {
-                    builder.amount(Long.valueOf(matcher.group(1).replaceAll(",", "")));
-                    builder.elapsed(Float.valueOf(matcher.group(2)));
-                }
-            }
-            for (Element result : results) {
-                //builder
-                final Entry.EntryBuilder entryBuilder = Entry.builder();
-                //name and url
-                final Element nameAndUrl = result.getElementsByClass("r")
-                        .first()
-                        .children()
-                        .first();
-                if (nameAndUrl != null) {
-                    entryBuilder.name(nameAndUrl.text());
+        }
+        for (Element result : results) {
+            //builder
+            final Entry.EntryBuilder entryBuilder = Entry.builder();
+            //name and url
+            final Element h3 = result.getElementsByClass("r").first();
+            entryBuilder.name(h3.text());
+            final Elements nameAndUrls = h3.children();
+            for (Element nameAndUrl : nameAndUrls) {
+                if (!nameAndUrl.attr("href").equals("")) {
                     entryBuilder.url(nameAndUrl.attr("href"));
+                    break;
                 }
-                //description
-                final Element desc = result.getElementsByClass("st").first();
-                if (desc != null) {
-                    entryBuilder.desc(desc.text());
+            }
+            //description
+            final Element desc = result.getElementsByClass("st").first();
+            if (desc != null) {
+                entryBuilder.desc(desc.text());
+                final Entry entry = entryBuilder.build();
+                //name and url are not null
+                if (entry.getName() != null && entry.getUrl() != null) {
+                    entries.add(entry);
                 }
-                entries.add(entryBuilder.build());
             }
         }
         builder.entries(entries);

@@ -3,6 +3,9 @@ package yz.gogo.web;
 import yz.gogo.model.Entry;
 import yz.gogo.model.SearchResponse;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+
 public class SearchPageBuilder {
     private static final String HTML_BEFORE_TITLE = "<!DOCTYPE html>\n" +
             "<html lang=\"en\">\n" +
@@ -13,7 +16,7 @@ public class SearchPageBuilder {
 
     private static final String HTML_BEFORE_INPUT = "</title>\n" +
             "<style>\n" +
-            "body{width:800px;padding-left:10px}.search{padding-top:5px;padding-bottom:5px}.logo{float:left;padding-left:5px;padding-right:10px;color:#000;text-decoration:none}.entry{padding-top:5px;padding-bottom:5px}.name{color:#434dce;text-decoration:none;font-size:18px}.url{color:#12968f;font-size:14px}.desc{font-size:16px}.next{padding-top:5px}\n" +
+            "body{width:800px;padding-left:10px}.search{padding-top:5px;padding-bottom:5px}.logo{float:left;padding-left:5px;padding-right:10px;color:#000;text-decoration:none}.entry{padding-top:5px;padding-bottom:5px}.name{color:#1a0dab;text-decoration:none;font-size:18px}.url{color:#006621;font-size:14px}.desc{font-size:16px}.next{padding-top:5px}\n" +
             "</style>\n" +
             "</head>\n" +
             "\n" +
@@ -74,7 +77,7 @@ class EntryBuilder {
                 .append(HTML_BEFORE_NAME)
                 .append(entry.getName())
                 .append(HTML_BEFORE_URL)
-                .append(entry.getUrl())
+                .append(URLDecoder.decode(entry.getUrl(), StandardCharsets.UTF_8))
                 .append(HTML_BEFORE_DESC)
                 .append(entry.getDesc())
                 .append(HTML_TAIL);
