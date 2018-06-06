@@ -17,8 +17,9 @@ import yz.gogo.model.SearchResponse;
 import yz.gogo.util.CompleteUtils;
 import yz.gogo.util.JsonUtils;
 import yz.gogo.util.SearchUtils;
-import yz.gogo.web.SearchPageBuilder;
+import yz.gogo.web.ResultPageBuilder;
 
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,9 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
                     HttpResponseStatus.BAD_REQUEST);
         } else {
             final QueryStringDecoder decoder = new QueryStringDecoder(request.uri());
-            log.info("Request {}, keep alive {}", request.uri(), HttpUtil.isKeepAlive(request));
+            log.info("Request {}, keep alive {}",
+                    URLDecoder.decode(request.uri(), StandardCharsets.UTF_8),
+                    HttpUtil.isKeepAlive(request));
             switch (decoder.path()) {
                 case "/":
                     index(ctx, request, ResponseType.PAGE);
@@ -56,7 +59,7 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
                     response(ctx,
                             request,
                             ResponseType.API,
-                            JsonUtils.toJson(Map.of("error", "the path should be '/api/search' or '/api/complete'")),
+                            JsonUtils.toJson(Map.of("error", "BAD_GATEWAY")),
                             HttpResponseStatus.BAD_GATEWAY);
             }
         }
@@ -74,7 +77,7 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
             response(ctx,
                     request,
                     ResponseType.API,
-                    "{\"info\":\"Hello, I am Gogo, https://github.com/zenuo/gogo\"}",
+                    "{\"info\":\"Hello, I am Gogo API, https://github.com/zenuo/gogo\"}",
                     HttpResponseStatus.OK);
         } else {
             response(ctx,
@@ -117,7 +120,7 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
                 response(ctx,
                         request,
                         ResponseType.PAGE,
-                        SearchPageBuilder.build(response),
+                        ResultPageBuilder.build(response),
                         response.getStatus());
             }
         }
@@ -162,14 +165,17 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
                 request.protocolVersion(),
                 status,
                 body == null ? Unpooled.buffer() : Unpooled.copiedBuffer(body.getBytes(StandardCharsets.UTF_8)));
+        //设置头信息
         response.headers().add("Server", "gogo/0.1");
         if (type == ResponseType.API) {
+            //若是API请求
             response.headers().add("Content-Type", "application/json; charset=utf-8");
             response.headers().add("Access-Control-Allow-Origin", "*");
         } else {
-            response.headers().add("Content-Type", "text/html; charset=UTF-8");
+            //若是网页请求
+            response.headers().add("Content-Type", "text/html; charset=utf-8");
         }
-        final boolean keepAlive = HttpUtil.isKeepAlive(request);
+//        final boolean keepAlive = HttpUtil.isKeepAlive(request);
 //        if (keepAlive) {
 //            response.headers().add("Connection", "Keep-Alive");
 //            response.headers().add("Keep-Alive", "timeout=5, max=1000");

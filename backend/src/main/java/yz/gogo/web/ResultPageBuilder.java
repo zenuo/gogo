@@ -6,7 +6,10 @@ import yz.gogo.model.SearchResponse;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
-public class SearchPageBuilder {
+/**
+ * 结果页面构建器
+ */
+public class ResultPageBuilder {
     private static final String HTML_BEFORE_TITLE = "<!DOCTYPE html>\n" +
             "<html lang=\"en\">\n" +
             "\n" +
@@ -34,21 +37,28 @@ public class SearchPageBuilder {
     private static final String HTML_TAIL = "</body>\n" +
             "</html>";
 
+    private static final String HTML_ERROR = "<h2>Sorry, error occurred, please try again.</h2>";
+
     public static String build(final SearchResponse response) {
         final StringBuilder builder = new StringBuilder(HTML_BEFORE_TITLE);
         builder.append(response.getKey())
                 .append(HTML_BEFORE_INPUT)
                 .append(response.getKey())
                 .append(HTML_BEFORE_RESULT);
-        for (Entry e : response.getEntries()) {
-            EntryBuilder.build(builder, e);
+        if (response.getEntries() != null) {
+            response.getEntries().forEach(e -> EntryBuilder.build(builder, e));
+            NextBuilder.build(builder, response.getKey(), response.getPage());
+        } else {
+            builder.append(HTML_ERROR);
         }
-        NextBuilder.build(builder, response.getKey(), response.getPage());
         builder.append(HTML_TAIL);
         return builder.toString();
     }
 }
 
+/**
+ * 条目构建器
+ */
 class EntryBuilder {
     private static final String HTML_BEFORE_HREF = "<div>\n" +
             "<div class=\"entry\">\n" +
@@ -84,6 +94,9 @@ class EntryBuilder {
     }
 }
 
+/**
+ * "Next"按钮构建器
+ */
 class NextBuilder {
     private static final String HTML_BEFORE_KEY = "<div class=\"next\">\n" +
             "<a href=\"/search?q=";
