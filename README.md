@@ -1,11 +1,16 @@
-# gogo backend
+# 一个谷歌搜索的镜像站点项目
 
-## 1 Search API
-HTTP method: GET
+## 1 网页
 
-URL: https://176.122.157.73:5000/api/search?q=github&p=1
+1)URL: https://176.122.157.73:5000
 
-Response：
+## 2 API
+### 2.1 搜索
+1)HTTP方法: GET
+
+2)URL: https://176.122.157.73:5000/api/search?q=github&p=1
+
+3)响应示例：
 ```
 {
   "key": "github",
@@ -23,12 +28,12 @@ Response：
 }
 ```
 
-## 2 Complete API
-HTTP method: GET
+### 2.2 补全
+1)HTTP方法: GET
 
-URL: https://176.122.157.73:5000/api/complete?q=github
+2)URL: https://176.122.157.73:5000/api/complete?q=github
 
-Response:
+3)响应示例:
 ```
 {
   "key": "github",
@@ -47,3 +52,9 @@ Response:
   "error": null
 }
 ```
+
+## 3 使用工具
+> 站在巨人的肩膀上
+
+* [Netty](https://netty.io/)
+* [Jsoup](https://jsoup.org/)
