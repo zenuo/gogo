@@ -15,7 +15,7 @@ public class SearchUtilsTest {
     public void request() throws IOException {
         final Document document = SearchUtils.request("udp", 1);
         if (document != null) {
-            System.out.println(document.title());
+            System.out.println(document.html());
         }
     }
 

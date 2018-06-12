@@ -15,6 +15,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 
 @Slf4j
@@ -31,10 +32,19 @@ public final class SearchUtils {
         final String url = String.format(Constants.GOOGLE_SEARCH_URL_TEMPLATE,
                 URLEncoder.encode(key, StandardCharsets.UTF_8),
                 start);
-        return Jsoup.connect(url)
+        final Document document = Jsoup.connect(url)
                 .header("User-Agent", Constants.USER_AGENT)
                 .timeout(Constants.TIME_OUT)
                 .get();
+        if (Constants.SUBSTITUTE_RULE_MAP.isEmpty()) {
+            return document;
+        } else {
+            String html = document.html();
+            for (Map.Entry<String, String> rule : Constants.SUBSTITUTE_RULE_MAP.entrySet()) {
+                html = html.replaceAll(rule.getKey(), rule.getValue());
+            }
+            return Jsoup.parse(html, url);
+        }
     }
 
     /**
