@@ -33,7 +33,7 @@ public final class SearchUtils {
                 URLEncoder.encode(key, StandardCharsets.UTF_8),
                 start);
         final Document document = Jsoup.connect(url)
-                .header("User-Agent", Constants.USER_AGENT)
+                .header("User-Agent", UserAgentUtils.get())
                 .timeout(Constants.TIME_OUT)
                 .get();
         if (Constants.SUBSTITUTE_RULE_MAP.isEmpty()) {
@@ -65,6 +65,7 @@ public final class SearchUtils {
             document = request(key, page);
         } catch (IOException e) {
             log.error("request, {}, {}", key, page);
+            log.error("exception", e);
             return builder.status(HttpResponseStatus.INTERNAL_SERVER_ERROR)
                     .error(e.getMessage())
                     .build();
@@ -89,6 +90,9 @@ public final class SearchUtils {
             final Entry.EntryBuilder entryBuilder = Entry.builder();
             //name and url
             final Element h3 = result.getElementsByClass("r").first();
+            if (h3 == null) {
+                continue;
+            }
             entryBuilder.name(h3.text());
             final Elements nameAndUrls = h3.children();
             for (Element nameAndUrl : nameAndUrls) {

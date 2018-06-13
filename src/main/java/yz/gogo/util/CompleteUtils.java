@@ -30,7 +30,7 @@ public final class CompleteUtils {
         final String url = String.format(Constants.GOOGLE_SEARCH_COMPLETE_URL_TEMPLATE,
                 URLEncoder.encode(key, StandardCharsets.UTF_8));
         return Jsoup.connect(url)
-                .header("User-Agent", Constants.USER_AGENT)
+                .header("User-Agent", UserAgentUtils.get())
                 .timeout(Constants.TIME_OUT)
                 .ignoreContentType(true)
                 .get();
