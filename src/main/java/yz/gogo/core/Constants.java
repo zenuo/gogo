@@ -50,11 +50,13 @@ public final class Constants {
      * 主页的HTML字符串
      */
     static String INDEX_PAGE_HTML = "<!DOCTYPE html><html lang=\"en\"><head> <meta charset=\"utf-8\"/> <title>Gogo</title> <style> body { text-align: center; } h1 { font-size: 50px; font-family: \"Times New Roman\", Times, serif; } footer { font-size: 15px; } .main { margin: 0 auto; width: 50%; padding-bottom: 50px; } </style></head><body><div class=\"main\"> <h1>Gogo</h1> <form action=\"/search\" method=\"GET\" onsubmit=\"return q.value!=''\"> <input name=\"q\" autocomplete=\"off\" autofocus=\"autofocus\" type=\"text\"> <button value=\"Search\" type=\"submit\">Go</button> </form></div><footer> Powered by Google Search</footer></body></html>";
+
     /**
      * 谷歌搜索URL模板
      */
     public static final String GOOGLE_SEARCH_URL_TEMPLATE = URL_PREFIX +
             "/search?safe=strict&q=%s&start=%d";
+
     /**
      * 谷歌搜索补全URL模板
      */
