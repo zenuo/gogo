@@ -19,7 +19,7 @@ public class ResultPageBuilder {
 
     private static final String HTML_BEFORE_INPUT = "</title>\n" +
             "<style>\n" +
-            "body{width:800px;padding-left:10px}.search{padding-top:5px;padding-bottom:5px}.logo{float:left;padding-right:10px;color:#000;text-decoration:none}.entry{padding-top:5px;padding-bottom:5px}.name{color:#1a0dab;text-decoration:none;font-size:18px}.url{color:#006621;font-size:14px}.desc{font-size:16px}.next{padding-top:5px}\n" +
+            "body{width:800px;padding-left:10px}.search{padding-top:5px;padding-bottom:5px}.logo{float:left;padding-right:10px;color:#000;text-decoration:none;font-family: \"Times New Roman\", Times, serif;}.entry{padding-top:5px;padding-bottom:5px;font-family: 'Roboto',arial,sans-serif;}.name{color:#1a0dab;text-decoration:none;font-size:18px}.url{color:#006621;font-size:14px}.desc{font-size:16px}.next{padding-top:5px}\n" +
             "</style>\n" +
             "</head>\n" +
             "\n" +
