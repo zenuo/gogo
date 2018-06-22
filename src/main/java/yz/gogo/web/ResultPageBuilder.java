@@ -39,6 +39,12 @@ public class ResultPageBuilder {
 
     private static final String HTML_ERROR = "<h2>Sorry, error occurred, please try again.</h2>";
 
+    /**
+     * 由响应示例构建页面
+     *
+     * @param response 响应示例
+     * @return 响应页面HTML字符串
+     */
     public static String build(final SearchResponse response) {
         final StringBuilder builder = new StringBuilder(HTML_BEFORE_TITLE);
         builder.append(response.getKey())
@@ -78,6 +84,12 @@ class EntryBuilder {
             "</div>\n" +
             "</div>";
 
+    /**
+     * 由条目实例构建页面
+     *
+     * @param target 目标StringBuilder实例
+     * @param entry  条目实例
+     */
     static void build(
             final StringBuilder target,
             final Entry entry
@@ -95,7 +107,7 @@ class EntryBuilder {
 }
 
 /**
- * "Next"按钮构建器
+ * 下一页按钮构建器
  */
 class NextBuilder {
     private static final String HTML_BEFORE_KEY = "<div class=\"next\">\n" +
@@ -106,6 +118,13 @@ class NextBuilder {
     private static final String HTML_TAIL = "\"><button>Next</button></a>\n" +
             "</div>";
 
+    /**
+     * 构建下一页按钮
+     *
+     * @param target 目标StringBuilder实例
+     * @param key    关键词字符串
+     * @param page   当前页数
+     */
     static void build(
             final StringBuilder target,
             final String key,
