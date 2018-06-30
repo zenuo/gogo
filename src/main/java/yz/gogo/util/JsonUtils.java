@@ -3,6 +3,9 @@ package yz.gogo.util;
 import lombok.extern.slf4j.Slf4j;
 import yz.gogo.core.Constants;
 
+/**
+ * JSON工具类
+ */
 @Slf4j
 public class JsonUtils {
     private JsonUtils() {

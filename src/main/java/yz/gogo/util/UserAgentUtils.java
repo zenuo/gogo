@@ -7,6 +7,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 final class UserAgentUtils {
+
+    private UserAgentUtils() {
+    }
+
     /**
      * 用户代理字符串数组
      */

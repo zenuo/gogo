@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
+/**
+ * 搜索功能的实现
+ */
 @Slf4j
 public final class SearchUtils {
     /**

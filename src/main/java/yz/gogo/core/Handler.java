@@ -24,6 +24,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 处理器类，通道读取事件的回调
+ */
 @Slf4j
 public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
     @Override
