@@ -20,7 +20,7 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 
 @Slf4j
-public class Main {
+public final class Main {
     public static void main(String[] args) {
         //加载配置文件
         final Path path = Paths.get("./substitute.conf");
@@ -62,7 +62,7 @@ public class Main {
             final Channel channel = bootstrap.bind("0.0.0.0", Constants.PORT)
                     .sync()
                     .channel();
-            log.info("Open your web browser and navigate to http://localhost:" + Constants.PORT + '/');
+            log.info("Bond port {}", Constants.PORT);
             //阻塞至通道关闭
             channel.closeFuture().sync();
         } catch (Exception e) {
