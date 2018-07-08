@@ -17,6 +17,7 @@ import yz.gogo.model.SearchResponse;
 import yz.gogo.util.CompleteUtils;
 import yz.gogo.util.JsonUtils;
 import yz.gogo.util.SearchUtils;
+import yz.gogo.web.IndexPageBuilder;
 import yz.gogo.web.ResultPageBuilder;
 
 import java.net.URLDecoder;
@@ -86,7 +87,7 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
             response(ctx,
                     request,
                     ResponseType.PAGE,
-                    Constants.INDEX_PAGE_HTML,
+                    IndexPageBuilder.build(),
                     HttpResponseStatus.OK
             );
         }

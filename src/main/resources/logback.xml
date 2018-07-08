@@ -12,19 +12,13 @@
             <totalSizeCap>256MB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <Pattern>${FILE_LOG_PATTERN}</Pattern>
-        </encoder>
-    </appender>
-
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
+            <charset>UTF-8</charset>
             <Pattern>${FILE_LOG_PATTERN}</Pattern>
         </encoder>
     </appender>
 
     <root level="INFO">
         <appender-ref ref="DAILY_ROLLING"/>
-        <appender-ref ref="CONSOLE"/>
     </root>
 
 </configuration>
