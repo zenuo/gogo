@@ -6,6 +6,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import yz.gogo.core.Config;
 import yz.gogo.core.Constants;
 import yz.gogo.model.Entry;
 import yz.gogo.model.SearchResponse;
@@ -39,11 +40,11 @@ public final class SearchUtils {
                 .header("User-Agent", UserAgentUtils.get())
                 .timeout(Constants.TIME_OUT)
                 .get();
-        if (Constants.SUBSTITUTE_RULE_MAP.isEmpty()) {
+        if (Config.INSTANCE.getSubstituteRuleMap().isEmpty()) {
             return document;
         } else {
             String html = document.html();
-            for (Map.Entry<String, String> rule : Constants.SUBSTITUTE_RULE_MAP.entrySet()) {
+            for (Map.Entry<String, String> rule : Config.INSTANCE.getSubstituteRuleMap().entrySet()) {
                 html = html.replaceAll(rule.getKey(), rule.getValue());
             }
             return Jsoup.parse(html, url);
@@ -107,7 +108,8 @@ public final class SearchUtils {
             //description
             final Element desc = result.getElementsByClass("st").first();
             if (desc != null) {
-                entryBuilder.desc(desc.text());
+                //替换"<"和">"
+                entryBuilder.desc(desc.text().replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
                 final Entry entry = entryBuilder.build();
                 //name and url are not null
                 if (entry.getName() != null && entry.getUrl() != null) {
