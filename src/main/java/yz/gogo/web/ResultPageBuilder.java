@@ -1,13 +1,20 @@
 package yz.gogo.web;
 
+import yz.gogo.core.Config;
+import yz.gogo.core.Constants;
 import yz.gogo.model.Entry;
 import yz.gogo.model.SearchResponse;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
 
 /**
  * 结果页面构建器
+ *
+ * @author 袁臻
+ * 2018-07-08 20:50:25
  */
 public class ResultPageBuilder {
     private static final String HTML_BEFORE_TITLE = "<!DOCTYPE html>\n" +
@@ -17,9 +24,11 @@ public class ResultPageBuilder {
             "<meta charset=\"utf-8\" />\n" +
             "<title>Gogo - ";
 
-    private static final String HTML_BEFORE_INPUT = "</title>\n" +
+    private static final String HTML_BEFORE_INVERT_STYLE = "</title>\n" +
             "<style>\n" +
-            "body{width:800px;padding-left:10px}.search{padding-top:5px;padding-bottom:5px}.logo{float:left;padding-right:10px;color:#000;text-decoration:none;font-family: \"Times New Roman\", Times, serif;}.entry{padding-top:5px;padding-bottom:5px;font-family: 'Roboto',arial,sans-serif;}.name{color:#1a0dab;text-decoration:none;font-size:18px}.url{color:#006621;font-size:14px}.desc{font-size:16px}.next{padding-top:5px}\n" +
+            "body{width:800px;padding-left:10px;";
+
+    private static final String HTML_AFTER_INVERT_STYLE = "}.search{padding-top:5px;padding-bottom:5px}.logo{float:left;padding-right:10px;color:#000;text-decoration:none;font-family: \"Times New Roman\", Times, serif;}.entry{padding-top:5px;padding-bottom:5px;font-family: 'Roboto',arial,sans-serif;}.name{color:#1a0dab;text-decoration:none;font-size:18px}.url{color:#006621;font-size:14px}.desc{font-size:16px}.next{padding-top:5px}\n" +
             "</style>\n" +
             "</head>\n" +
             "\n" +
@@ -46,19 +55,26 @@ public class ResultPageBuilder {
      * @return 响应页面HTML字符串
      */
     public static String build(final SearchResponse response) {
-        final StringBuilder builder = new StringBuilder(HTML_BEFORE_TITLE);
-        builder.append(response.getKey())
-                .append(HTML_BEFORE_INPUT)
+        final StringBuilder sb = new StringBuilder(HTML_BEFORE_TITLE);
+        sb.append(response.getKey())
+                .append(HTML_BEFORE_INVERT_STYLE);
+        final LocalTime now = LocalTime.now(ZoneOffset.UTC);
+        //若不是日间模式
+        if (now.isBefore(Config.INSTANCE.getDayModeStartTime()) ||
+                now.isAfter(Config.INSTANCE.getDayModeEndTime())) {
+            sb.append(Constants.HTML_INVERT_STYLE);
+        }
+        sb.append(HTML_AFTER_INVERT_STYLE)
                 .append(response.getKey())
                 .append(HTML_BEFORE_RESULT);
         if (response.getEntries() != null) {
-            response.getEntries().forEach(e -> EntryBuilder.build(builder, e));
-            NextBuilder.build(builder, response.getKey(), response.getPage());
+            response.getEntries().forEach(e -> EntryBuilder.build(sb, e));
+            NextBuilder.build(sb, response.getKey(), response.getPage());
         } else {
-            builder.append(HTML_ERROR);
+            sb.append(HTML_ERROR);
         }
-        builder.append(HTML_TAIL);
-        return builder.toString();
+        sb.append(HTML_TAIL);
+        return sb.toString();
     }
 }
 
