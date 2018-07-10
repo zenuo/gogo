@@ -8,7 +8,6 @@ import yz.gogo.model.SearchResponse;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
-import java.time.ZoneOffset;
 
 /**
  * 结果页面构建器
@@ -58,7 +57,7 @@ public class ResultPageBuilder {
         final StringBuilder sb = new StringBuilder(HTML_BEFORE_TITLE);
         sb.append(response.getKey())
                 .append(HTML_BEFORE_INVERT_STYLE);
-        final LocalTime now = LocalTime.now(ZoneOffset.UTC);
+        final LocalTime now = LocalTime.now();
         //若不是日间模式
         if (now.isBefore(Config.INSTANCE.getDayModeStartTime()) ||
                 now.isAfter(Config.INSTANCE.getDayModeEndTime())) {

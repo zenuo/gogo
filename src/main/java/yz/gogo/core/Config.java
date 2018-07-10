@@ -39,11 +39,11 @@ public enum Config {
      */
     private int port;
     /**
-     * 日间模式开始时间，UTC时区
+     * 日间模式开始时间
      */
     private LocalTime dayModeStartTime;
     /**
-     * 日间模式结束时间，UTC时区
+     * 日间模式结束时间
      */
     private LocalTime dayModeEndTime;
 
@@ -68,7 +68,7 @@ public enum Config {
                     this.port = Constants.DEFAULT_PORT;
                 }
 
-                //读取日间模式开始时间，UTC时区
+                //读取日间模式开始时间
                 final String dayModeStartTime = conf.getProperty("day-mode-start-time");
                 if (dayModeStartTime != null) {
                     this.dayModeStartTime = LocalTime.parse(dayModeStartTime);
@@ -76,7 +76,7 @@ public enum Config {
                     this.dayModeStartTime = Constants.DEFAULT_DAY_MODE_START_TIME;
                 }
 
-                //读取日间模式结束时间，UTC时区
+                //读取日间模式结束时间
                 final String dayModeEndTime = conf.getProperty("day-mode-end-time");
                 if (dayModeEndTime != null) {
                     this.dayModeEndTime = LocalTime.parse(dayModeEndTime);

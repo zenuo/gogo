@@ -4,7 +4,6 @@ import yz.gogo.core.Config;
 import yz.gogo.core.Constants;
 
 import java.time.LocalTime;
-import java.time.ZoneOffset;
 
 /**
  * 主页构建器
@@ -21,7 +20,7 @@ public class IndexPageBuilder {
     /**
      * 反相样式之后的HTML字符串
      */
-    private static final String HTML_AFTER_INVERT_STYLE = "}h1{font-size:50px;font-family:\"Times New Roman\",Times,serif;}footer{font-size:15px;font-family:'Roboto',arial,sans-serif;}.main{margin:0 auto;width:50%;padding-bottom:50px;}</style></head><body><div class=\"main\"><h1>Gogo</h1><form action=\"/search\" method=\"GET\" onsubmit=\"return q.value!=''\"><input name=\"q\" autocomplete=\"off\" autofocus=\"autofocus\" type=\"text\"> <button value=\"Search\" type=\"submit\">Go</button></form></div><footer>Powered by Google Search</footer></body></html>";
+    private static final String HTML_AFTER_INVERT_STYLE = "}h1{font-size:50px;font-family:\"Times New Roman\",Times,serif;}footer{font-size:15px;font-family:'Roboto',arial,sans-serif;}.main{margin:0 auto;width:50%;padding-bottom:50px;}</style></head><body><div class=\"main\"><h1>Gogo</h1><form action=\"/search\" method=\"GET\" onsubmit=\"return q.value!=''\"><input name=\"q\" autocomplete=\"off\" autofocus=\"autofocus\" type=\"text\"> <button value=\"Search\" type=\"submit\">Go</button></form></div><footer>Powered by Google Search, <a href=\"https://github.com/zenuo/gogo\">source code</a></footer></body></html>";
 
     /**
      * 构建主页
@@ -30,7 +29,7 @@ public class IndexPageBuilder {
      */
     public static String build() {
         final StringBuilder sb = new StringBuilder(HTML_BEFORE_INVERT_STYLE);
-        final LocalTime now = LocalTime.now(ZoneOffset.UTC);
+        final LocalTime now = LocalTime.now();
         //若不是日间模式
         if (now.isBefore(Config.INSTANCE.getDayModeStartTime()) ||
                 now.isAfter(Config.INSTANCE.getDayModeEndTime())) {
