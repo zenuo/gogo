@@ -1,7 +1,6 @@
 package yz.gogo.web;
 
 import yz.gogo.core.Config;
-import yz.gogo.core.Constants;
 import yz.gogo.model.Entry;
 import yz.gogo.model.SearchResponse;
 
@@ -16,35 +15,58 @@ import java.time.LocalTime;
  * 2018-07-08 20:50:25
  */
 public class ResultPageBuilder {
+    /**
+     * 标题前的HTML
+     */
     private static final String HTML_BEFORE_TITLE = "<!DOCTYPE html>\n" +
             "<html lang=\"en\">\n" +
-            "\n" +
             "<head>\n" +
             "<meta charset=\"utf-8\" />\n" +
             "<title>Gogo - ";
 
-    private static final String HTML_BEFORE_INVERT_STYLE = "</title>\n" +
-            "<style>\n" +
-            "body{width:800px;padding-left:10px;";
+    /**
+     * 样式表前的HTML
+     */
+    private static final String HTML_BEFORE_STYLE = "</title>\n<style>\n";
 
-    private static final String HTML_AFTER_INVERT_STYLE = "}.search{padding-top:5px;padding-bottom:5px}.logo{float:left;padding-right:10px;color:#000;text-decoration:none;font-family: \"Times New Roman\", Times, serif;}.entry{padding-top:5px;padding-bottom:5px;font-family: 'Roboto',arial,sans-serif;}.name{color:#1a0dab;text-decoration:none;font-size:18px}.url{color:#006621;font-size:14px}.desc{font-size:16px}.next{padding-top:5px}\n" +
-            "</style>\n" +
+    /**
+     * 夜间模式的样式表
+     */
+    private static final String HTML_NIGHT_MODE_STYLE = ".logo,body{color:#fff}.entry,.search{padding-bottom:5px;padding-top:5px}.logo,.name{text-decoration:none}.entry,.next,.search{padding-top:5px}body{width:800px;padding-left:10px;background-color:#000}.logo{float:left;padding-right:10px;font-family:\"Times New Roman\",Times,serif}.entry{font-family:Roboto,arial,sans-serif}.name{color:#fffb00;font-size:18px}.url{color:#2bd8a4;font-size:14px}.desc{font-size:16px}";
+
+    /**
+     * 日间模式的样式表
+     */
+    private static final String HTML_DAY_MODE_STYLE = ".entry,.search{padding-bottom:5px;padding-top:5px}.logo,.name{text-decoration:none}.entry,.next,.search{padding-top:5px}body{width:800px;padding-left:10px}.logo{float:left;padding-right:10px;color:#000;font-family:\"Times New Roman\",Times,serif}.entry{font-family:Roboto,arial,sans-serif}.name{color:#1a0dab;font-size:18px}.url{color:#006621;font-size:14px}.desc{font-size:16px}";
+
+    /**
+     * 样式表之后的HTML
+     */
+    private static final String HTML_AFTER_STYLE = "</style>\n" +
             "</head>\n" +
-            "\n" +
             "<body>\n" +
             "<div class=\"search\">\n" +
             "<a href=\"/\"><span class=\"logo\"><b>Gogo</b></span></a>\n" +
             "<form action=\"/search\" method=\"GET\" onsubmit=\"return q.value!=''\">\n" +
             "<input name=\"q\" autocomplete=\"off\" type=\"text\" value=\"";
 
+    /**
+     * 结果条目之后的样式表
+     */
     private static final String HTML_BEFORE_RESULT = "\">\n" +
             "<button type=\"submit\">Go</button>\n" +
             "</form>\n" +
             "</div>\n";
 
+    /**
+     * 尾部的HTML
+     */
     private static final String HTML_TAIL = "</body>\n" +
             "</html>";
 
+    /**
+     * 错误的HTML
+     */
     private static final String HTML_ERROR = "<h2>Sorry, error occurred, please try again.</h2>";
 
     /**
@@ -56,14 +78,16 @@ public class ResultPageBuilder {
     public static String build(final SearchResponse response) {
         final StringBuilder sb = new StringBuilder(HTML_BEFORE_TITLE);
         sb.append(response.getKey())
-                .append(HTML_BEFORE_INVERT_STYLE);
+                .append(HTML_BEFORE_STYLE);
         final LocalTime now = LocalTime.now();
         //若不是日间模式
         if (now.isBefore(Config.INSTANCE.getDayModeStartTime()) ||
                 now.isAfter(Config.INSTANCE.getDayModeEndTime())) {
-            sb.append(Constants.HTML_INVERT_STYLE);
+            sb.append(HTML_NIGHT_MODE_STYLE);
+        } else {
+            sb.append(HTML_DAY_MODE_STYLE);
         }
-        sb.append(HTML_AFTER_INVERT_STYLE)
+        sb.append(HTML_AFTER_STYLE)
                 .append(response.getKey())
                 .append(HTML_BEFORE_RESULT);
         if (response.getEntries() != null) {
@@ -81,20 +105,34 @@ public class ResultPageBuilder {
  * 条目构建器
  */
 class EntryBuilder {
+    /**
+     * 超链接之前的HTML
+     */
     private static final String HTML_BEFORE_HREF = "<div>\n" +
             "<div class=\"entry\">\n" +
             "<a class=\"name\" href=\"";
 
+    /**
+     * 名称之前的HTML
+     */
     private static final String HTML_BEFORE_NAME = "\">";
 
+    /**
+     * URL字符串之前的HTML
+     */
     private static final String HTML_BEFORE_URL = "</a>\n" +
             "<br />\n" +
             "<span class=\"url\">";
-
+    /**
+     * 描述之前的HTML
+     */
     private static final String HTML_BEFORE_DESC = "</span>\n" +
             "<br />\n" +
             "<span class=\"desc\">";
 
+    /**
+     * 尾部HTML
+     */
     private static final String HTML_TAIL = "</span>\n" +
             "</div>\n" +
             "</div>";
@@ -125,11 +163,20 @@ class EntryBuilder {
  * 下一页按钮构建器
  */
 class NextBuilder {
+    /**
+     * 关键字之前的HTML
+     */
     private static final String HTML_BEFORE_KEY = "<div class=\"next\">\n" +
             "<a href=\"/search?q=";
 
+    /**
+     * 页码之前的HTML
+     */
     private static final String HTML_BEFORE_PAGE = "&p=";
 
+    /**
+     * 尾部HTML
+     */
     private static final String HTML_TAIL = "\"><button>Next</button></a>\n" +
             "</div>";
 

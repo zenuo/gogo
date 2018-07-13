@@ -48,7 +48,7 @@ public final class Main {
             final Channel channel = bootstrap.bind("0.0.0.0", Config.INSTANCE.getPort())
                     .sync()
                     .channel();
-            log.info("Bond port {}", Config.INSTANCE.getPort());
+            log.info("Bond port " + Config.INSTANCE.getPort());
             //阻塞至通道关闭
             channel.closeFuture().sync();
         } catch (Exception e) {

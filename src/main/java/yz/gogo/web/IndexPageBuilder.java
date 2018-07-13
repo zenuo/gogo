@@ -1,7 +1,6 @@
 package yz.gogo.web;
 
 import yz.gogo.core.Config;
-import yz.gogo.core.Constants;
 
 import java.time.LocalTime;
 
@@ -15,12 +14,22 @@ public class IndexPageBuilder {
     /**
      * 反相样式之前的HTML字符串
      */
-    private static final String HTML_BEFORE_INVERT_STYLE = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"/><title>Gogo</title><style>body{text-align:center;";
+    private static final String HTML_BEFORE_INVERT_STYLE = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"/><title>Gogo</title><style>";
 
     /**
      * 反相样式之后的HTML字符串
      */
-    private static final String HTML_AFTER_INVERT_STYLE = "}h1{font-size:50px;font-family:\"Times New Roman\",Times,serif;}footer{font-size:15px;font-family:'Roboto',arial,sans-serif;}.main{margin:0 auto;width:50%;padding-bottom:50px;}</style></head><body><div class=\"main\"><h1>Gogo</h1><form action=\"/search\" method=\"GET\" onsubmit=\"return q.value!=''\"><input name=\"q\" autocomplete=\"off\" autofocus=\"autofocus\" type=\"text\"> <button value=\"Search\" type=\"submit\">Go</button></form></div><footer>Powered by Google Search, <a href=\"https://github.com/zenuo/gogo\">source code</a></footer></body></html>";
+    private static final String HTML_AFTER_INVERT_STYLE = "</style></head><body><div class=\"main\"><h1>Gogo</h1><form action=\"/search\" method=\"GET\" onsubmit=\"return q.value!=''\"><input name=\"q\" autocomplete=\"off\" autofocus=\"autofocus\" type=\"text\"> <button value=\"Search\" type=\"submit\">Go</button></form></div><footer>Powered by Google Search, <a href=\"https://github.com/zenuo/gogo\">source code</a></footer></body></html>";
+
+    /**
+     * 夜间模式的样式表
+     */
+    private static final String HTML_NIGHT_MODE_STYLE = "body{text-align:center;background-color:#000;color:#fff}h1{font-size:50px;font-family:\"Times New Roman\",Times,serif}footer{font-size:15px;font-family:Roboto,arial,sans-serif}.main{margin:0 auto;width:50%;padding-bottom:50px}";
+
+    /**
+     * 日间模式的样式表
+     */
+    private static final String HTML_DAY_MODE_STYLE = "body{text-align:center}h1{font-size:50px;font-family:\"Times New Roman\",Times,serif}footer{font-size:15px;font-family:Roboto,arial,sans-serif}.main{margin:0 auto;width:50%;padding-bottom:50px}";
 
     /**
      * 构建主页
@@ -33,7 +42,9 @@ public class IndexPageBuilder {
         //若不是日间模式
         if (now.isBefore(Config.INSTANCE.getDayModeStartTime()) ||
                 now.isAfter(Config.INSTANCE.getDayModeEndTime())) {
-            sb.append(Constants.HTML_INVERT_STYLE);
+            sb.append(HTML_NIGHT_MODE_STYLE);
+        } else {
+            sb.append(HTML_DAY_MODE_STYLE);
         }
         sb.append(HTML_AFTER_INVERT_STYLE);
         return sb.toString();
