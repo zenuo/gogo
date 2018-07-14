@@ -18,13 +18,18 @@ import lombok.extern.slf4j.Slf4j;
 import yz.gogo.core.Config;
 import yz.gogo.core.Handler;
 
+/**
+ * 入口类 Entry point
+ *
+ * @author 袁臻
+ * 2018-06-02 19:12:15
+ */
 @Slf4j
 public final class Main {
     public static void main(String[] args) {
         //加载配置文件
         Config.INSTANCE.init();
 
-        //监听端口
         final NioEventLoopGroup boss = new NioEventLoopGroup(1);
         final NioEventLoopGroup worker = new NioEventLoopGroup();
         try {
@@ -45,6 +50,7 @@ public final class Main {
                                     .addLast(new Handler());
                         }
                     });
+            //绑定端口
             final Channel channel = bootstrap.bind("0.0.0.0", Config.INSTANCE.getPort())
                     .sync()
                     .channel();
