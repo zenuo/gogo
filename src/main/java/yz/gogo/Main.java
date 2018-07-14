@@ -21,7 +21,7 @@ import yz.gogo.core.Handler;
 /**
  * 入口类 Entry point
  *
- * @author 袁臻
+ * @author zenuo
  * 2018-06-02 19:12:15
  */
 @Slf4j
