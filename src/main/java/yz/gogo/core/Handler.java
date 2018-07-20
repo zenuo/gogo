@@ -1,6 +1,7 @@
 package yz.gogo.core;
 
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
@@ -29,6 +30,7 @@ import java.util.Map;
  * 处理器类，通道读取事件的回调
  */
 @Slf4j
+@ChannelHandler.Sharable
 public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) {
@@ -36,11 +38,11 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
             response(ctx,
                     request,
                     ResponseType.API,
-                    JsonUtils.toJson(Map.of("error", "the http method should be GET only")),
+                    "{\"error\", \"the http method should be GET only\"}",
                     HttpResponseStatus.BAD_REQUEST);
         } else {
             final QueryStringDecoder decoder = new QueryStringDecoder(request.uri());
-            log.info("Request {}, keep alive {}",
+            log.debug("Request [{}], keep alive [{}]",
                     URLDecoder.decode(request.uri(), StandardCharsets.UTF_8),
                     HttpUtil.isKeepAlive(request));
             switch (decoder.path()) {
@@ -103,7 +105,7 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
             final ResponseType type
     ) {
         final List<String> keys = decoder.parameters().get("q");
-        if (keys == null || keys.get(0).equals("")) {
+        if (keys == null || "".equals(keys.get(0))) {
             response(ctx,
                     request,
                     ResponseType.API,
@@ -113,7 +115,7 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
             final List<String> pages = decoder.parameters().get("p");
             final SearchResponse response = SearchUtils.response(
                     keys.get(0),
-                    pages == null || pages.get(0).equals("") ? 1 : Integer.parseInt(pages.get(0)));
+                    pages == null || "".equals(pages.get(0)) ? 1 : Integer.parseInt(pages.get(0)));
             if (type == ResponseType.API) {
                 response(ctx,
                         request,
@@ -139,7 +141,7 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
             final QueryStringDecoder decoder
     ) {
         final List<String> keys = decoder.parameters().get("q");
-        if (keys == null || keys.get(0).equals("")) {
+        if (keys == null || "".equals(keys.get(0))) {
             response(ctx,
                     request,
                     ResponseType.API,
@@ -179,16 +181,8 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
             //若是网页请求
             response.headers().add("Content-Type", "text/html; charset=utf-8");
         }
-//        final boolean keepAlive = HttpUtil.isKeepAlive(request);
-//        if (keepAlive) {
-//            response.headers().add("Connection", "Keep-Alive");
-//            response.headers().add("Keep-Alive", "timeout=5, max=1000");
-//        }
         ctx.writeAndFlush(response);
         log.info("response");
-//        if (!keepAlive) {
-//            ctx.close();
-//        }
         ctx.close();
     }
 
