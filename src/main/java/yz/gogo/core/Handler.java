@@ -1,6 +1,7 @@
 package yz.gogo.core;
 
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -181,9 +182,10 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
             //若是网页请求
             response.headers().add("Content-Type", "text/html; charset=utf-8");
         }
-        ctx.writeAndFlush(response);
+        //响应后关闭通道
+        ctx.writeAndFlush(response)
+                .addListener(ChannelFutureListener.CLOSE);
         log.info("response");
-        ctx.close();
     }
 
     @Override
