@@ -4,8 +4,8 @@ import yz.gogo.core.Config;
 import yz.gogo.model.Entry;
 import yz.gogo.model.SearchResponse;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
 
 /**
@@ -147,15 +147,19 @@ class EntryBuilder {
             final StringBuilder target,
             final Entry entry
     ) {
-        target.append(HTML_BEFORE_HREF)
-                .append(entry.getUrl())
-                .append(HTML_BEFORE_NAME)
-                .append(entry.getName())
-                .append(HTML_BEFORE_URL)
-                .append(URLDecoder.decode(entry.getUrl(), StandardCharsets.UTF_8))
-                .append(HTML_BEFORE_DESC)
-                .append(entry.getDesc())
-                .append(HTML_TAIL);
+        try {
+            target.append(HTML_BEFORE_HREF)
+                    .append(entry.getUrl())
+                    .append(HTML_BEFORE_NAME)
+                    .append(entry.getName())
+                    .append(HTML_BEFORE_URL)
+                    .append(URLDecoder.decode(entry.getUrl(), "UTF-8"))
+                    .append(HTML_BEFORE_DESC)
+                    .append(entry.getDesc())
+                    .append(HTML_TAIL);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 }
 

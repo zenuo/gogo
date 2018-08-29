@@ -13,7 +13,6 @@ import yz.gogo.model.SearchResponse;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +33,7 @@ public final class SearchUtils {
     public static Document request(final String key, final int page) throws IOException {
         final int start = page > 1 ? (page - 1) * 10 : 0;
         final String url = String.format(Constants.GOOGLE_SEARCH_URL_TEMPLATE,
-                URLEncoder.encode(key, StandardCharsets.UTF_8),
+                URLEncoder.encode(key, "UTF-8"),
                 start);
         final Document document = Jsoup.connect(url)
                 .header("User-Agent", UserAgentUtils.get())
@@ -59,6 +58,7 @@ public final class SearchUtils {
      * @return entries if succeed, null otherwise
      */
     public static SearchResponse search(final String key, final int page) {
+        log.info("request, [{}], [{}]", key, page);
         //builder
         final SearchResponse.SearchResponseBuilder builder = SearchResponse.builder();
         builder.key(key);
@@ -68,7 +68,6 @@ public final class SearchUtils {
         try {
             document = request(key, page);
         } catch (IOException e) {
-            log.error("request, {}, {}", key, page);
             log.error("exception", e);
             return builder.status(HttpResponseStatus.INTERNAL_SERVER_ERROR)
                     .error(e.getMessage())

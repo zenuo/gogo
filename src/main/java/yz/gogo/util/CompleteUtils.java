@@ -10,7 +10,6 @@ import yz.gogo.model.CompleteResponse;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +30,7 @@ public final class CompleteUtils {
      */
     public static Document request(final String key) throws IOException {
         final String url = String.format(Constants.GOOGLE_SEARCH_COMPLETE_URL_TEMPLATE,
-                URLEncoder.encode(key, StandardCharsets.UTF_8));
+                URLEncoder.encode(key, "UTF-8"));
         return Jsoup.connect(url)
                 .header("User-Agent", UserAgentUtils.get())
                 .timeout(Constants.TIME_OUT)

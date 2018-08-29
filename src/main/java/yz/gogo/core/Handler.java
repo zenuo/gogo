@@ -5,12 +5,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpUtil;
-import io.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.handler.codec.http.*;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +17,10 @@ import yz.gogo.util.SearchUtils;
 import yz.gogo.web.IndexPageBuilder;
 import yz.gogo.web.ResultPageBuilder;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 处理器类，通道读取事件的回调
@@ -34,7 +29,7 @@ import java.util.Map;
 @ChannelHandler.Sharable
 public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) {
+    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws UnsupportedEncodingException {
         if (request.method() != HttpMethod.GET) {
             response(ctx,
                     request,
@@ -44,7 +39,7 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
         } else {
             final QueryStringDecoder decoder = new QueryStringDecoder(request.uri());
             log.debug("Request [{}], keep alive [{}]",
-                    URLDecoder.decode(request.uri(), StandardCharsets.UTF_8),
+                    URLDecoder.decode(request.uri(), "UTF-8"),
                     HttpUtil.isKeepAlive(request));
             switch (decoder.path()) {
                 case "/":
@@ -66,7 +61,7 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
                     response(ctx,
                             request,
                             ResponseType.API,
-                            JsonUtils.toJson(Map.of("error", "BAD_GATEWAY")),
+                            "{\"error\": \"BAD_GATEWAY\"}",
                             HttpResponseStatus.BAD_GATEWAY);
             }
         }
@@ -110,7 +105,7 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
             response(ctx,
                     request,
                     ResponseType.API,
-                    JsonUtils.toJson(Map.of("error", "the keyword should not be empty")),
+                    "{\"error\": \"the keyword should not be empty\"}",
                     HttpResponseStatus.BAD_REQUEST);
         } else {
             final List<String> pages = decoder.parameters().get("p");
@@ -146,7 +141,7 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
             response(ctx,
                     request,
                     ResponseType.API,
-                    JsonUtils.toJson(Map.of("error", "the keyword should not be empty")),
+                    "{\"error\": \"the keyword should not be empty\"}",
                     HttpResponseStatus.BAD_REQUEST);
         } else {
             final CompleteResponse response = CompleteUtils.response(keys.get(0));

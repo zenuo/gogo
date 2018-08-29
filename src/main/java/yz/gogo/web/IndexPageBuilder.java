@@ -19,7 +19,7 @@ public class IndexPageBuilder {
     /**
      * 反相样式之后的HTML字符串
      */
-    private static final String HTML_AFTER_INVERT_STYLE = "</style></head><body><div class=\"main\"><h1>Gogo</h1><form action=\"/search\" method=\"GET\" onsubmit=\"return q.value!=''\"><input name=\"q\" autocomplete=\"off\" autofocus=\"autofocus\" type=\"text\"> <button value=\"Search\" type=\"submit\">Go</button></form></div><footer>Powered by Google Search, <a href=\"https://github.com/zenuo/gogo\">source code</a></footer></body></html>";
+    private static final String HTML_AFTER_INVERT_STYLE = "</style></head><body><div class=\"main\"><h1>Gogo</h1><form action=\"/search\" method=\"GET\" onsubmit=\"return q.value!=''\"><input name=\"q\" autocomplete=\"off\" autofocus=\"autofocus\" type=\"text\"> <button value=\"Search\" type=\"submit\">Go</button></form></div><footer>(ゝ∀･)~试试<a href=\"https://176.122.157.73:5001\">5001端口</a>，原版谷歌搜索镜像</footer></body></html>";
 
     /**
      * 夜间模式的样式表
