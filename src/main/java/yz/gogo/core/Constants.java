@@ -43,18 +43,15 @@ public final class Constants {
      * 替换规则的正则
      */
     static final Pattern SUBSTITUTE_RULE_PATTERN = Pattern.compile("^\"(.+?)\" \"(.*?)\"$");
-    /**
-     * URL前缀
-     */
-    private static final String URL_PREFIX = System.getProperty("google.search.host", "https://www.google.com");
+
     /**
      * 谷歌搜索URL模板
      */
-    public static final String GOOGLE_SEARCH_URL_TEMPLATE = URL_PREFIX +
-            "/search?safe=strict&q=%s&start=%d";
+    public static final String GOOGLE_SEARCH_URL_TEMPLATE =
+            "https://%s/search?safe=strict&q=%s&start=%d";
     /**
      * 谷歌搜索补全URL模板
      */
-    public static final String GOOGLE_SEARCH_COMPLETE_URL_TEMPLATE = URL_PREFIX +
-            "/complete/search?client=psy-ab&q=%s";
+    public static final String GOOGLE_SEARCH_COMPLETE_URL_TEMPLATE =
+            "https://%s/complete/search?client=psy-ab&q=%s";
 }

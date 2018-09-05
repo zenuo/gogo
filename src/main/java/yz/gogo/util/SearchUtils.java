@@ -33,8 +33,10 @@ public final class SearchUtils {
     public static Document request(final String key, final int page) throws IOException {
         final int start = page > 1 ? (page - 1) * 10 : 0;
         final String url = String.format(Constants.GOOGLE_SEARCH_URL_TEMPLATE,
+                GoogleDomainUtils.get(),
                 URLEncoder.encode(key, "UTF-8"),
                 start);
+        log.info("get [{}]", url);
         final Document document = Jsoup.connect(url)
                 .header("User-Agent", UserAgentUtils.get())
                 .timeout(Constants.TIME_OUT)

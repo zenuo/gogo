@@ -30,7 +30,9 @@ public final class CompleteUtils {
      */
     public static Document request(final String key) throws IOException {
         final String url = String.format(Constants.GOOGLE_SEARCH_COMPLETE_URL_TEMPLATE,
+                GoogleDomainUtils.get(),
                 URLEncoder.encode(key, "UTF-8"));
+        log.info("get [{}]", url);
         return Jsoup.connect(url)
                 .header("User-Agent", UserAgentUtils.get())
                 .timeout(Constants.TIME_OUT)
