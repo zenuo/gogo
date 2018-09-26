@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,6 +32,11 @@ public enum Config {
     INSTANCE;
 
     /**
+     * 配置文件路径
+     */
+    private final static String CONF_FILE_PATH = "gogo.conf";
+
+    /**
      * 替换规则的映射
      */
     private final ConcurrentHashMap<String, String> substituteRuleMap = new ConcurrentHashMap<>();
@@ -46,19 +52,24 @@ public enum Config {
      * 日间模式结束时间
      */
     private LocalTime dayModeEndTime;
+    /**
+     * 标语
+     */
+    private String slogan;
 
     /**
      * 初始化
      */
     public void init() {
-        final String confPathString = "." + File.separatorChar + "gogo.conf";
-        final Path confPath = Paths.get(confPathString);
-        if (Files.exists(confPath)) {
+        //若配置文件存在
+        if (Files.exists(Paths.get(CONF_FILE_PATH))) {
             final Properties conf = new Properties();
-            try {
-                final FileInputStream fis = new FileInputStream(confPathString);
-                conf.load(fis);
-                fis.close();
+            try (//文件输入流
+                 final FileInputStream fis = new FileInputStream(CONF_FILE_PATH);
+                 //输入流读者
+                 final InputStreamReader reader = new InputStreamReader(fis, StandardCharsets.UTF_8)) {
+                //读取
+                conf.load(reader);
 
                 //读取端口
                 final String port = conf.getProperty("port");
@@ -84,10 +95,20 @@ public enum Config {
                     this.dayModeEndTime = Constants.DEFAULT_DAY_MODE_END_TIME;
                 }
 
-                log.info("initialized, port={}, day-mode-start-time={}, day-mode-end-time={}",
+                //读取标语
+                final String slogan = conf.getProperty("slogan");
+                if (slogan != null) {
+                    this.slogan = slogan;
+                } else {
+                    this.slogan = Constants.DEFAULT_SLOGAN;
+                }
+
+                //记录配置项
+                log.info("initialized, port={}, day-mode-start-time={}, day-mode-end-time={}, slogan={}",
                         this.port,
                         this.dayModeStartTime,
-                        this.dayModeEndTime);
+                        this.dayModeEndTime,
+                        this.slogan);
 
                 //加载替换规则的映射
                 final Path substituteConfPath = Paths.get("." + File.separatorChar + "substitute.conf");
@@ -120,7 +141,8 @@ public enum Config {
                 log.warn("加载配置文件", e);
             }
         } else {
-            log.error("文件'{}'不存在", confPathString);
+            //若配置文件不存在
+            log.error("文件'{}'不存在", CONF_FILE_PATH);
             System.exit(1);
         }
     }

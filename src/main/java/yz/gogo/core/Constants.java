@@ -11,10 +11,6 @@ import java.util.regex.Pattern;
 public final class Constants {
 
     /**
-     * 夜间模式的样式字符串
-     */
-    public static final String HTML_INVERT_STYLE = "background-color:black;filter:invert(100%);";
-    /**
      * 请求超时，毫秒
      */
     public static final int TIME_OUT = 4000;
@@ -47,11 +43,17 @@ public final class Constants {
     /**
      * 谷歌搜索URL模板
      */
-    public static final String GOOGLE_SEARCH_URL_TEMPLATE =
-            "https://%s/search?safe=strict&q=%s&start=%d";
+    public static final String GOOGLE_SEARCH_URL_TEMPLATE
+            = "https://%s/search?safe=strict&q=%s&start=%d";
     /**
      * 谷歌搜索补全URL模板
      */
-    public static final String GOOGLE_SEARCH_COMPLETE_URL_TEMPLATE =
-            "https://%s/complete/search?client=psy-ab&q=%s";
+    public static final String GOOGLE_SEARCH_COMPLETE_URL_TEMPLATE
+            = "https://%s/complete/search?client=psy-ab&q=%s";
+
+    /**
+     * 默认标语
+     */
+    public static final String DEFAULT_SLOGAN
+            = "Powered by Google Search, <a href=\"https://github.com/zenuo/gogo\">source code</a>";
 }

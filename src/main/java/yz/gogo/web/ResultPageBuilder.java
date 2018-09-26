@@ -37,7 +37,7 @@ public class ResultPageBuilder {
     /**
      * 日间模式的样式表
      */
-    private static final String HTML_DAY_MODE_STYLE = ".entry,.search{padding-bottom:5px;padding-top:5px}.logo,.name{text-decoration:none}.entry,.next,.search{padding-top:5px}body{width:800px;padding-left:10px}.logo{float:left;padding-right:10px;color:#000;font-family:\"Times New Roman\",Times,serif}.entry{font-family:Roboto,arial,sans-serif}.name{color:#1a0dab;font-size:18px}.url{color:#006621;font-size:14px}.desc{font-size:16px}";
+    private static final String HTML_DAY_MODE_STYLE = ".entry,.search{padding-bottom:5px;padding-top:5px}.logo,.name{text-decoration:none}.entry,.next,.search{padding-top:5px}body{width:800px;padding-left:10px;background-color:#F8F4E7;}.logo{float:left;padding-right:10px;color:#000;font-family:\"Times New Roman\",Times,serif}.entry{font-family:Roboto,arial,sans-serif}.name{color:#1a0dab;font-size:18px}.url{color:#006621;font-size:14px}.desc{font-size:16px}";
 
     /**
      * 样式表之后的HTML
