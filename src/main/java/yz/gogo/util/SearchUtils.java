@@ -38,7 +38,8 @@ public final class SearchUtils {
                 start);
         log.info("get [{}]", url);
         final Document document = Jsoup.connect(url)
-                .header("User-Agent", UserAgentUtils.get())
+                .header("Accept-Language", "en")
+                .userAgent(UserAgentUtils.get())
                 .timeout(Constants.TIME_OUT)
                 .get();
         if (Config.INSTANCE.getSubstituteRuleMap().isEmpty()) {
@@ -70,7 +71,7 @@ public final class SearchUtils {
         try {
             document = request(key, page);
         } catch (IOException e) {
-            log.error("exception", e);
+            log.error("exception occurred during request google search", e);
             return builder.status(HttpResponseStatus.INTERNAL_SERVER_ERROR)
                     .error(e.getMessage())
                     .build();
@@ -85,7 +86,7 @@ public final class SearchUtils {
         if (resultStat != null) {
             final Matcher matcher = Constants.STATS_RESULTS_PATTERN
                     .matcher(resultStat.text());
-            if (matcher.find() && matcher.groupCount() == 2) {
+            if (matcher.find() && matcher.groupCount() == Constants.STATS_PATTERN_GROUP_COUNT) {
                 builder.amount(Long.valueOf(matcher.group(1).replaceAll(",", "")));
                 builder.elapsed(Float.valueOf(matcher.group(2)));
             }
@@ -106,8 +107,10 @@ public final class SearchUtils {
             //description
             final Element desc = result.getElementsByClass("st").first();
             if (desc != null) {
-                //替换"<"和">"
-                entryBuilder.desc(desc.text().replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
+                entryBuilder.desc(desc.text()
+                        //sterilize "<" and ">"
+                        .replaceAll("<", "&lt;")
+                        .replaceAll(">", "&gt;"));
                 final Entry entry = entryBuilder.build();
                 //name and url are not null
                 if (entry.getName() != null && entry.getUrl() != null) {

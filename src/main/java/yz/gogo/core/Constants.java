@@ -24,6 +24,11 @@ public final class Constants {
     public static final Pattern STATS_RESULTS_PATTERN =
             Pattern.compile("About (.+?) results \\((.+?) seconds\\)");
     /**
+     * 默认标语
+     */
+    static final String DEFAULT_SLOGAN
+            = "Powered by Google Search, please <a href=\"https://github.com/zenuo/gogo\">Star me</a>, thank you.";
+    /**
      * 日间模式的开始时间
      */
     static final LocalTime DEFAULT_DAY_MODE_START_TIME = LocalTime.of(23, 0);
@@ -50,10 +55,9 @@ public final class Constants {
      */
     public static final String GOOGLE_SEARCH_COMPLETE_URL_TEMPLATE
             = "https://%s/complete/search?client=psy-ab&q=%s";
-
     /**
-     * 默认标语
+     * 搜索结果统计的组数
      */
-    public static final String DEFAULT_SLOGAN
-            = "Powered by Google Search, <a href=\"https://github.com/zenuo/gogo\">source code</a>";
+    public static int STATS_PATTERN_GROUP_COUNT = 2;
+
 }
