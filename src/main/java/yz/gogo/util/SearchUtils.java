@@ -102,9 +102,8 @@ public final class SearchUtils {
             }
             entryBuilder.name(name.text());
             //url
-            final Element url = result.getElementsByClass("iUh30").first();
-            final String urlText = url.text();
-            entryBuilder.url(urlText.startsWith("https://") ? urlText : "http://" + urlText);
+            final Element url = name.parent();
+            entryBuilder.url(url.attr("href"));
             //description
             final Element desc = result.getElementsByClass("st").first();
             if (desc != null) {
