@@ -103,7 +103,8 @@ public final class SearchUtils {
             entryBuilder.name(name.text());
             //url
             final Element url = result.getElementsByClass("iUh30").first();
-            entryBuilder.url(url.text());
+            final String urlText = url.text();
+            entryBuilder.url(urlText.startsWith("https://") ? urlText : "http://" + urlText);
             //description
             final Element desc = result.getElementsByClass("st").first();
             if (desc != null) {
