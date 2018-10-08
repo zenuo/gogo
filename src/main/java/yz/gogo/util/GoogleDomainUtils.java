@@ -1,7 +1,13 @@
 package yz.gogo.util;
 
+/**
+ * Google Domain Utils
+ */
 public final class GoogleDomainUtils {
 
+    /**
+     * Array of domains
+     */
     private static final String[] NAMES = new String[]{
             "www.google.is",
             "www.google.dk",
@@ -48,7 +54,7 @@ public final class GoogleDomainUtils {
             "www.google.bg",
             "www.google.ro",
             "www.google.md",
-            "www.google.cn",
+            //"www.google.cn",
             "www.google.mn",
             "www.google.co.kr",
             "www.google.co.jp",
@@ -169,22 +175,25 @@ public final class GoogleDomainUtils {
             "www.google.ht"};
 
     /**
-     * 最后一次使用的索引
+     * last UA requested
      */
     private static int INDEX = 0;
 
+    /**
+     * Prevent class instances from being created in any place other than this very class.
+     */
     private GoogleDomainUtils() {
 
     }
 
     /**
-     * 获取谷歌域名
+     * Get Google domain
      *
-     * @return 谷歌域名
+     * @return domain string
      */
     public static String get() {
         if (INDEX > NAMES.length - 1) {
-            //重置
+            //reset to 0
             INDEX = 0;
         }
         return NAMES[INDEX++];
