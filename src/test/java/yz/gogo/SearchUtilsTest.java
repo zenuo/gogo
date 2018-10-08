@@ -20,7 +20,7 @@ public class SearchUtilsTest {
     }
 
     @Test
-    public void search() throws IOException {
+    public void search() {
         final SearchResponse response = SearchUtils.search("udp", 1);
         if (response.getEntries() != null) {
             response.getEntries().forEach(e -> System.out.println(e.getName()));

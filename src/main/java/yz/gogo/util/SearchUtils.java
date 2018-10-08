@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 
 /**
- * 搜索功能的实现
+ * Implementation of Search functions.
  */
 @Slf4j
 public final class SearchUtils {
@@ -81,31 +81,28 @@ public final class SearchUtils {
         }
         final List<Entry> entries = new ArrayList<>();
         //stats
-        final Element resultStats = document.getElementById("resultStats");
-        if (resultStats != null) {
+        final Element resultStat = document.getElementById("resultStats");
+        if (resultStat != null) {
             final Matcher matcher = Constants.STATS_RESULTS_PATTERN
-                    .matcher(resultStats.text());
+                    .matcher(resultStat.text());
             if (matcher.find() && matcher.groupCount() == 2) {
                 builder.amount(Long.valueOf(matcher.group(1).replaceAll(",", "")));
                 builder.elapsed(Float.valueOf(matcher.group(2)));
             }
         }
+        //traverse search result entries
         for (Element result : results) {
-            //builder
+            //entry builder
             final Entry.EntryBuilder entryBuilder = Entry.builder();
-            //name and url
-            final Element h3 = result.getElementsByClass("r").first();
-            if (h3 == null) {
+            //name
+            final Element name = result.getElementsByClass("LC20lb").first();
+            if (name == null) {
                 continue;
             }
-            entryBuilder.name(h3.text());
-            final Elements nameAndUrls = h3.children();
-            for (Element nameAndUrl : nameAndUrls) {
-                if (!nameAndUrl.attr("href").equals("")) {
-                    entryBuilder.url(nameAndUrl.attr("href"));
-                    break;
-                }
-            }
+            entryBuilder.name(name.text());
+            //url
+            final Element url = result.getElementsByClass("iUh30").first();
+            entryBuilder.url(url.text());
             //description
             final Element desc = result.getElementsByClass("st").first();
             if (desc != null) {
