@@ -33,7 +33,7 @@ def stop():
     pid = get_pid()
     if pid != '':
         os.popen(__STOP_COMMAND % pid)
-        print('stop, pid is %s' % pid)
+        print('Stop, pid is %s' % pid)
         exit(0)
     else:
         print('Error, program is not running', file=sys.stderr)
@@ -62,4 +62,4 @@ if __name__ == '__main__':
         elif arg == 'restart':
             restart()
         else:
-            print('bad argument"%s"\n%s' % (arg, __HELP), file=sys.stderr)
+            print('Bad argument"%s"\n%s' % (arg, __HELP), file=sys.stderr)
