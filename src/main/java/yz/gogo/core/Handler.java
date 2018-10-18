@@ -5,7 +5,12 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpUtil;
+import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +22,6 @@ import yz.gogo.util.SearchUtils;
 import yz.gogo.web.IndexPageBuilder;
 import yz.gogo.web.ResultPageBuilder;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -29,7 +33,7 @@ import java.util.List;
 @ChannelHandler.Sharable
 public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws UnsupportedEncodingException {
+    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) {
         if (request.method() != HttpMethod.GET) {
             response(ctx,
                     request,
@@ -39,7 +43,7 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
         } else {
             final QueryStringDecoder decoder = new QueryStringDecoder(request.uri());
             log.debug("Request [{}], keep alive [{}]",
-                    URLDecoder.decode(request.uri(), "UTF-8"),
+                    URLDecoder.decode(request.uri(), StandardCharsets.UTF_8),
                     HttpUtil.isKeepAlive(request));
             switch (decoder.path()) {
                 case "/":
@@ -168,11 +172,12 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
                 status,
                 body == null ? Unpooled.buffer() : Unpooled.copiedBuffer(body.getBytes(StandardCharsets.UTF_8)));
         //设置头信息
-        response.headers().add("Server", "gogo/0.1");
+        response.headers().add("Server", "gogo/1.4");
         if (type == ResponseType.API) {
             //若是API请求
             response.headers().add("Content-Type", "application/json; charset=utf-8");
             response.headers().add("Access-Control-Allow-Origin", "*");
+            response.headers().add("Access-Control-Request-Method", "*");
         } else {
             //若是网页请求
             response.headers().add("Content-Type", "text/html; charset=utf-8");

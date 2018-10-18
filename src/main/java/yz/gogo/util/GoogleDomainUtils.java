@@ -191,7 +191,7 @@ public final class GoogleDomainUtils {
      *
      * @return domain string
      */
-    public static String get() {
+    public synchronized static String get() {
         if (INDEX > NAMES.length - 1) {
             //reset to 0
             INDEX = 0;
