@@ -4,8 +4,8 @@ import yz.gogo.core.Config;
 import yz.gogo.model.Entry;
 import yz.gogo.model.SearchResponse;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
 
 /**
@@ -22,17 +22,17 @@ public class ResultPageBuilder {
             "<html lang=\"en\">\n" +
             "<head>\n" +
             "<meta charset=\"utf-8\" />\n" +
-            "<title>Gogo - ";
+            "<title>";
 
     /**
      * 样式表前的HTML
      */
-    private static final String HTML_BEFORE_STYLE = "</title>\n<style>\n";
+    private static final String HTML_BEFORE_STYLE = " - Gogo</title>\n<style>\n";
 
     /**
      * 夜间模式的样式表
      */
-    private static final String HTML_NIGHT_MODE_STYLE = ".logo,body{color:#fff}.entry,.search{padding-bottom:5px;padding-top:5px}.logo,.name{text-decoration:none}.entry,.next,.search{padding-top:5px}body{width:800px;padding-left:10px;background-color:#000}.logo{float:left;padding-right:10px;font-family:\"Times New Roman\",Times,serif}.entry{font-family:Roboto,arial,sans-serif}.name{color:#fffb00;font-size:18px}.url{color:#2bd8a4;font-size:14px}.desc{font-size:16px}";
+    private static final String HTML_NIGHT_MODE_STYLE = ".logo,body{color:#B6C5D4}.entry,.search{padding-bottom:5px;padding-top:5px}.logo,.name{text-decoration:none}.entry,.next,.search{padding-top:5px}body{width:800px;padding-left:10px;background-color:#000}.logo{float:left;padding-right:10px;font-family:\"Times New Roman\",Times,serif}.entry{font-family:Roboto,arial,sans-serif}.name{color:#aaab00;font-size:18px}.url{color:#2bd8a4;font-size:14px}.desc{font-size:16px}";
 
     /**
      * 日间模式的样式表
@@ -147,19 +147,15 @@ class EntryBuilder {
             final StringBuilder target,
             final Entry entry
     ) {
-        try {
-            target.append(HTML_BEFORE_HREF)
-                    .append(entry.getUrl())
-                    .append(HTML_BEFORE_NAME)
-                    .append(entry.getName())
-                    .append(HTML_BEFORE_URL)
-                    .append(URLDecoder.decode(entry.getUrl(), "UTF-8"))
-                    .append(HTML_BEFORE_DESC)
-                    .append(entry.getDesc())
-                    .append(HTML_TAIL);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        target.append(HTML_BEFORE_HREF)
+                .append(entry.getUrl())
+                .append(HTML_BEFORE_NAME)
+                .append(entry.getName())
+                .append(HTML_BEFORE_URL)
+                .append(URLDecoder.decode(entry.getUrl(), StandardCharsets.UTF_8))
+                .append(HTML_BEFORE_DESC)
+                .append(entry.getDesc())
+                .append(HTML_TAIL);
     }
 }
 

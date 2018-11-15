@@ -36,9 +36,10 @@ public final class Main {
             final ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(boss, worker)
                     .channel(NioServerSocketChannel.class)
-                    .option(ChannelOption.SO_BACKLOG, 100)
+                    .option(ChannelOption.SO_BACKLOG, 128)
+                    .option(ChannelOption.TCP_NODELAY, true)
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
-                    .handler(new LoggingHandler(LogLevel.DEBUG))
+                    .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) {
@@ -49,9 +50,10 @@ public final class Main {
                                     .addLast(new ChunkedWriteHandler())
                                     .addLast(new Handler());
                         }
-                    });
+                    })
+                    .validate();
             //绑定端口
-            final Channel channel = bootstrap.bind("0.0.0.0", Config.INSTANCE.getPort())
+            final Channel channel = bootstrap.bind(Config.INSTANCE.getPort())
                     .sync()
                     .channel();
             log.info("Bond port " + Config.INSTANCE.getPort());
