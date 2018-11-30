@@ -83,7 +83,7 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
             response(ctx,
                     request,
                     ResponseType.API,
-                    "{\"info\":\"Hello, I am Gogo API, https://github.com/zenuo/gogo\"}",
+                    "{\"info\":\"Hello, welcome to Gogo API, https://github.com/zenuo/gogo\"}",
                     HttpResponseStatus.OK);
         } else {
             response(ctx,
@@ -167,12 +167,13 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
             final String body,
             final HttpResponseStatus status
     ) {
+        //响应对象
         final DefaultFullHttpResponse response = new DefaultFullHttpResponse(
                 request.protocolVersion(),
                 status,
                 body == null ? Unpooled.buffer() : Unpooled.copiedBuffer(body.getBytes(StandardCharsets.UTF_8)));
         //设置头信息
-        response.headers().add("Server", "gogo/1.4");
+        response.headers().add("Server", "gogo/1.5");
         if (type == ResponseType.API) {
             //若是API请求
             response.headers().add("Content-Type", "application/json; charset=utf-8");
@@ -190,8 +191,10 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
+        //若时间为空闲状态事件
         if (evt instanceof IdleStateEvent) {
             if (((IdleStateEvent) evt).state() == IdleState.ALL_IDLE) {
+                //关闭
                 ctx.close();
             }
         }

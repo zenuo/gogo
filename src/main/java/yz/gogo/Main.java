@@ -4,7 +4,6 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -29,31 +28,45 @@ public final class Main {
     public static void main(String[] args) {
         //加载配置文件
         Config.INSTANCE.init();
-
+        //acceptor
         final NioEventLoopGroup boss = new NioEventLoopGroup(1);
+        //client
         final NioEventLoopGroup worker = new NioEventLoopGroup();
         try {
-            final ServerBootstrap bootstrap = new ServerBootstrap();
-            bootstrap.group(boss, worker)
+            final ServerBootstrap bootstrap = new ServerBootstrap()
+                    //设置事件循环组
+                    .group(boss, worker)
+                    //Channel类型
                     .channel(NioServerSocketChannel.class)
+                    //在Linux下，Accept队列大小
                     .option(ChannelOption.SO_BACKLOG, 128)
-                    .option(ChannelOption.TCP_NODELAY, true)
+                    //启用保活
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
-                    .handler(new LoggingHandler(LogLevel.INFO))
+                    //Netty框架日志级别
+                    .handler(new LoggingHandler(LogLevel.DEBUG))
+                    //通道初始化器
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) {
-                            final ChannelPipeline pipeline = ch.pipeline();
-                            pipeline.addLast(new IdleStateHandler(0, 0, 30))
+                            ch.pipeline()
+                                    //空闲状态处理器
+                                    .addLast(new IdleStateHandler(0, 0, 30))
+                                    //HTTP服务器编码
                                     .addLast(new HttpServerCodec())
+                                    //HTTP对象聚合器
                                     .addLast(new HttpObjectAggregator(65536))
+                                    //分块写处理器
                                     .addLast(new ChunkedWriteHandler())
+                                    //业务处理器
                                     .addLast(new Handler());
                         }
                     })
+                    //验证
                     .validate();
             //绑定端口
-            final Channel channel = bootstrap.bind(Config.INSTANCE.getPort())
+            final Channel channel = bootstrap
+                    .bind(Config.INSTANCE.getPort())
+                    //阻塞
                     .sync()
                     .channel();
             log.info("Bond port " + Config.INSTANCE.getPort());
