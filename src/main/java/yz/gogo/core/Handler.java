@@ -32,6 +32,7 @@ import java.util.List;
 @Slf4j
 @ChannelHandler.Sharable
 public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) {
         if (request.method() != HttpMethod.GET) {
@@ -186,7 +187,6 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
         //响应后关闭通道
         ctx.writeAndFlush(response)
                 .addListener(ChannelFutureListener.CLOSE);
-        log.info("response");
     }
 
     @Override
