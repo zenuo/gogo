@@ -3,7 +3,7 @@ package yz.gogo.core;
 /**
  * 响应类型
  */
-public enum ResponseType {
+enum ResponseType {
     /**
      * 通过API响应
      */
@@ -12,5 +12,5 @@ public enum ResponseType {
     /**
      * 通过网页响应
      */
-    PAGE;
+    PAGE
 }
