@@ -43,7 +43,7 @@ public final class Main {
                     //启用保活
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
                     //Netty框架日志级别
-                    .handler(new LoggingHandler(LogLevel.DEBUG))
+                    .handler(new LoggingHandler(LogLevel.TRACE))
                     //通道初始化器
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
