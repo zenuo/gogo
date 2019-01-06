@@ -32,6 +32,8 @@ public final class Main {
         final NioEventLoopGroup boss = new NioEventLoopGroup(1);
         //client
         final NioEventLoopGroup worker = new NioEventLoopGroup();
+        //handler
+        final Handler handler = new Handler();
         try {
             final ServerBootstrap bootstrap = new ServerBootstrap()
                     //设置事件循环组
@@ -58,7 +60,7 @@ public final class Main {
                                     //分块写处理器
                                     .addLast(new ChunkedWriteHandler())
                                     //业务处理器
-                                    .addLast(new Handler());
+                                    .addLast(handler);
                         }
                     })
                     //验证
