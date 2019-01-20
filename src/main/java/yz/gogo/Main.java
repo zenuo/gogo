@@ -12,13 +12,12 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
-import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 import yz.gogo.core.Config;
 import yz.gogo.core.Handler;
 
 /**
- * 入口类 Entry point
+ * 入口类
  *
  * @author zenuo
  * 2018-06-02 19:12:15
@@ -27,7 +26,12 @@ import yz.gogo.core.Handler;
 public final class Main {
     public static void main(String[] args) {
         //加载配置文件
-        Config.INSTANCE.init();
+        log.info("initialized, port={}, day-mode-start-time={}, day-mode-end-time={}, slogan={}, 匹配规则={}",
+                Config.INSTANCE.getPort(),
+                Config.INSTANCE.getDayModeStartTime(),
+                Config.INSTANCE.getDayModeEndTime(),
+                Config.INSTANCE.getSlogan(),
+                Config.INSTANCE.getSubstituteRuleMap());
         //acceptor
         final NioEventLoopGroup boss = new NioEventLoopGroup(1);
         //client
@@ -42,8 +46,6 @@ public final class Main {
                     .channel(NioServerSocketChannel.class)
                     //在Linux下，Accept队列大小
                     .option(ChannelOption.SO_BACKLOG, 128)
-                    //启用保活
-                    .childOption(ChannelOption.SO_KEEPALIVE, true)
                     //Netty框架日志级别
                     .handler(new LoggingHandler(LogLevel.TRACE))
                     //通道初始化器
@@ -51,12 +53,10 @@ public final class Main {
                         @Override
                         protected void initChannel(SocketChannel ch) {
                             ch.pipeline()
-                                    //空闲状态处理器
-                                    .addLast(new IdleStateHandler(0, 0, 30))
                                     //HTTP服务器编码
                                     .addLast(new HttpServerCodec())
                                     //HTTP对象聚合器
-                                    .addLast(new HttpObjectAggregator(65536))
+                                    .addLast(new HttpObjectAggregator(16 * 1024))
                                     //分块写处理器
                                     .addLast(new ChunkedWriteHandler())
                                     //业务处理器
@@ -71,11 +71,11 @@ public final class Main {
                     //阻塞
                     .sync()
                     .channel();
-            log.info("Bond port " + Config.INSTANCE.getPort());
+            log.info("端口{}已绑定", Config.INSTANCE.getPort());
             //阻塞至通道关闭
             channel.closeFuture().sync();
         } catch (Exception e) {
-            log.error("主类异常", e);
+            log.error("引导服务器异常", e);
         } finally {
             //关闭线程组
             boss.shutdownGracefully();

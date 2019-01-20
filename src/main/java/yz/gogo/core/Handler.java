@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
@@ -31,7 +32,7 @@ import java.util.List;
  */
 @Slf4j
 @ChannelHandler.Sharable
-public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
+public final class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) {
@@ -174,15 +175,15 @@ public class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
                 status,
                 body == null ? Unpooled.buffer() : Unpooled.copiedBuffer(body.getBytes(StandardCharsets.UTF_8)));
         //设置头信息
-        response.headers().add("Server", "gogo/1.5");
+        response.headers().add(HttpHeaderNames.SERVER, "gogo");
         if (type == ResponseType.API) {
             //若是API请求
-            response.headers().add("Content-Type", "application/json; charset=utf-8");
-            response.headers().add("Access-Control-Allow-Origin", "*");
-            response.headers().add("Access-Control-Request-Method", "*");
+            response.headers().add(HttpHeaderNames.CONTENT_TYPE, "application/json; charset=utf-8");
+            response.headers().add(HttpHeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+            response.headers().add(HttpHeaderNames.ACCESS_CONTROL_ALLOW_METHODS, "GET");
         } else {
             //若是网页请求
-            response.headers().add("Content-Type", "text/html; charset=utf-8");
+            response.headers().add(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=utf-8");
         }
         //响应后关闭通道
         ctx.writeAndFlush(response)

@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalTime;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
@@ -60,7 +61,7 @@ public enum Config {
     /**
      * 初始化
      */
-    public void init() {
+    Config() {
         //若配置文件存在
         if (Files.exists(Paths.get(CONF_FILE_PATH))) {
             final Properties conf = new Properties();
@@ -96,19 +97,9 @@ public enum Config {
                 }
 
                 //读取标语
-                final String slogan = conf.getProperty("slogan");
-                if (slogan != null) {
-                    this.slogan = slogan;
-                } else {
-                    this.slogan = Constants.DEFAULT_SLOGAN;
-                }
-
-                //记录配置项
-                log.info("initialized, port={}, day-mode-start-time={}, day-mode-end-time={}, slogan={}",
-                        this.port,
-                        this.dayModeStartTime,
-                        this.dayModeEndTime,
-                        this.slogan);
+                this.slogan = Objects.requireNonNullElse(
+                        conf.getProperty("slogan"),
+                        Constants.DEFAULT_SLOGAN);
 
                 //加载替换规则的映射
                 final Path substituteConfPath = Paths.get("." + File.separatorChar + "substitute.conf");
@@ -130,20 +121,16 @@ public enum Config {
                                         this.substituteRuleMap.put(source, target);
                                     }
                                 });
-                        log.info("匹配规则:" + this.substituteRuleMap);
                     } catch (IOException e) {
-                        log.error("读取替换规则配置文件错误", e);
+                        throw new IllegalStateException("读取替换规则配置文件错误", e);
                     }
-                } else {
-                    log.info("替换规则配置文件不存在");
                 }
             } catch (Exception e) {
-                log.warn("加载配置文件", e);
+                throw new IllegalStateException("加载配置文件", e);
             }
         } else {
             //若配置文件不存在
-            log.error("文件'{}'不存在", CONF_FILE_PATH);
-            System.exit(1);
+            throw new IllegalStateException("文件" + CONF_FILE_PATH + "不存在");
         }
     }
 }

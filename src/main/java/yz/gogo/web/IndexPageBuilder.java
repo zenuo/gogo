@@ -10,7 +10,7 @@ import java.time.LocalTime;
  * @author zenuo
  * 2018-07-08 20:50:25
  */
-public class IndexPageBuilder {
+public final class IndexPageBuilder {
     /**
      * 样式表之前的HTML字符串
      */

@@ -9,20 +9,6 @@ import java.util.regex.Pattern;
  * 常量类
  */
 public final class Constants {
-
-    /**
-     * 请求超时，毫秒
-     */
-    public static final int TIME_OUT = 3000;
-    /**
-     * Object mapper
-     */
-    public static final ObjectMapper MAPPER = new ObjectMapper();
-    /**
-     * 搜索结果统计的正则表达式
-     */
-    public static final Pattern STATS_RESULTS_PATTERN =
-            Pattern.compile("About (.+?) results \\((.+?) seconds\\)");
     /**
      * 默认标语
      */
@@ -45,6 +31,19 @@ public final class Constants {
      */
     static final Pattern SUBSTITUTE_RULE_PATTERN = Pattern.compile("^\"(.+?)\" \"(.*?)\"$");
 
+    /**
+     * 请求超时，毫秒
+     */
+    public static final int TIME_OUT = 3000;
+    /**
+     * Object mapper
+     */
+    public static final ObjectMapper MAPPER = new ObjectMapper();
+    /**
+     * 搜索结果统计的正则表达式
+     */
+    public static final Pattern STATS_RESULTS_PATTERN =
+            Pattern.compile("About (.+?) results \\((.+?) seconds\\)");
     /**
      * 谷歌搜索URL模板
      */

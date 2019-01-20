@@ -7,7 +7,7 @@ import yz.gogo.core.Constants;
  * JSON工具类
  */
 @Slf4j
-public class JsonUtils {
+public final class JsonUtils {
     private JsonUtils() {
 
     }

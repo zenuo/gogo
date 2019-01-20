@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 @Getter
-public class Entry {
+public final class Entry {
     private String name;
     private String url;
     private String desc;

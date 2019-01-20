@@ -14,7 +14,7 @@ import java.time.LocalTime;
  * @author zenuo
  * 2018-07-08 20:50:25
  */
-public class ResultPageBuilder {
+public final class ResultPageBuilder {
     /**
      * 标题前的HTML
      */
@@ -104,7 +104,7 @@ public class ResultPageBuilder {
 /**
  * 条目构建器
  */
-class EntryBuilder {
+final class EntryBuilder {
     /**
      * 超链接之前的HTML
      */
@@ -162,7 +162,7 @@ class EntryBuilder {
 /**
  * 下一页按钮构建器
  */
-class NextBuilder {
+final class NextBuilder {
     /**
      * 关键字之前的HTML
      */

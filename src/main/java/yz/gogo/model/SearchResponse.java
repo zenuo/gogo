@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @Getter
-public class SearchResponse {
+public final class SearchResponse {
     private String key;
     private int page;
     private Long amount;

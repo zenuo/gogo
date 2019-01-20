@@ -4,17 +4,19 @@
               value="./log/gogo.log}"/>
     <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
 
-    <appender name="DAILY_ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>${LOG_FILE}</File>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <FileNamePattern>${LOG_FILE}-%d{yyyy-MM-dd}.log.gz</FileNamePattern>
-            <maxHistory>60</maxHistory>
-            <totalSizeCap>256MB</totalSizeCap>
-        </rollingPolicy>
-        <encoder>
-            <charset>UTF-8</charset>
-            <Pattern>${FILE_LOG_PATTERN}</Pattern>
-        </encoder>
+    <appender name="DAILY_ROLLING" class="ch.qos.logback.classic.AsyncAppender">
+        <appender class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <File>${LOG_FILE}</File>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <FileNamePattern>${LOG_FILE}-%d{yyyy-MM-dd}.log.gz</FileNamePattern>
+                <maxHistory>7</maxHistory>
+                <totalSizeCap>4MB</totalSizeCap>
+            </rollingPolicy>
+            <encoder>
+                <charset>UTF-8</charset>
+                <Pattern>${FILE_LOG_PATTERN}</Pattern>
+            </encoder>
+        </appender>
     </appender>
 
     <root level="INFO">
