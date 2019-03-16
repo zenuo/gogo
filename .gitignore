@@ -4,3 +4,4 @@ target
 log
 *.jar
 *.sh
+dependency-reduced-pom.xml
