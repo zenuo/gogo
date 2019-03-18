@@ -1,4 +1,4 @@
-package yz.gogo.util;
+package zenuo.gogo.util;
 
 import lombok.extern.slf4j.Slf4j;
 

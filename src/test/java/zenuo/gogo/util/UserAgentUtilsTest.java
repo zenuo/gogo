@@ -1,4 +1,4 @@
-package yz.gogo.util;
+package zenuo.gogo.util;
 
 import org.junit.Test;
 

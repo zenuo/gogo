@@ -1,8 +1,8 @@
-package yz.gogo.web;
+package zenuo.gogo.web;
 
-import yz.gogo.core.Config;
-import yz.gogo.model.Entry;
-import yz.gogo.model.SearchResponse;
+import zenuo.gogo.core.Config;
+import zenuo.gogo.model.Entry;
+import zenuo.gogo.model.SearchResponse;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;

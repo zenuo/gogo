@@ -1,6 +1,6 @@
-package yz.gogo.web;
+package zenuo.gogo.web;
 
-import yz.gogo.core.Config;
+import zenuo.gogo.core.Config;
 
 import java.time.LocalTime;
 

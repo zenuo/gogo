@@ -1,9 +1,9 @@
-package yz.gogo.core;
+package zenuo.gogo.core;
 
 /**
  * 响应类型
  */
-enum ResponseType {
+public enum ResponseType {
     /**
      * 通过API响应
      */

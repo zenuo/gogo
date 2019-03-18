@@ -1,4 +1,4 @@
-package yz.gogo.model;
+package zenuo.gogo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -11,12 +11,9 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @Getter
-public final class SearchResponse {
+public final class CompleteResponse {
     private String key;
-    private int page;
-    private Long amount;
-    private Float elapsed;
-    private List<Entry> entries;
+    private List<String> lints;
     private String error;
     @JsonIgnore
     private HttpResponseStatus status;

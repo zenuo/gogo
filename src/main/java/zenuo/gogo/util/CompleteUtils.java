@@ -1,12 +1,12 @@
-package yz.gogo.util;
+package zenuo.gogo.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import yz.gogo.core.Constants;
-import yz.gogo.model.CompleteResponse;
+import zenuo.gogo.core.Constants;
+import zenuo.gogo.model.CompleteResponse;
 
 import java.io.IOException;
 import java.net.URLEncoder;

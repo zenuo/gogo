@@ -1,12 +1,12 @@
-package yz.gogo;
+package zenuo.gogo;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
-import yz.gogo.core.Constants;
-import yz.gogo.model.CompleteResponse;
-import yz.gogo.util.CompleteUtils;
-import yz.gogo.util.JsonUtils;
+import zenuo.gogo.core.Constants;
+import zenuo.gogo.model.CompleteResponse;
+import zenuo.gogo.util.CompleteUtils;
+import zenuo.gogo.util.JsonUtils;
 
 import java.io.IOException;
 import java.util.List;

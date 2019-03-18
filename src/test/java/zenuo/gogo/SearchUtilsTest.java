@@ -1,11 +1,11 @@
-package yz.gogo;
+package zenuo.gogo;
 
 import org.jsoup.nodes.Document;
 import org.junit.Test;
-import yz.gogo.core.Constants;
-import yz.gogo.model.SearchResponse;
-import yz.gogo.util.JsonUtils;
-import yz.gogo.util.SearchUtils;
+import zenuo.gogo.core.Constants;
+import zenuo.gogo.model.SearchResponse;
+import zenuo.gogo.util.JsonUtils;
+import zenuo.gogo.util.SearchUtils;
 
 import java.io.IOException;
 import java.util.regex.Matcher;

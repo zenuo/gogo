@@ -1,4 +1,4 @@
-package yz.gogo.util;
+package zenuo.gogo.util;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.extern.slf4j.Slf4j;
@@ -6,10 +6,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import yz.gogo.core.Config;
-import yz.gogo.core.Constants;
-import yz.gogo.model.Entry;
-import yz.gogo.model.SearchResponse;
+import zenuo.gogo.core.Config;
+import zenuo.gogo.core.Constants;
+import zenuo.gogo.model.Entry;
+import zenuo.gogo.model.SearchResponse;
 
 import java.io.IOException;
 import java.net.URLEncoder;

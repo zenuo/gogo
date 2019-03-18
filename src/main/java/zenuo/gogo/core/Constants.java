@@ -1,4 +1,4 @@
-package yz.gogo.core;
+package zenuo.gogo.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

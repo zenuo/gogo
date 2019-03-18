@@ -1,4 +1,4 @@
-package yz.gogo;
+package zenuo.gogo;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -13,8 +13,8 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import lombok.extern.slf4j.Slf4j;
-import yz.gogo.core.Config;
-import yz.gogo.core.Handler;
+import zenuo.gogo.core.Config;
+import zenuo.gogo.core.Handler;
 
 /**
  * 入口类

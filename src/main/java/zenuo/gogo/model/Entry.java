@@ -1,4 +1,4 @@
-package yz.gogo.model;
+package zenuo.gogo.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
