@@ -12,7 +12,7 @@ import zenuo.gogo.core.ResponseType;
 
 import java.nio.charset.StandardCharsets;
 
-public interface IGogoProcessor {
+public interface IProcessor {
 
     /**
      * 处理

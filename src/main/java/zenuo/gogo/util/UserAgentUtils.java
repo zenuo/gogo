@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
  * 用户代理工具类
  */
 @Slf4j
-final class UserAgentUtils {
+public final class UserAgentUtils {
 
     /**
      * 用户代理字符串数组
@@ -30,7 +30,7 @@ final class UserAgentUtils {
      *
      * @return 用户代理字符串
      */
-    synchronized static String get() {
+    public static synchronized String get() {
         if (INDEX > USER_AGENTS.length - 1) {
             //重置
             INDEX = 0;

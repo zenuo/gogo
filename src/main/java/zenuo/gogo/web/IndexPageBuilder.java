@@ -1,6 +1,7 @@
 package zenuo.gogo.web;
 
 import zenuo.gogo.core.Config;
+import zenuo.gogo.model.IResponse;
 
 import java.time.LocalTime;
 
@@ -10,7 +11,7 @@ import java.time.LocalTime;
  * @author zenuo
  * 2018-07-08 20:50:25
  */
-public final class IndexPageBuilder {
+public final class IndexPageBuilder implements IPageBuilder {
     /**
      * 样式表之前的HTML字符串
      */
@@ -40,7 +41,7 @@ public final class IndexPageBuilder {
      *
      * @return 主页的字符串
      */
-    public static String build() {
+    public String build(IResponse response) {
         //字符串构建器，初始化内容为样式表之前的HTML
         final StringBuilder sb = new StringBuilder(HTML_BEFORE_STYLE);
         //当前时间

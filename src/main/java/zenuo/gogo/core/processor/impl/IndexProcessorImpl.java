@@ -5,10 +5,16 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import zenuo.gogo.core.ResponseType;
-import zenuo.gogo.core.processor.IGogoProcessor;
+import zenuo.gogo.core.processor.IProcessor;
+import zenuo.gogo.web.IPageBuilder;
 import zenuo.gogo.web.IndexPageBuilder;
 
-public final class IndexProcessorImpl implements IGogoProcessor {
+public final class IndexProcessorImpl implements IProcessor {
+
+    /**
+     * 页面构建器
+     */
+    private static final IPageBuilder PAGE_BUILDER = new IndexPageBuilder();
 
     @Override
     public void process(ChannelHandlerContext ctx, FullHttpRequest request, QueryStringDecoder decoder, ResponseType responseType) {
@@ -22,7 +28,7 @@ public final class IndexProcessorImpl implements IGogoProcessor {
             response(ctx,
                     request,
                     ResponseType.PAGE,
-                    IndexPageBuilder.build(),
+                    PAGE_BUILDER.build(null),
                     HttpResponseStatus.OK
             );
         }

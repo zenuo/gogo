@@ -1,20 +1,23 @@
-package zenuo.gogo;
+package zenuo.gogo.core.processor.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
 import zenuo.gogo.core.Constants;
 import zenuo.gogo.model.CompleteResponse;
-import zenuo.gogo.util.CompleteUtils;
 import zenuo.gogo.util.JsonUtils;
 
 import java.io.IOException;
 import java.util.List;
 
-public class CompleteUtilsTest {
+public class CompleteProcessorImplTest {
+
+    private static final CompleteProcessorImpl completeProcessor = new CompleteProcessorImpl();
+
     @Test
     public void request() throws IOException {
-        final Document document = CompleteUtils.request("udp");
+
+        final Document document = completeProcessor.request("udp");
         System.out.println(document.body().text());
     }
 
@@ -24,9 +27,7 @@ public class CompleteUtilsTest {
         try {
             final JsonNode jsonNode = Constants.MAPPER.readTree(completeJson);
             final JsonNode lints = jsonNode.get(1);
-            lints.forEach(lint -> {
-                System.out.println(lint.get(0).asText());
-            });
+            lints.forEach(lint -> System.out.println(lint.get(0).asText()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -34,13 +35,13 @@ public class CompleteUtilsTest {
 
     @Test
     public void complete() throws IOException {
-        final List<String> lints = CompleteUtils.complete("udp");
+        final List<String> lints = completeProcessor.complete("udp");
         System.out.println(lints);
     }
 
     @Test
     public void response() {
-        final CompleteResponse response = CompleteUtils.response("udp");
+        final CompleteResponse response = completeProcessor.response("udp");
         System.out.println(JsonUtils.toJson(response));
     }
 }

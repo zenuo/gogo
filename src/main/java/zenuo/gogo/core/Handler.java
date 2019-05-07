@@ -11,7 +11,7 @@ import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
-import zenuo.gogo.core.processor.IGogoProcessor;
+import zenuo.gogo.core.processor.IProcessor;
 import zenuo.gogo.core.processor.impl.CompleteProcessorImpl;
 import zenuo.gogo.core.processor.impl.IndexProcessorImpl;
 import zenuo.gogo.core.processor.impl.SearchProcessorImpl;
@@ -29,17 +29,17 @@ public final class Handler extends SimpleChannelInboundHandler<FullHttpRequest> 
     /**
      * 首页处理器
      */
-    private final IGogoProcessor indexProcessor = new IndexProcessorImpl();
+    private final IProcessor indexProcessor = new IndexProcessorImpl();
 
     /**
      * 搜索处理器
      */
-    private final IGogoProcessor searchProcessor = new SearchProcessorImpl();
+    private final IProcessor searchProcessor = new SearchProcessorImpl();
 
     /**
      * 补全处理器
      */
-    private final IGogoProcessor completeProcessor = new CompleteProcessorImpl();
+    private final IProcessor completeProcessor = new CompleteProcessorImpl();
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) {

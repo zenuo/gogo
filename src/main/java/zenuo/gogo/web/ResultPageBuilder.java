@@ -2,6 +2,7 @@ package zenuo.gogo.web;
 
 import zenuo.gogo.core.Config;
 import zenuo.gogo.model.Entry;
+import zenuo.gogo.model.IResponse;
 import zenuo.gogo.model.SearchResponse;
 
 import java.net.URLDecoder;
@@ -14,7 +15,7 @@ import java.time.LocalTime;
  * @author zenuo
  * 2018-07-08 20:50:25
  */
-public final class ResultPageBuilder {
+public final class ResultPageBuilder implements IPageBuilder {
     /**
      * 标题前的HTML
      */
@@ -72,10 +73,11 @@ public final class ResultPageBuilder {
     /**
      * 由响应示例构建页面
      *
-     * @param response 响应示例
+     * @param iResponse 响应实例
      * @return 响应页面HTML字符串
      */
-    public static String build(final SearchResponse response) {
+    public String build(IResponse iResponse) {
+        final SearchResponse response = (SearchResponse) iResponse;
         final StringBuilder sb = new StringBuilder(HTML_BEFORE_TITLE);
         sb.append(response.getKey())
                 .append(HTML_BEFORE_STYLE);

@@ -1,19 +1,22 @@
-package zenuo.gogo;
+package zenuo.gogo.core.processor.impl;
 
 import org.jsoup.nodes.Document;
 import org.junit.Test;
 import zenuo.gogo.core.Constants;
 import zenuo.gogo.model.SearchResponse;
 import zenuo.gogo.util.JsonUtils;
-import zenuo.gogo.util.SearchUtils;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
 
-public class SearchUtilsTest {
+public class SearchProcessorImplTest {
+
+    private static final SearchProcessorImpl searchProcessor = new SearchProcessorImpl();
+
     @Test
     public void request() throws IOException {
-        final Document document = SearchUtils.request("udp", 1);
+
+        final Document document = searchProcessor.request("udp", 1);
         if (document != null) {
             System.out.println(document.html());
         }
@@ -21,7 +24,7 @@ public class SearchUtilsTest {
 
     @Test
     public void search() {
-        final SearchResponse response = SearchUtils.search("udp", 1);
+        final SearchResponse response = searchProcessor.search("udp", 1);
         if (response.getEntries() != null) {
             response.getEntries().forEach(e -> System.out.println(e.getName()));
         }
@@ -29,7 +32,7 @@ public class SearchUtilsTest {
 
     @Test
     public void response() {
-        final SearchResponse searchResponse = SearchUtils.response("udp", 2);
+        final SearchResponse searchResponse = searchProcessor.response("udp", 2);
         final String json = JsonUtils.toJson(searchResponse);
         System.out.println(json);
     }

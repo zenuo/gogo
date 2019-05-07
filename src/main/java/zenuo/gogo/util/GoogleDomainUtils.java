@@ -1,12 +1,12 @@
 package zenuo.gogo.util;
 
 /**
- * Google Domain Utils
+ * 谷歌域名工具类
  */
 public final class GoogleDomainUtils {
 
     /**
-     * Array of domains
+     * 域名数组
      */
     private static final String[] NAMES = new String[]{
             "www.google.is",
@@ -175,25 +175,25 @@ public final class GoogleDomainUtils {
             "www.google.ht"};
 
     /**
-     * last UA requested
+     * 最后一个返回的域名的索引
      */
     private static int INDEX = 0;
 
     /**
-     * Prevent class instances from being created in any place other than this very class.
+     * 防止被实例化
      */
     private GoogleDomainUtils() {
 
     }
 
     /**
-     * Get Google domain
+     * 获取域名
      *
-     * @return domain string
+     * @return 域名字符串
      */
     public synchronized static String get() {
         if (INDEX > NAMES.length - 1) {
-            //reset to 0
+            //置为0
             INDEX = 0;
         }
         return NAMES[INDEX++];

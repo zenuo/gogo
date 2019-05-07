@@ -1,18 +1,29 @@
 package zenuo.gogo.core.processor.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import zenuo.gogo.core.Constants;
 import zenuo.gogo.core.ResponseType;
-import zenuo.gogo.core.processor.IGogoProcessor;
+import zenuo.gogo.core.processor.IProcessor;
 import zenuo.gogo.model.CompleteResponse;
-import zenuo.gogo.util.CompleteUtils;
+import zenuo.gogo.util.GoogleDomainUtils;
 import zenuo.gogo.util.JsonUtils;
+import zenuo.gogo.util.UserAgentUtils;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
-public final class CompleteProcessorImpl implements IGogoProcessor {
+@Slf4j
+public final class CompleteProcessorImpl implements IProcessor {
 
     @Override
     public void process(ChannelHandlerContext ctx, FullHttpRequest request, QueryStringDecoder decoder, ResponseType responseType) {
@@ -24,12 +35,72 @@ public final class CompleteProcessorImpl implements IGogoProcessor {
                     "{\"error\": \"the keyword should not be empty\"}",
                     HttpResponseStatus.BAD_REQUEST);
         } else {
-            final CompleteResponse response = CompleteUtils.response(keys.get(0));
+            final CompleteResponse response = response(keys.get(0));
             response(ctx,
                     request,
                     ResponseType.API,
                     JsonUtils.toJson(response),
                     response.getStatus());
         }
+    }
+
+    /**
+     * Make the request of google search complete
+     *
+     * @param key keyword
+     * @return document instance if succeed
+     * @throws IOException io exception occurred
+     */
+    Document request(final String key) throws IOException {
+        final String url = String.format(Constants.GOOGLE_SEARCH_COMPLETE_URL_TEMPLATE,
+                GoogleDomainUtils.get(),
+                URLEncoder.encode(key, StandardCharsets.UTF_8));
+        log.info("get [{}]", url);
+        return Jsoup.connect(url)
+                .header("User-Agent", UserAgentUtils.get())
+                .timeout(Constants.TIME_OUT)
+                .ignoreContentType(true)
+                .get();
+    }
+
+    /**
+     * Get lints of google search complete result
+     *
+     * @param key keyword
+     * @return lint list
+     * @throws IOException io exception occurred
+     */
+    List<String> complete(final String key) throws IOException {
+        final Document document = request(key);
+        final JsonNode bodyNode = Constants.MAPPER.readTree(document.body().text());
+        final JsonNode lintNode = bodyNode.get(1);
+        if (lintNode == null) {
+            return null;
+        }
+        //lint list
+        final ArrayList<String> lints = new ArrayList<>(lintNode.size());
+        lintNode.forEach(lint -> lints.add(lint.get(0).asText()));
+        return lints;
+    }
+
+    /**
+     * Do complete and response
+     *
+     * @param key keyword
+     * @return response instance
+     */
+    CompleteResponse response(final String key) {
+        //builder
+        final CompleteResponse.CompleteResponseBuilder builder = CompleteResponse.builder();
+        builder.key(key);
+        try {
+            final List<String> lints = complete(key);
+            builder.lints(lints).status(HttpResponseStatus.OK);
+        } catch (Exception e) {
+            log.error("complete {}", key, e);
+            builder.error(e.getMessage())
+                    .status(HttpResponseStatus.GATEWAY_TIMEOUT);
+        }
+        return builder.build();
     }
 }
