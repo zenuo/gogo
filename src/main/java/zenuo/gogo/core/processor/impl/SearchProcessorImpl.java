@@ -4,14 +4,16 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import zenuo.gogo.core.Config;
-import zenuo.gogo.core.Constants;
+import org.springframework.stereotype.Component;
 import zenuo.gogo.core.ResponseType;
+import zenuo.gogo.core.config.Config;
+import zenuo.gogo.core.config.Constants;
 import zenuo.gogo.core.processor.IProcessor;
 import zenuo.gogo.model.Entry;
 import zenuo.gogo.model.SearchResponse;
@@ -19,7 +21,6 @@ import zenuo.gogo.util.GoogleDomainUtils;
 import zenuo.gogo.util.JsonUtils;
 import zenuo.gogo.util.UserAgentUtils;
 import zenuo.gogo.web.IPageBuilder;
-import zenuo.gogo.web.ResultPageBuilder;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -30,12 +31,14 @@ import java.util.Map;
 import java.util.regex.Matcher;
 
 @Slf4j
+@Component("searchProcessor")
+@RequiredArgsConstructor
 public final class SearchProcessorImpl implements IProcessor {
 
     /**
      * 页面构建器
      */
-    private static final IPageBuilder PAGE_BUILDER = new ResultPageBuilder();
+    private final IPageBuilder resultPageBuilder;
 
     @Override
     public void process(ChannelHandlerContext ctx, FullHttpRequest request, QueryStringDecoder decoder, ResponseType responseType) {
@@ -61,7 +64,7 @@ public final class SearchProcessorImpl implements IProcessor {
                 response(ctx,
                         request,
                         ResponseType.PAGE,
-                        PAGE_BUILDER.build(response),
+                        resultPageBuilder.build(response),
                         response.getStatus());
             }
         }

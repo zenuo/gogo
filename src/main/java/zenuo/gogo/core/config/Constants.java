@@ -1,4 +1,4 @@
-package zenuo.gogo.core;
+package zenuo.gogo.core.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

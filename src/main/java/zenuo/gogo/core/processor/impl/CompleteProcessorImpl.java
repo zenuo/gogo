@@ -8,8 +8,9 @@ import io.netty.handler.codec.http.QueryStringDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import zenuo.gogo.core.Constants;
+import org.springframework.stereotype.Component;
 import zenuo.gogo.core.ResponseType;
+import zenuo.gogo.core.config.Constants;
 import zenuo.gogo.core.processor.IProcessor;
 import zenuo.gogo.model.CompleteResponse;
 import zenuo.gogo.util.GoogleDomainUtils;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+@Component("completeProcessor")
 public final class CompleteProcessorImpl implements IProcessor {
 
     @Override

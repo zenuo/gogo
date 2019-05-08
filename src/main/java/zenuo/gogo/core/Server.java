@@ -1,4 +1,4 @@
-package zenuo.gogo;
+package zenuo.gogo.core;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -12,19 +12,30 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import zenuo.gogo.core.Config;
-import zenuo.gogo.core.Handler;
+import org.springframework.stereotype.Component;
+import zenuo.gogo.core.config.Config;
+
+import javax.annotation.PostConstruct;
 
 /**
- * 入口类
+ * 服务器
  *
  * @author zenuo
- * 2018-06-02 19:12:15
+ * @date 2019/05/08
  */
+@Component
 @Slf4j
-public final class Main {
-    public static void main(String[] args) {
+@RequiredArgsConstructor
+public final class Server {
+
+    @NonNull
+    private final Handler handler;
+
+    @PostConstruct
+    private void bootstrap() {
         //加载配置文件
         log.info("initialized, port={}, day-mode-start-time={}, day-mode-end-time={}, slogan={}, 匹配规则={}",
                 Config.INSTANCE.getPort(),
@@ -36,8 +47,6 @@ public final class Main {
         final NioEventLoopGroup boss = new NioEventLoopGroup(1);
         //client
         final NioEventLoopGroup worker = new NioEventLoopGroup();
-        //handler
-        final Handler handler = new Handler();
         try {
             final ServerBootstrap bootstrap = new ServerBootstrap()
                     //设置事件循环组

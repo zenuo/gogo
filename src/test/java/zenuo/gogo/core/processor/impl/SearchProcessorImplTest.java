@@ -1,17 +1,19 @@
 package zenuo.gogo.core.processor.impl;
 
 import org.jsoup.nodes.Document;
-import org.junit.Test;
-import zenuo.gogo.core.Constants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.testng.annotations.Test;
+import zenuo.gogo.TestEnvironmentWithoutTx;
+import zenuo.gogo.core.config.Constants;
 import zenuo.gogo.model.SearchResponse;
 import zenuo.gogo.util.JsonUtils;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
 
-public class SearchProcessorImplTest {
-
-    private static final SearchProcessorImpl searchProcessor = new SearchProcessorImpl();
+public class SearchProcessorImplTest extends TestEnvironmentWithoutTx {
+    @Autowired
+    private SearchProcessorImpl searchProcessor;
 
     @Test
     public void request() throws IOException {

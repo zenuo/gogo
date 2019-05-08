@@ -1,6 +1,7 @@
 package zenuo.gogo.web;
 
-import zenuo.gogo.core.Config;
+import org.springframework.stereotype.Component;
+import zenuo.gogo.core.config.Config;
 import zenuo.gogo.model.IResponse;
 
 import java.time.LocalTime;
@@ -11,6 +12,7 @@ import java.time.LocalTime;
  * @author zenuo
  * 2018-07-08 20:50:25
  */
+@Component("indexPageBuilder")
 public final class IndexPageBuilder implements IPageBuilder {
     /**
      * 样式表之前的HTML字符串

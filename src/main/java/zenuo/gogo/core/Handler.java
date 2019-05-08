@@ -10,11 +10,10 @@ import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import zenuo.gogo.core.processor.IProcessor;
-import zenuo.gogo.core.processor.impl.CompleteProcessorImpl;
-import zenuo.gogo.core.processor.impl.IndexProcessorImpl;
-import zenuo.gogo.core.processor.impl.SearchProcessorImpl;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -23,23 +22,25 @@ import java.nio.charset.StandardCharsets;
  * 处理器类，通道读取事件的回调
  */
 @Slf4j
+@Component
 @ChannelHandler.Sharable
+@RequiredArgsConstructor
 public final class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     /**
      * 首页处理器
      */
-    private final IProcessor indexProcessor = new IndexProcessorImpl();
+    private final IProcessor indexProcessor;
 
     /**
      * 搜索处理器
      */
-    private final IProcessor searchProcessor = new SearchProcessorImpl();
+    private final IProcessor searchProcessor;
 
     /**
      * 补全处理器
      */
-    private final IProcessor completeProcessor = new CompleteProcessorImpl();
+    private final IProcessor completeProcessor;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) {

@@ -1,7 +1,7 @@
 package zenuo.gogo.util;
 
 import lombok.extern.slf4j.Slf4j;
-import zenuo.gogo.core.Constants;
+import zenuo.gogo.core.config.Constants;
 
 /**
  * JSON工具类
