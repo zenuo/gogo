@@ -1,7 +1,9 @@
 package zenuo.gogo.web;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import zenuo.gogo.core.config.Config;
+import zenuo.gogo.core.config.GogoConfig;
 import zenuo.gogo.model.Entry;
 import zenuo.gogo.model.IResponse;
 import zenuo.gogo.model.SearchResponse;
@@ -17,7 +19,12 @@ import java.time.LocalTime;
  * 2018-07-08 20:50:25
  */
 @Component("resultPageBuilder")
+@RequiredArgsConstructor
 public final class ResultPageBuilder implements IPageBuilder {
+
+    @NonNull
+    private final GogoConfig gogoConfig;
+
     /**
      * 标题前的HTML
      */
@@ -85,8 +92,8 @@ public final class ResultPageBuilder implements IPageBuilder {
                 .append(HTML_BEFORE_STYLE);
         final LocalTime now = LocalTime.now();
         //若不是日间模式
-        if (now.isBefore(Config.INSTANCE.getDayModeStartTime()) ||
-                now.isAfter(Config.INSTANCE.getDayModeEndTime())) {
+        if (now.isBefore(gogoConfig.getDayModeStartTime()) ||
+                now.isAfter(gogoConfig.getDayModeEndTime())) {
             sb.append(HTML_NIGHT_MODE_STYLE);
         } else {
             sb.append(HTML_DAY_MODE_STYLE);

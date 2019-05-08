@@ -13,8 +13,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 import zenuo.gogo.core.ResponseType;
-import zenuo.gogo.core.config.Config;
 import zenuo.gogo.core.config.Constants;
+import zenuo.gogo.core.config.GogoConfig;
 import zenuo.gogo.core.processor.IProcessor;
 import zenuo.gogo.model.Entry;
 import zenuo.gogo.model.SearchResponse;
@@ -38,6 +38,9 @@ import java.util.regex.Matcher;
 @RequiredArgsConstructor
 public final class SearchProcessorImpl implements IProcessor {
 
+    @NonNull
+    private final GogoConfig gogoConfig;
+    
     /**
      * 页面构建器
      */
@@ -95,11 +98,11 @@ public final class SearchProcessorImpl implements IProcessor {
                 .userAgent(UserAgentUtils.get())
                 .timeout(Constants.TIME_OUT)
                 .get();
-        if (Config.INSTANCE.getSubstituteRuleMap().isEmpty()) {
+        if (gogoConfig.getSubstituteRuleMap().isEmpty()) {
             return document;
         } else {
             String html = document.html();
-            for (Map.Entry<String, String> rule : Config.INSTANCE.getSubstituteRuleMap().entrySet()) {
+            for (Map.Entry<String, String> rule : gogoConfig.getSubstituteRuleMap().entrySet()) {
                 html = html.replaceAll(rule.getKey(), rule.getValue());
             }
             return Jsoup.parse(html, url);

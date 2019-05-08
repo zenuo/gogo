@@ -15,7 +15,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import zenuo.gogo.core.config.Config;
+import zenuo.gogo.core.config.GogoConfig;
 
 import javax.annotation.PostConstruct;
 
@@ -31,17 +31,13 @@ import javax.annotation.PostConstruct;
 public final class Server {
 
     @NonNull
+    private final GogoConfig gogoConfig;
+
+    @NonNull
     private final Handler handler;
 
     @PostConstruct
     private void bootstrap() {
-        //加载配置文件
-        log.info("initialized, port={}, day-mode-start-time={}, day-mode-end-time={}, slogan={}, 匹配规则={}",
-                Config.INSTANCE.getPort(),
-                Config.INSTANCE.getDayModeStartTime(),
-                Config.INSTANCE.getDayModeEndTime(),
-                Config.INSTANCE.getSlogan(),
-                Config.INSTANCE.getSubstituteRuleMap());
         //acceptor
         final NioEventLoopGroup boss = new NioEventLoopGroup(1);
         //client
@@ -74,10 +70,10 @@ public final class Server {
                     //验证
                     .validate();
             //绑定端口
-            bootstrap.bind(Config.INSTANCE.getPort())
+            bootstrap.bind(gogoConfig.getPort())
                     //阻塞
                     .sync();
-            log.info("端口{}已绑定", Config.INSTANCE.getPort());
+            log.info("端口{}已绑定", gogoConfig.getPort());
         } catch (Exception e) {
             log.error("引导服务器异常", e);
         }

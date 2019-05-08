@@ -1,4 +1,8 @@
-# 生产环境配置
+# 全局配置
+---
+spring:
+  application.name: gogo
+...
 
 # Redis配置
 ---
@@ -16,4 +20,20 @@ redis:
     min-idle: 10 #连接池中的最小空闲连接
     minEvictableIdleTimeMillis: 600000 #10分钟
     timeBetweenEvictionRunsMillis: 180000 # 3分钟
+...
+
+# Gogo配置
+---
+gogo:
+  # 监听端口
+  port: 4999
+  # 日间模式开始时间
+  day-mode-start-time-string: "07:00"
+  # 日间模式结束时间
+  day-mode-end-time-string: "19:00"
+  # 首页标语
+  slogan: 求<a href="https://github.com/zenuo/gogo">Star</a>，蟹蟹支持(´・ω・｀)
+  # 搜索结果替换规则
+  substitute:
+    - https://zh.wikipedia.org#https://176.122.157.73:3457
 ...
