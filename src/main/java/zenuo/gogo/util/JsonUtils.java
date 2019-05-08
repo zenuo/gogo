@@ -3,6 +3,8 @@ package zenuo.gogo.util;
 import lombok.extern.slf4j.Slf4j;
 import zenuo.gogo.core.config.Constants;
 
+import java.io.IOException;
+
 /**
  * JSON工具类
  */
@@ -23,7 +25,16 @@ public final class JsonUtils {
             return Constants.MAPPER.writeValueAsString(object);
         } catch (Exception e) {
             log.error("toJson", e);
-            return null;
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public static <T> T fromJson(String json, Class<? extends T> clazz) {
+        try {
+            return Constants.MAPPER.readValue(json, clazz);
+        } catch (IOException e) {
+            log.error("fromJson", e);
+            throw new IllegalStateException(e);
         }
     }
 }
