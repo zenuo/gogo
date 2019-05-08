@@ -57,6 +57,13 @@ public final class Constants {
     /**
      * 搜索结果统计的组数
      */
-    public static int STATS_PATTERN_GROUP_COUNT = 2;
-
+    public static final int STATS_PATTERN_GROUP_COUNT = 2;
+    /**
+     * 搜索响应存活时间
+     */
+    public static final long SEARCH_RESPONSE_CACHE_TTL_IN_SECONDS = 3600L;
+    /**
+     * 键「搜索响应」模式
+     */
+    public static final String KEY_SEARCH_RESPONSE_PATTERN = "sr_%s_%d";
 }

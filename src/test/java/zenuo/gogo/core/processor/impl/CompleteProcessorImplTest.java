@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;
-import zenuo.gogo.TestEnvironmentWithoutTx;
+import zenuo.gogo.TestEnvironment;
 import zenuo.gogo.core.config.Constants;
 import zenuo.gogo.model.CompleteResponse;
 import zenuo.gogo.util.JsonUtils;
@@ -12,7 +12,7 @@ import zenuo.gogo.util.JsonUtils;
 import java.io.IOException;
 import java.util.List;
 
-public class CompleteProcessorImplTest extends TestEnvironmentWithoutTx {
+public class CompleteProcessorImplTest extends TestEnvironment {
 
     @Autowired
     private CompleteProcessorImpl completeProcessor;

@@ -12,6 +12,6 @@ import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
  */
 @Slf4j
 @SpringBootTest(classes = GogoApplication.class)
-public class TestEnvironmentWithoutTx extends AbstractTestNGSpringContextTests {
+public class TestEnvironment extends AbstractTestNGSpringContextTests {
 
 }

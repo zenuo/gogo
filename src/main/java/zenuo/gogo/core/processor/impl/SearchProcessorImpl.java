@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -17,6 +18,7 @@ import zenuo.gogo.core.config.Constants;
 import zenuo.gogo.core.processor.IProcessor;
 import zenuo.gogo.model.Entry;
 import zenuo.gogo.model.SearchResponse;
+import zenuo.gogo.service.ICacheService;
 import zenuo.gogo.util.GoogleDomainUtils;
 import zenuo.gogo.util.JsonUtils;
 import zenuo.gogo.util.UserAgentUtils;
@@ -28,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 
 @Slf4j
@@ -38,7 +41,11 @@ public final class SearchProcessorImpl implements IProcessor {
     /**
      * 页面构建器
      */
+    @NonNull
     private final IPageBuilder resultPageBuilder;
+
+    @NonNull
+    private final ICacheService cacheService;
 
     @Override
     public void process(ChannelHandlerContext ctx, FullHttpRequest request, QueryStringDecoder decoder, ResponseType responseType) {
@@ -59,13 +66,13 @@ public final class SearchProcessorImpl implements IProcessor {
                         request,
                         ResponseType.API,
                         JsonUtils.toJson(response),
-                        response.getStatus());
+                        response.getStatus() == null ? HttpResponseStatus.OK : response.getStatus());
             } else {
                 response(ctx,
                         request,
                         ResponseType.PAGE,
                         resultPageBuilder.build(response),
-                        response.getStatus());
+                        response.getStatus() == null ? HttpResponseStatus.OK : response.getStatus());
             }
         }
     }
@@ -181,12 +188,66 @@ public final class SearchProcessorImpl implements IProcessor {
                     .status(HttpResponseStatus.BAD_REQUEST)
                     .build();
         }
-        return search(key, page);
+        final Optional<SearchResponse> cache = readCache(key, page);
+        if (cache.isPresent()) {
+            return cache.get();
+        } else {
+            //访问谷歌
+            final SearchResponse searchResponse = search(key, page);
+            //缓存搜索响应
+            writeCache(key, page, searchResponse);
+            return searchResponse;
+        }
     }
 
+    /**
+     * 模式已改变
+     *
+     * @param builder 搜索响应构建器
+     * @return 搜索响应构建
+     */
     private SearchResponse patternChanged(final SearchResponse.SearchResponseBuilder builder) {
         return builder.status(HttpResponseStatus.INTERNAL_SERVER_ERROR)
                 .error("google search page pattern changed, please contact developer")
                 .build();
+    }
+
+    /**
+     * 读取缓存
+     *
+     * @param key  搜索关键词
+     * @param page 页码
+     * @return 搜索结果
+     */
+    private Optional<SearchResponse> readCache(final String key, final int page) {
+        //从缓存服务中读取
+        final String cacheKey = String.format(Constants.KEY_SEARCH_RESPONSE_PATTERN, key, page);
+        final Optional<String> value = cacheService.get(cacheKey);
+        //若存在
+        if (value.isPresent()) {
+            //更新存活时间
+            cacheService.expire(cacheKey, Constants.SEARCH_RESPONSE_CACHE_TTL_IN_SECONDS);
+            //反序列化
+            return Optional.ofNullable(JsonUtils.fromJson(value.get(), SearchResponse.class));
+        } else {
+            //不存在
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * 写入缓存
+     *
+     * @param key            搜索关键词
+     * @param page           页码
+     * @param searchResponse 搜索结果
+     */
+    private void writeCache(final String key, final int page, final SearchResponse searchResponse) {
+        //序列化，键
+        final String cacheKey = String.format(Constants.KEY_SEARCH_RESPONSE_PATTERN, key, page);
+        //值
+        final String value = JsonUtils.toJson(searchResponse);
+        //写入缓存
+        cacheService.setex(cacheKey, Constants.SEARCH_RESPONSE_CACHE_TTL_IN_SECONDS, value);
     }
 }

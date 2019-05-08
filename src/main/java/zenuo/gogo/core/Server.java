@@ -1,7 +1,6 @@
 package zenuo.gogo.core;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -75,20 +74,12 @@ public final class Server {
                     //验证
                     .validate();
             //绑定端口
-            final Channel channel = bootstrap
-                    .bind(Config.INSTANCE.getPort())
+            bootstrap.bind(Config.INSTANCE.getPort())
                     //阻塞
-                    .sync()
-                    .channel();
+                    .sync();
             log.info("端口{}已绑定", Config.INSTANCE.getPort());
-            //阻塞至通道关闭
-            channel.closeFuture().sync();
         } catch (Exception e) {
             log.error("引导服务器异常", e);
-        } finally {
-            //关闭线程组
-            boss.shutdownGracefully();
-            worker.shutdownGracefully();
         }
     }
 }

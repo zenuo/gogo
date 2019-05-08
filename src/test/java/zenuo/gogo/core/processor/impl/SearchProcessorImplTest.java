@@ -3,7 +3,7 @@ package zenuo.gogo.core.processor.impl;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;
-import zenuo.gogo.TestEnvironmentWithoutTx;
+import zenuo.gogo.TestEnvironment;
 import zenuo.gogo.core.config.Constants;
 import zenuo.gogo.model.SearchResponse;
 import zenuo.gogo.util.JsonUtils;
@@ -11,7 +11,7 @@ import zenuo.gogo.util.JsonUtils;
 import java.io.IOException;
 import java.util.regex.Matcher;
 
-public class SearchProcessorImplTest extends TestEnvironmentWithoutTx {
+public class SearchProcessorImplTest extends TestEnvironment {
     @Autowired
     private SearchProcessorImpl searchProcessor;
 

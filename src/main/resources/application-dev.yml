@@ -5,7 +5,7 @@
 redis:
   database: 0 #Redis数据库索引（默认为0）
   host: localhost
-  port: 6739
+  port: 6379
   # 超时，单位毫秒
   timeout: 1000
   password: 766d016efb375eb1e7b663db

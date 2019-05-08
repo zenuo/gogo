@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import zenuo.gogo.core.ResponseType;
@@ -17,6 +18,7 @@ public final class IndexProcessorImpl implements IProcessor {
     /**
      * 页面构建器
      */
+    @NonNull
     private final IPageBuilder indexPageBuilder;
 
     @Override
