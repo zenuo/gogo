@@ -1,42 +1,54 @@
-# 一个谷歌搜索的镜像
+# 勾勾：一个基于谷歌的搜索工具
 
-> 本程序通过`网页`和`API`两种方式提供服务。
+## 是什么
 
-## 1 网页
+「勾勾」是一个搜索工具，搜索结果基于[谷歌](https://google.com)，致力于「安全和简洁」的搜索体验。
+
+### 安全
+
+- 「勾勾」是一个在`用户`与`谷歌`之间的代理，谷歌无法得知用户的隐私（如UserAgent、Cookie等），也无法`跟踪用户的结果点击`
+
+- 部署简单，基于`JDK 11`，仅需一台处于`可以访问谷歌的网络`的主机即可
+
+### 简洁
+
+- ~~精简~~（丑陋）到极致的Web前端
+- 提供Web API，轻松地自定义搜索前端（正在开发`基于命令行的搜索前端`）
+
+## 如何使用
+
+> 本程序通过`网页`和`Web API`两种方式提供服务。
+
+### 网页
 
 1)URL: https://176.122.157.73:5000
 
-## 2 API
-### 2.1 搜索
-1)HTTP方法: GET
+### API
 
-2)URL: https://176.122.157.73:5000/api/search?q=github&p=1
+#### 搜索
 
-3)响应示例：
-```
+```bash
+$ curl -X GET -k "https://176.122.157.73:5000/api/search?q=github&p=1"
 {
   "key": "github",
-  "page": 0,
-  "amount": 163000000,
-  "elapsed": 0.27,
+  "page": 1,
+  "amount": 223000000,
+  "elapsed": 0.43,
   "entries": [
     {
-      "name": "GitHub - Wikipedia",
-      "url": "https://en.wikipedia.org/wiki/GitHub",
-      "desc": "GitHub is a web-based hosting service for version control using git. It is mostly used for computer code. It offers all of the distributed version control and source ..."
+      "name": "The world's leading software development platform · GitHub",
+      "url": "https://github.com/",
+      "desc": "GitHub brings together the world's largest community of developers to discover, share, and build better software. From open source projects to private team ..."
     }
   ],
   "error": null
 }
 ```
 
-### 2.2 补全
-1)HTTP方法: GET
+#### 关键词提示
 
-2)URL: https://176.122.157.73:5000/api/complete?q=github
-
-3)响应示例:
-```
+```bash
+$ curl -X GET -k "https://176.122.157.73:5000/api/complete?q=github"
 {
   "key": "github",
   "lints": [
@@ -55,8 +67,16 @@
 }
 ```
 
-## 3 使用工具
+## 开发计划
+
+- 后端实现细节文档
+- 基于命令行的搜索前端
+- 可配置的缓存：内存与Redis
+
+## 框架
+
 > 站在巨人的肩膀上
 
-* [Netty](https://netty.io/)
-* [Jsoup](https://jsoup.org/)
+- [Netty](https://netty.io/)
+- [Jsoup](https://jsoup.org/)
+- [SpringBoot](https://github.com/spring-projects/spring-boot)
