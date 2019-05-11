@@ -37,3 +37,14 @@ gogo:
   substitute:
     - https://zh.wikipedia.org#https://176.122.157.73:3457
 ...
+
+# SSL配置
+---
+ssl:
+  # 是否启用SSL，若是，请提供证书与密钥文件
+  enabled: false
+  # An X.509 certificate chain file in PEM format
+  keyCertChainFile:
+  # A PKCS#8 private key file in PEM format
+  keyFile:
+...
