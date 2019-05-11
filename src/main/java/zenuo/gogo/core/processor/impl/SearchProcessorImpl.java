@@ -227,7 +227,7 @@ public final class SearchProcessorImpl implements IProcessor {
      */
     private Optional<SearchResponse> readCache(final String key, final int page) {
         //从缓存服务中读取
-        final String cacheKey = String.format(Constants.KEY_SEARCH_RESPONSE_PATTERN, key, page);
+        final String cacheKey = String.format(Constants.KEY_SEARCH_RESPONSE_PATTERN, key.hashCode(), page);
         final Optional<String> value = cacheService.get(cacheKey);
         //若存在
         if (value.isPresent()) {
@@ -250,7 +250,7 @@ public final class SearchProcessorImpl implements IProcessor {
      */
     private void writeCache(final String key, final int page, final SearchResponse searchResponse) {
         //序列化，键
-        final String cacheKey = String.format(Constants.KEY_SEARCH_RESPONSE_PATTERN, key, page);
+        final String cacheKey = String.format(Constants.KEY_SEARCH_RESPONSE_PATTERN, key.hashCode(), page);
         //值
         final String value = JsonUtils.toJson(searchResponse);
         //写入缓存

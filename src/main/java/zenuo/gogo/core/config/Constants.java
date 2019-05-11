@@ -65,5 +65,5 @@ public final class Constants {
     /**
      * 键「搜索响应」模式
      */
-    public static final String KEY_SEARCH_RESPONSE_PATTERN = "sr_%s_%d";
+    public static final String KEY_SEARCH_RESPONSE_PATTERN = "sr_%d_%d";
 }
