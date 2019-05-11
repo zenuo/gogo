@@ -155,7 +155,10 @@ public final class SearchProcessorImpl implements IProcessor {
             if (name == null) {
                 continue;
             }
-            entryBuilder.name(name.text());
+            entryBuilder.name(name.text()
+                    //sterilize "<" and ">"
+                    .replaceAll("<", "&lt;")
+                    .replaceAll(">", "&gt;"));
             //url
             final Element url = name.parent();
             entryBuilder.url(url.attr("href"));
