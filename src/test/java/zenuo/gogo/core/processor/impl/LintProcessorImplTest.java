@@ -6,21 +6,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;
 import zenuo.gogo.TestEnvironment;
 import zenuo.gogo.core.config.Constants;
-import zenuo.gogo.model.CompleteResponse;
+import zenuo.gogo.model.LintResponse;
 import zenuo.gogo.util.JsonUtils;
 
 import java.io.IOException;
 import java.util.List;
 
-public class CompleteProcessorImplTest extends TestEnvironment {
+public class LintProcessorImplTest extends TestEnvironment {
 
     @Autowired
-    private CompleteProcessorImpl completeProcessor;
+    private LintProcessorImpl lintProcessor;
 
     @Test
     public void request() throws IOException {
 
-        final Document document = completeProcessor.request("udp");
+        final Document document = lintProcessor.request("udp");
         System.out.println(document.body().text());
     }
 
@@ -37,14 +37,14 @@ public class CompleteProcessorImplTest extends TestEnvironment {
     }
 
     @Test
-    public void complete() throws IOException {
-        final List<String> lints = completeProcessor.complete("udp");
+    public void lint() throws IOException {
+        final List<String> lints = lintProcessor.lint("udp");
         System.out.println(lints);
     }
 
     @Test
     public void response() {
-        final CompleteResponse response = completeProcessor.response("udp");
+        final LintResponse response = lintProcessor.response("udp");
         System.out.println(JsonUtils.toJson(response));
     }
 }

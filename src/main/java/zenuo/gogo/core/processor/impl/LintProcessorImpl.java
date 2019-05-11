@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import zenuo.gogo.core.ResponseType;
 import zenuo.gogo.core.config.Constants;
 import zenuo.gogo.core.processor.IProcessor;
-import zenuo.gogo.model.CompleteResponse;
+import zenuo.gogo.model.LintResponse;
 import zenuo.gogo.util.GoogleDomainUtils;
 import zenuo.gogo.util.JsonUtils;
 import zenuo.gogo.util.UserAgentUtils;
@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Component("completeProcessor")
-public final class CompleteProcessorImpl implements IProcessor {
+@Component("lintProcessor")
+public final class LintProcessorImpl implements IProcessor {
 
     @Override
     public void process(ChannelHandlerContext ctx, FullHttpRequest request, QueryStringDecoder decoder, ResponseType responseType) {
@@ -37,7 +37,7 @@ public final class CompleteProcessorImpl implements IProcessor {
                     "{\"error\": \"the keyword should not be empty\"}",
                     HttpResponseStatus.BAD_REQUEST);
         } else {
-            final CompleteResponse response = response(keys.get(0));
+            final LintResponse response = response(keys.get(0));
             response(ctx,
                     request,
                     ResponseType.API,
@@ -47,7 +47,7 @@ public final class CompleteProcessorImpl implements IProcessor {
     }
 
     /**
-     * Make the request of google search complete
+     * Make the request of google search lint
      *
      * @param key keyword
      * @return document instance if succeed
@@ -66,13 +66,13 @@ public final class CompleteProcessorImpl implements IProcessor {
     }
 
     /**
-     * Get lints of google search complete result
+     * Get lints of google search lint result
      *
      * @param key keyword
      * @return lint list
      * @throws IOException io exception occurred
      */
-    List<String> complete(final String key) throws IOException {
+    List<String> lint(final String key) throws IOException {
         final Document document = request(key);
         final JsonNode bodyNode = Constants.MAPPER.readTree(document.body().text());
         final JsonNode lintNode = bodyNode.get(1);
@@ -86,20 +86,20 @@ public final class CompleteProcessorImpl implements IProcessor {
     }
 
     /**
-     * Do complete and response
+     * Do lint and response
      *
      * @param key keyword
      * @return response instance
      */
-    CompleteResponse response(final String key) {
+    LintResponse response(final String key) {
         //builder
-        final CompleteResponse.CompleteResponseBuilder builder = CompleteResponse.builder();
+        final LintResponse.LintResponseBuilder builder = LintResponse.builder();
         builder.key(key);
         try {
-            final List<String> lints = complete(key);
+            final List<String> lints = lint(key);
             builder.lints(lints).status(HttpResponseStatus.OK);
         } catch (Exception e) {
-            log.error("complete {}", key, e);
+            log.error("lint {}", key, e);
             builder.error(e.getMessage())
                     .status(HttpResponseStatus.GATEWAY_TIMEOUT);
         }
