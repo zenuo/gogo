@@ -56,7 +56,7 @@ public class GogoConfig {
     private List<String> substitute;
 
     @PostConstruct
-    private void init() {
+    private void postConstruct() {
         if (port == null) {
             port = Constants.DEFAULT_PORT;
         }
