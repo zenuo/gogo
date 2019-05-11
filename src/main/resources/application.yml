@@ -32,7 +32,7 @@ gogo:
   # 日间模式结束时间
   day-mode-end-time-string: "19:00"
   # 首页标语
-  slogan: 求<a href="https://github.com/zenuo/gogo">Star</a>，蟹蟹支持(´・ω・｀)
+  slogan: 欢迎<a href="https://github.com/zenuo/gogo">star</a>，蟹蟹支持🥳
   # 搜索结果替换规则
   substitute:
     - https://zh.wikipedia.org#https://176.122.157.73:3457

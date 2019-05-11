@@ -37,17 +37,35 @@ public final class ResultPageBuilder implements IPageBuilder {
     /**
      * 样式表前的HTML
      */
-    private static final String HTML_BEFORE_STYLE = " - Gogo</title>\n<style>\n";
+    private static final String HTML_BEFORE_STYLE = " - 勾勾</title>\n<style>\n";
 
     /**
      * 夜间模式的样式表
      */
-    private static final String HTML_NIGHT_MODE_STYLE = ".logo,body{color:#B6C5D4}.entry,.search{padding-bottom:5px;padding-top:5px}.logo,.name{text-decoration:none}.entry,.next,.search{padding-top:5px}body{width:800px;padding-left:10px;background-color:#000}.logo{float:left;padding-right:10px;font-family:\"Times New Roman\",Times,serif}.entry{font-family:Roboto,arial,sans-serif}.name{color:#aaab00;font-size:18px}.url{color:#2bd8a4;font-size:14px}.desc{font-size:16px}";
+    private static final String HTML_NIGHT_MODE_STYLE = ".logo,body{color:#B6C5D4}." +
+            "entry,.search{padding-bottom:5px;padding-top:5px}" +
+            ".logo,.name{text-decoration:none}" +
+            ".entry,.next,.search{padding-top:5px}" +
+            "body{width:800px;padding-left:10px;background-color:#000}" +
+            ".logo{float:left;padding-right:10px;font-family:\"Times New Roman\",Times,serif}" +
+            ".entry{font-family:Roboto,arial,sans-serif}" +
+            ".name{color:#aaab00;font-size:18px}" +
+            ".url{color:#2bd8a4;font-size:14px}" +
+            ".desc{font-size:16px}";
 
     /**
      * 日间模式的样式表
      */
-    private static final String HTML_DAY_MODE_STYLE = ".entry,.search{padding-bottom:5px;padding-top:5px}.logo,.name{text-decoration:none}.entry,.next,.search{padding-top:5px}body{width:800px;padding-left:10px;background-color:#F8F4E7;}.logo{float:left;padding-right:10px;color:#000;font-family:\"Times New Roman\",Times,serif}.entry{font-family:Roboto,arial,sans-serif}.name{color:#1a0dab;font-size:18px}.url{color:#006621;font-size:14px}.desc{font-size:16px}";
+    private static final String HTML_DAY_MODE_STYLE = "" +
+            ".entry,.search{padding-bottom:5px;padding-top:5px}" +
+            ".logo,.name{text-decoration:none}" +
+            ".entry,.next,.search{padding-top:5px}" +
+            "body{width:800px;padding-left:10px;background-color:#F8F4E7;}" +
+            ".logo{float:left;padding-right:10px;color:#000;font-family:\"Times New Roman\",Times,serif}" +
+            ".entry{font-family:Roboto,arial,sans-serif}" +
+            ".name{color:#1a0dab;font-size:18px}" +
+            ".url{color:#006621;font-size:14px}" +
+            ".desc{font-size:16px}";
 
     /**
      * 样式表之后的HTML
@@ -56,7 +74,7 @@ public final class ResultPageBuilder implements IPageBuilder {
             "</head>\n" +
             "<body>\n" +
             "<div class=\"search\">\n" +
-            "<a href=\"/\"><span class=\"logo\"><b>Gogo</b></span></a>\n" +
+            "<a href=\"/\"><span class=\"logo\"><b>勾勾</b></span></a>\n" +
             "<form action=\"/search\" method=\"GET\" onsubmit=\"return q.value!=''\">\n" +
             "<input name=\"q\" autocomplete=\"off\" type=\"text\" value=\"";
 
