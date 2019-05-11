@@ -47,7 +47,7 @@ public final class LintProcessorImpl implements IProcessor {
     }
 
     /**
-     * Make the request of google search complete
+     * Make the request of google search lint
      *
      * @param key keyword
      * @return document instance if succeed
@@ -66,13 +66,13 @@ public final class LintProcessorImpl implements IProcessor {
     }
 
     /**
-     * Get lints of google search complete result
+     * Get lints of google search lint result
      *
      * @param key keyword
      * @return lint list
      * @throws IOException io exception occurred
      */
-    List<String> complete(final String key) throws IOException {
+    List<String> lint(final String key) throws IOException {
         final Document document = request(key);
         final JsonNode bodyNode = Constants.MAPPER.readTree(document.body().text());
         final JsonNode lintNode = bodyNode.get(1);
@@ -86,7 +86,7 @@ public final class LintProcessorImpl implements IProcessor {
     }
 
     /**
-     * Do complete and response
+     * Do lint and response
      *
      * @param key keyword
      * @return response instance
@@ -96,10 +96,10 @@ public final class LintProcessorImpl implements IProcessor {
         final LintResponse.LintResponseBuilder builder = LintResponse.builder();
         builder.key(key);
         try {
-            final List<String> lints = complete(key);
+            final List<String> lints = lint(key);
             builder.lints(lints).status(HttpResponseStatus.OK);
         } catch (Exception e) {
-            log.error("complete {}", key, e);
+            log.error("lint {}", key, e);
             builder.error(e.getMessage())
                     .status(HttpResponseStatus.GATEWAY_TIMEOUT);
         }

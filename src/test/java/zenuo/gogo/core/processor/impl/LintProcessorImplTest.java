@@ -15,12 +15,12 @@ import java.util.List;
 public class LintProcessorImplTest extends TestEnvironment {
 
     @Autowired
-    private LintProcessorImpl completeProcessor;
+    private LintProcessorImpl lintProcessor;
 
     @Test
     public void request() throws IOException {
 
-        final Document document = completeProcessor.request("udp");
+        final Document document = lintProcessor.request("udp");
         System.out.println(document.body().text());
     }
 
@@ -37,14 +37,14 @@ public class LintProcessorImplTest extends TestEnvironment {
     }
 
     @Test
-    public void complete() throws IOException {
-        final List<String> lints = completeProcessor.complete("udp");
+    public void lint() throws IOException {
+        final List<String> lints = lintProcessor.lint("udp");
         System.out.println(lints);
     }
 
     @Test
     public void response() {
-        final LintResponse response = completeProcessor.response("udp");
+        final LintResponse response = lintProcessor.response("udp");
         System.out.println(JsonUtils.toJson(response));
     }
 }
