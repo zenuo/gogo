@@ -40,12 +40,13 @@ public final class Handler extends SimpleChannelInboundHandler<FullHttpRequest> 
     /**
      * 补全处理器
      */
-    private final IProcessor completeProcessor;
+    private final IProcessor lintProcessor;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) {
-
+        //若方法不是GET
         if (request.method() != HttpMethod.GET) {
+            //响应错误
             indexProcessor.response(ctx,
                     request,
                     ResponseType.API,
@@ -69,8 +70,8 @@ public final class Handler extends SimpleChannelInboundHandler<FullHttpRequest> 
                 case "/api/search":
                     searchProcessor.process(ctx, request, decoder, ResponseType.API);
                     break;
-                case "/api/complete":
-                    completeProcessor.process(ctx, request, decoder, null);
+                case "/api/lint":
+                    lintProcessor.process(ctx, request, decoder, null);
                     break;
                 default:
                     indexProcessor.response(ctx,
