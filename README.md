@@ -56,7 +56,7 @@ $ curl -X GET -k "https://176.122.157.73:5000/api/search?q=github&p=1"
 #### 关键词提示
 
 ```bash
-$ curl -X GET -k "https://176.122.157.73:5000/api/complete?q=github"
+$ curl -X GET -k "https://176.122.157.73:5000/api/lint?q=github"
 {
   "key": "github",
   "lints": [

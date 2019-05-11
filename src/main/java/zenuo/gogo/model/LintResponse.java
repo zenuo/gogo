@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @Getter
-public final class CompleteResponse {
+public final class LintResponse {
     private String key;
     private List<String> lints;
     private String error;

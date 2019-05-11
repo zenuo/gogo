@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import zenuo.gogo.core.ResponseType;
 import zenuo.gogo.core.config.Constants;
 import zenuo.gogo.core.processor.IProcessor;
-import zenuo.gogo.model.CompleteResponse;
+import zenuo.gogo.model.LintResponse;
 import zenuo.gogo.util.GoogleDomainUtils;
 import zenuo.gogo.util.JsonUtils;
 import zenuo.gogo.util.UserAgentUtils;
@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Component("completeProcessor")
-public final class CompleteProcessorImpl implements IProcessor {
+@Component("lintProcessor")
+public final class LintProcessorImpl implements IProcessor {
 
     @Override
     public void process(ChannelHandlerContext ctx, FullHttpRequest request, QueryStringDecoder decoder, ResponseType responseType) {
@@ -37,7 +37,7 @@ public final class CompleteProcessorImpl implements IProcessor {
                     "{\"error\": \"the keyword should not be empty\"}",
                     HttpResponseStatus.BAD_REQUEST);
         } else {
-            final CompleteResponse response = response(keys.get(0));
+            final LintResponse response = response(keys.get(0));
             response(ctx,
                     request,
                     ResponseType.API,
@@ -91,9 +91,9 @@ public final class CompleteProcessorImpl implements IProcessor {
      * @param key keyword
      * @return response instance
      */
-    CompleteResponse response(final String key) {
+    LintResponse response(final String key) {
         //builder
-        final CompleteResponse.CompleteResponseBuilder builder = CompleteResponse.builder();
+        final LintResponse.LintResponseBuilder builder = LintResponse.builder();
         builder.key(key);
         try {
             final List<String> lints = complete(key);
