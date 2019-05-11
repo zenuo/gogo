@@ -29,7 +29,7 @@ public final class Constants {
     /**
      * 替换规则的正则
      */
-    static final Pattern SUBSTITUTE_RULE_PATTERN = Pattern.compile("^\"(.+?)\" \"(.*?)\"$");
+    static final Pattern SUBSTITUTE_RULE_PATTERN = Pattern.compile("^(.+?)#(.*?)$");
 
     /**
      * 请求超时，毫秒

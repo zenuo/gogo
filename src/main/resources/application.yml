@@ -1,6 +1,39 @@
 # 全局配置
 ---
 spring:
-  profiles.active: prod
   application.name: gogo
+...
+
+# Redis配置
+---
+redis:
+  database: 0 #Redis数据库索引（默认为0）
+  host: localhost
+  port: 6379
+  # 超时，单位毫秒
+  timeout: 1000
+  password: 766d016efb375eb1e7b663db
+  pool:
+    max-active: 80 #连接池最大连接数（使用负值表示没有限制）
+    max-wait: 2000 #连接最大阻塞等待时间（使用负值表示没有限制）
+    max-idle:  20 #连接池中的最大空闲连接
+    min-idle: 10 #连接池中的最小空闲连接
+    minEvictableIdleTimeMillis: 600000 #10分钟
+    timeBetweenEvictionRunsMillis: 180000 # 3分钟
+...
+
+# Gogo配置
+---
+gogo:
+  # 监听端口
+  port: 4999
+  # 日间模式开始时间
+  day-mode-start-time-string: "07:00"
+  # 日间模式结束时间
+  day-mode-end-time-string: "19:00"
+  # 首页标语
+  slogan: 欢迎<a href="https://github.com/zenuo/gogo">star</a>，蟹蟹支持🥳
+  # 搜索结果替换规则
+  substitute:
+    - https://zh.wikipedia.org#https://176.122.157.73:3457
 ...
