@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <property name="LOG_FILE"
+              value="./log/gogo.log}"/>
+    <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
+
+    <!-- 控制台输出 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 每日轮转 -->
+    <appender name="DAILY_ROLLING" class="ch.qos.logback.classic.AsyncAppender">
+        <appender class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <File>${LOG_FILE}</File>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <FileNamePattern>${LOG_FILE}-%d{yyyy-MM-dd}.log.gz</FileNamePattern>
+                <maxHistory>7</maxHistory>
+                <totalSizeCap>4MB</totalSizeCap>
+            </rollingPolicy>
+            <encoder>
+                <charset>UTF-8</charset>
+                <Pattern>${FILE_LOG_PATTERN}</Pattern>
+            </encoder>
+        </appender>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="DAILY_ROLLING"/>
+    </root>
+
+</configuration>
