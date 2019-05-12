@@ -6,3 +6,4 @@ log
 *.sh
 dependency-reduced-pom.xml
 *.plantuml
+build-gogo-cli-Desktop-Default

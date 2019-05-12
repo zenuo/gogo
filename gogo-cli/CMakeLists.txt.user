@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.9.0, 2019-05-12T18:39:21. -->
+<!-- Written by QtCreator 4.9.0, 2019-05-12T21:11:47. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -357,7 +357,7 @@
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">gogo-cli</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">CMakeProjectManager.CMakeRunConfiguration.gogo-cli
 /home/yz/project/gogo/gogo-cli/</value>
-    <value type="QString" key="RunConfiguration.Arguments">curl</value>
+    <value type="QString" key="RunConfiguration.Arguments">你好 1</value>
     <value type="uint" key="RunConfiguration.QmlDebugServerPort">3768</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>

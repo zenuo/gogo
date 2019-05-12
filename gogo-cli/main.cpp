@@ -1,6 +1,6 @@
 #include <iostream>
-#include <sstream>
 #include <curl/curl.h>
+#include <jansson.h>
 
 using namespace std;
 
@@ -18,9 +18,24 @@ void do_get(string key, int page);
  */
 void help();
 
+/**
+ * @brief write_callback 写入接收数据的回调
+ * @param ptr 交付的数据的指针
+ * @param size 1
+ * @param nmemb 交付的数据的长度
+ * @param userdata
+ * @return CURLE_OK
+ */
+size_t write_callback(char *ptr, size_t size, size_t nmemb, char *body);
+
+/**
+ * @brief parse_response_and_print 解析响应并打印
+ * @param body 响应体
+ */
+void parse_response_and_print(const char *body);
+
 int main(int argc, char *argv[])
 {
-    //std::cout << argc << std::endl;
     //若命令行参数个数不在[1,2]之间
     if (argc == 1 || argc > 3)
     {
@@ -33,9 +48,7 @@ int main(int argc, char *argv[])
             do_get(key, 1);
         } else {
             //页数
-            string pageString(argv[1]);
-            std::istringstream iss(pageString);
-            int page = iss.peek();
+            int page = atoi(argv[2]);
 
             if (page <= 0)
             {
@@ -61,23 +74,30 @@ void do_get(string key, int page)
         //允许自签发的证书
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-
         //URL编码
         char *keyEscaped = curl_easy_escape(curl, key.c_str(), key.length());
-
         string keyEscapedString(keyEscaped);
         string url = "https://176.122.157.73:5000/api/search?q=" + keyEscapedString + "&p=" + std::to_string(page);
-
-        //设置主机名
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
 
+        //响应body
+        char *body;
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &body);
+
         /* Perform the request, res will get the return code */
         res = curl_easy_perform(curl);
+
         /* Check for errors */
         if(res != CURLE_OK)
+        {
             fprintf(stderr, "curl_easy_perform() failed: %s\n",
                     curl_easy_strerror(res));
+        } else {
+            //请求成功
+            std::cout<<body<<std::endl;
+        }
 
         /* always cleanup */
         curl_easy_cleanup(curl);
@@ -88,4 +108,27 @@ void do_get(string key, int page)
 void help()
 {
     fprintf(stdout, "usage: %s <key> [page]\r\n", EXECUTEBALE_NAME);
+}
+
+size_t write_callback(char *ptr, size_t size, size_t nmemb, char *body)
+{
+    body = ptr;
+    return nmemb;
+}
+
+void parse_response_and_print(const char *body)
+{
+    json_t *root;
+    json_error_t error;
+    root = json_loads(body, 0, &error);
+
+    if (!root)
+    {
+        fprintf(stderr, "json error on line %d: %s\n", error.line, error.text);
+        exit(1);
+    }
+    else
+    {
+        //todo 解析Json
+    }
 }
