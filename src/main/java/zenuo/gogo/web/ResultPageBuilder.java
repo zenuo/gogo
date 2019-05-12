@@ -9,6 +9,7 @@ import zenuo.gogo.model.IResponse;
 import zenuo.gogo.model.SearchResponse;
 
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
 
@@ -95,7 +96,7 @@ public final class ResultPageBuilder implements IPageBuilder {
     /**
      * 错误的HTML
      */
-    private static final String HTML_ERROR = "<h2>Sorry, error occurred, please try again.</h2>";
+    private static final String HTML_ERROR = "<h2>抱歉🥺，网络错误，推荐使用<a href=\"https://fireball.com/search?q=%s\">Fireball Search Engine</a></h2>";
 
     /**
      * 由响应示例构建页面
@@ -123,7 +124,7 @@ public final class ResultPageBuilder implements IPageBuilder {
             response.getEntries().forEach(e -> EntryBuilder.build(sb, e));
             NextBuilder.build(sb, response.getKey(), response.getPage());
         } else {
-            sb.append(HTML_ERROR);
+            sb.append(String.format(HTML_ERROR, URLEncoder.encode(response.getKey(), StandardCharsets.UTF_8)));
         }
         sb.append(HTML_TAIL);
         return sb.toString();
