@@ -7,3 +7,4 @@ log
 dependency-reduced-pom.xml
 *.plantuml
 build-gogo-cli-Desktop-Default
+.vscode
