@@ -95,7 +95,7 @@ func request(key string, page int) {
 	if runtime.GOOS == "windows" {
 		//若是Windows，则不打印样式
 		for _, entry := range sr.Entries {
-			fmt.Printf("%s", entry.Name)
+			fmt.Printf("%s\r\n", entry.Name)
 			fmt.Printf("    %s\r\n", entry.URL)
 			fmt.Printf("    %s\r\n", entry.Desc)
 		}
