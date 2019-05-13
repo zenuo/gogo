@@ -88,7 +88,7 @@ func request(key string, page int) {
 	}
 	//判断是否有错误
 	if sr.Error != "" {
-		fmt.Println("Error: ", e)
+		fmt.Println("Error: ", sr.Error)
 		os.Exit(3)
 	}
 	//打印
