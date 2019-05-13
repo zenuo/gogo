@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstring>
 #include <cstdlib>
+#include <typeinfo>
 #include <curl/curl.h>
 #include <jansson.h>
 
@@ -108,7 +109,7 @@ void do_get(string key, int page)
                     curl_easy_strerror(res));
         } else {
             //请求成功
-            std::cout<<chunk.memory<<std::endl;
+            parse_response_and_print(chunk.memory);
         }
 
         /* always cleanup */
@@ -154,8 +155,41 @@ void parse_response_and_print(const char *body)
         fprintf(stderr, "json error on line %d: %s\n", error.line, error.text);
         exit(1);
     }
-    else
-    {
-        //todo 解析Json
+    else    {
+        //解析Json
+        if(!json_is_object(root))
+        {
+            //error
+        }
+        else {
+            json_t *error = json_object_get(root, "error");
+            int erroriIsNull = json_equal(json_null(), error);
+            if (!erroriIsNull)
+            {
+                //响应错误
+                fprintf(stdout, "error: ", json_string_value(error));
+            } else {
+                json_t *entries = json_object_get(root, "entries");
+                //数量
+                size_t length = json_array_size(entries);
+
+                //遍历
+                for (int i = 0; i < length; i++) {
+                    const char *name, *url, *desc;
+
+                    json_t *entry = json_array_get(entries, i);
+
+                    name = json_string_value(json_object_get(entry, "name"));
+                    url = json_string_value(json_object_get(entry, "url"));
+                    desc = json_string_value(json_object_get(entry, "desc"));
+
+                    std::cout << "\033[1;33m" << name << "\033[0m" << std::endl
+                              << "    \033[0;32m" << url << "\033[0m" << std::endl
+                              << "    \033[2m" << name << "\033[0m" << std::endl
+                              << std::endl;
+                }
+            }
+            json_decref(root);
+        }
     }
 }
