@@ -1,10 +1,17 @@
 #include <iostream>
+#include <cstring>
+#include <cstdlib>
 #include <curl/curl.h>
 #include <jansson.h>
 
 using namespace std;
 
 static const char *EXECUTEBALE_NAME = "gogo-cli";
+
+struct MemoryStruct {
+  char *memory;
+  size_t size;
+};
 
 /**
  * @brief do_get 执行GET请求
@@ -23,10 +30,10 @@ void help();
  * @param ptr 交付的数据的指针
  * @param size 1
  * @param nmemb 交付的数据的长度
- * @param userdata
+ * @param userp
  * @return CURLE_OK
  */
-size_t write_callback(char *ptr, size_t size, size_t nmemb, char *body);
+size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userp);
 
 /**
  * @brief parse_response_and_print 解析响应并打印
@@ -82,9 +89,14 @@ void do_get(string key, int page)
         curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
 
         //响应body
-        char *body;
+        struct MemoryStruct chunk;
+
+          chunk.memory = static_cast<char *>(malloc(1));  /* will be grown as needed by the realloc above */
+          chunk.size = 0;    /* no data at this point */
+
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &body);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, static_cast<void *>(&chunk));
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, "gogo-cli/1.0");
 
         /* Perform the request, res will get the return code */
         res = curl_easy_perform(curl);
@@ -96,11 +108,12 @@ void do_get(string key, int page)
                     curl_easy_strerror(res));
         } else {
             //请求成功
-            std::cout<<body<<std::endl;
+            std::cout<<chunk.memory<<std::endl;
         }
 
         /* always cleanup */
         curl_easy_cleanup(curl);
+        free(chunk.memory);
     }
     curl_global_cleanup();
 }
@@ -110,10 +123,24 @@ void help()
     fprintf(stdout, "usage: %s <key> [page]\r\n", EXECUTEBALE_NAME);
 }
 
-size_t write_callback(char *ptr, size_t size, size_t nmemb, char *body)
+size_t write_callback(char *contents, size_t size, size_t nmemb, void *userp)
 {
-    body = ptr;
-    return nmemb;
+    size_t realsize = size * nmemb;
+      struct MemoryStruct *mem = (struct MemoryStruct *)userp;
+
+      char *ptr = static_cast<char*>(realloc(mem->memory, mem->size + realsize + 1));
+      if(ptr == NULL) {
+        /* out of memory! */
+        printf("not enough memory (realloc returned NULL)\n");
+        return 0;
+      }
+
+      mem->memory = ptr;
+      memcpy(&(mem->memory[mem->size]), contents, realsize);
+      mem->size += realsize;
+      mem->memory[mem->size] = 0;
+
+      return realsize;
 }
 
 void parse_response_and_print(const char *body)
