@@ -17,7 +17,7 @@
 
 ## 如何使用
 
-> 本程序通过`网页`和`Web API`两种方式提供服务。
+> 本程序通过`网页`、`命令行`和`Web API`三种方式提供服务。
 
 ### 网页
 
@@ -30,6 +30,18 @@
 搜索页面截图：
 
 ![e5c1b9df30645ffb8059ca72.png](image/e5c1b9df30645ffb8059ca72.png)
+
+### 命令行
+
+> 请到[Release](https://github.com/zenuo/gogo/releases)页面下载可执行程序，并重命名为`gogo-cli`，放置到`PATH`路径下
+
+```bash
+$ gogo-cli github 1
+```
+
+截图如下：
+
+![639ad4d3863e52f90a16cbe5.png](image/639ad4d3863e52f90a16cbe5.png)
 
 ### Web API
 
