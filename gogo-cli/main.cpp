@@ -9,8 +9,8 @@ using namespace std;
 static const char *EXECUTEBALE_NAME = "gogo-cli";
 
 struct MemoryStruct {
-  char *memory;
-  size_t size;
+    char *memory;
+    size_t size;
 };
 
 /**
@@ -27,11 +27,11 @@ void help();
 
 /**
  * @brief write_callback 写入接收数据的回调
- * @param ptr 交付的数据的指针
+ * @param contents 交付的数据的指针
  * @param size 1
  * @param nmemb 交付的数据的长度
- * @param userp
- * @return CURLE_OK
+ * @param userp 用户数据指针
+ * @return 数据长度
  */
 size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userp);
 
@@ -91,8 +91,8 @@ void do_get(string key, int page)
         //响应body
         struct MemoryStruct chunk;
 
-          chunk.memory = static_cast<char *>(malloc(1));  /* will be grown as needed by the realloc above */
-          chunk.size = 0;    /* no data at this point */
+        chunk.memory = static_cast<char *>(malloc(1));  /* will be grown as needed by the realloc above */
+        chunk.size = 0;    /* no data at this point */
 
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, static_cast<void *>(&chunk));
@@ -126,21 +126,21 @@ void help()
 size_t write_callback(char *contents, size_t size, size_t nmemb, void *userp)
 {
     size_t realsize = size * nmemb;
-      struct MemoryStruct *mem = (struct MemoryStruct *)userp;
+    struct MemoryStruct *mem = static_cast<struct MemoryStruct *>(userp);
 
-      char *ptr = static_cast<char*>(realloc(mem->memory, mem->size + realsize + 1));
-      if(ptr == NULL) {
+    char *ptr = static_cast<char*>(realloc(mem->memory, mem->size + realsize + 1));
+    if(ptr == nullptr) {
         /* out of memory! */
-        printf("not enough memory (realloc returned NULL)\n");
+        fprintf(stdout, "not enough memory (realloc returned NULL)\n");
         return 0;
-      }
+    }
 
-      mem->memory = ptr;
-      memcpy(&(mem->memory[mem->size]), contents, realsize);
-      mem->size += realsize;
-      mem->memory[mem->size] = 0;
+    mem->memory = ptr;
+    memcpy(&(mem->memory[mem->size]), contents, realsize);
+    mem->size += realsize;
+    mem->memory[mem->size] = 0;
 
-      return realsize;
+    return realsize;
 }
 
 void parse_response_and_print(const char *body)
