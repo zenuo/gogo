@@ -157,7 +157,7 @@ final class GoogleSearchResultProviderImpl implements ISearchResultProvider {
         final HttpGet httpGet = new HttpGet(url);
         httpGet.setHeader("Accept-Language", "en");
         httpGet.setHeader("User-Agent", UserAgentUtils.get());
-        return Jsoup.parse(url, httpClientProvider.httpGet(httpGet));
+        return Jsoup.parse(httpClientProvider.httpGet(httpGet));
     }
 
     /**
