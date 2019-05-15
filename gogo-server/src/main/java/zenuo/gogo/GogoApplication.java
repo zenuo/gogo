@@ -16,9 +16,10 @@ import java.nio.file.Paths;
 public class GogoApplication {
     public static void main(String[] args) {
         //若当前目录存在配置文件
-        if (Files.exists(Paths.get("./application.yml"))) {
+        final String configFilePath = "./application.yml";
+        if (Files.exists(Paths.get(configFilePath))) {
             //从当前目录中读取
-            System.setProperty("spring.config.location", "file:./application.yml");
+            System.setProperty("spring.config.location", "file:" + configFilePath);
         }
         //启动
         SpringApplication.run(GogoApplication.class, args);
