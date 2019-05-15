@@ -8,8 +8,6 @@ import zenuo.gogo.TestEnvironment;
 
 import java.io.IOException;
 
-import static org.testng.Assert.*;
-
 /**
  * 测试
  *
@@ -34,7 +32,7 @@ public class HttpClientProviderImplTest extends TestEnvironment {
                 //每个线程5次
                 for (int j = 0; j < 5; j++) {
                     try {
-                        final String o = httpClientProvider.httpGet(httpGet);
+                        final String o = httpClientProvider.execute(httpGet);
                         log.info("body hashcode={}", o.hashCode());
                     } catch (IOException e) {
                         e.printStackTrace();
