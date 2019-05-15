@@ -1,5 +1,6 @@
 package zenuo.gogo.core.config;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalTime;
@@ -39,6 +40,10 @@ public final class Constants {
      * Object mapper
      */
     public static final ObjectMapper MAPPER = new ObjectMapper();
+
+    static {
+        MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    }
     /**
      * 搜索结果统计的正则表达式
      */
@@ -54,10 +59,6 @@ public final class Constants {
      */
     public static final String GOOGLE_SEARCH_COMPLETE_URL_TEMPLATE
             = "https://%s/complete/search?client=psy-ab&q=%s";
-    /**
-     * 搜索结果统计的组数
-     */
-    public static final int STATS_PATTERN_GROUP_COUNT = 2;
     /**
      * 搜索响应存活时间
      */
