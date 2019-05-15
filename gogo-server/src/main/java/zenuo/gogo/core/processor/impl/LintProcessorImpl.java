@@ -47,7 +47,7 @@ public final class LintProcessorImpl implements IProcessor {
     }
 
     /**
-     * Make the request of google search lint
+     * Make the request of google search0 lint
      *
      * @param key keyword
      * @return document instance if succeed
@@ -66,7 +66,7 @@ public final class LintProcessorImpl implements IProcessor {
     }
 
     /**
-     * Get lints of google search lint result
+     * Get lints of google search0 lint result
      *
      * @param key keyword
      * @return lint list
