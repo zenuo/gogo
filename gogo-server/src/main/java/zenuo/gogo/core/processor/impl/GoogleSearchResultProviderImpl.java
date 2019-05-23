@@ -17,6 +17,7 @@ import zenuo.gogo.exception.SearchException;
 import zenuo.gogo.model.Entry;
 import zenuo.gogo.model.SearchResponse;
 import zenuo.gogo.util.GoogleDomainUtils;
+import zenuo.gogo.util.StringUtils;
 import zenuo.gogo.util.UserAgentUtils;
 
 import java.io.IOException;
@@ -86,20 +87,14 @@ final class GoogleSearchResultProviderImpl implements ISearchResultProvider {
             if (name == null) {
                 continue;
             }
-            entryBuilder.name(name.text()
-                    //sterilize "<" and ">"
-                    .replaceAll("<", "&lt;")
-                    .replaceAll(">", "&gt;"));
+            entryBuilder.name(StringUtils.htmlSterilize(name.text()));
             //url
             final Element url = name.parent();
             entryBuilder.url(url.attr("href"));
             //description
             final Element desc = result.getElementsByClass("st").first();
             if (desc != null) {
-                entryBuilder.desc(desc.text()
-                        //sterilize "<" and ">"
-                        .replaceAll("<", "&lt;")
-                        .replaceAll(">", "&gt;"));
+                entryBuilder.desc(StringUtils.htmlSterilize(desc.text()));
                 final Entry entry = entryBuilder.build();
                 //name and url are not null
                 if (entry.getName() != null && entry.getUrl() != null) {

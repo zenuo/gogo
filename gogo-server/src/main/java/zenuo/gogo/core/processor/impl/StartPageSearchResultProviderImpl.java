@@ -17,6 +17,7 @@ import zenuo.gogo.core.processor.ISearchResultProvider;
 import zenuo.gogo.exception.SearchException;
 import zenuo.gogo.model.Entry;
 import zenuo.gogo.model.SearchResponse;
+import zenuo.gogo.util.StringUtils;
 import zenuo.gogo.util.UserAgentUtils;
 
 import java.io.IOException;
@@ -85,20 +86,14 @@ final class StartPageSearchResultProviderImpl implements ISearchResultProvider {
                 continue;
             }
             final Element a = h3.child(0);
-            entryBuilder.name(a.text()
-                    //sterilize "<" and ">"
-                    .replaceAll("<", "&lt;")
-                    .replaceAll(">", "&gt;"));
+            entryBuilder.name(StringUtils.htmlSterilize(a.text()));
             entryBuilder.url(a.attr("href"));
             final Element p = result.getElementsByClass("search-item__body").first();
             if (p == null) {
                 entries.add(entryBuilder.build());
                 continue;
             }
-            entryBuilder.desc(p.text()
-                    //sterilize "<" and ">"
-                    .replaceAll("<", "&lt;")
-                    .replaceAll(">", "&gt;"));
+            entryBuilder.desc(StringUtils.htmlSterilize(p.text()));
             entries.add(entryBuilder.build());
         }
         builder.entries(entries);
