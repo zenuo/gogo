@@ -7,6 +7,7 @@ import zenuo.gogo.core.config.GogoConfig;
 import zenuo.gogo.model.Entry;
 import zenuo.gogo.model.IResponse;
 import zenuo.gogo.model.SearchResponse;
+import zenuo.gogo.util.StringUtils;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -96,7 +97,7 @@ public final class ResultPageBuilder implements IPageBuilder {
     /**
      * 错误的HTML
      */
-    private static final String HTML_ERROR = "<h2>抱歉🥺，网络错误，推荐使用<a href=\"https://fireball.com/search?q=%s\">Fireball Search Engine</a></h2>";
+    private static final String HTML_ERROR = "<h2>抱歉🥺，网络错误，请暂时使用<a href=\"https://cn.bing.com/search?q=%s\">Bing Search</a></h2>";
 
     /**
      * 由响应示例构建页面
@@ -107,7 +108,7 @@ public final class ResultPageBuilder implements IPageBuilder {
     public String build(IResponse iResponse) {
         final SearchResponse response = (SearchResponse) iResponse;
         final StringBuilder sb = new StringBuilder(HTML_BEFORE_TITLE);
-        sb.append(response.getKey())
+        sb.append(StringUtils.htmlSterilize(response.getKey()))
                 .append(HTML_BEFORE_STYLE);
         final LocalTime now = LocalTime.now();
         //若不是日间模式
@@ -118,7 +119,7 @@ public final class ResultPageBuilder implements IPageBuilder {
             sb.append(HTML_DAY_MODE_STYLE);
         }
         sb.append(HTML_AFTER_STYLE)
-                .append(response.getKey())
+                .append(StringUtils.htmlSterilize(response.getKey()))
                 .append(HTML_BEFORE_RESULT);
         if (response.getEntries() != null) {
             response.getEntries().forEach(e -> EntryBuilder.build(sb, e));
