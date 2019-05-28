@@ -10,10 +10,11 @@ import (
 	"os"
 	"runtime"
 	"strconv"
+	"strings"
 )
 
 const executableName string = "gogo-cli"
-const version string = "0.1"
+const version string = "0.2"
 const host string = "176.122.157.73"
 const port int = 5000
 
@@ -35,20 +36,28 @@ type SearchResponse struct {
 }
 
 func main() {
+	// 根据命令行参数长度判断
 	switch len(os.Args) {
+	case 1:
+		help()
+		break
 	case 2:
 		request(os.Args[1], 1)
 		break
-	case 3:
-		i, err := strconv.Atoi(os.Args[2])
-		if err != nil {
-			fmt.Println("err: ", err)
-			os.Exit(1)
-		}
-		request(os.Args[1], i)
-		break
 	default:
-		help()
+		// 最后一个参数
+		lastArg := os.Args[len(os.Args)-1]
+		// 最后一个参数转为整型
+		i, err := strconv.Atoi(lastArg)
+		if err != nil {
+			key := strings.Join(os.Args[1:], " ")
+			request(key, 1)
+		} else {
+			// 将最后一个命令行参数当作页码
+			key := strings.Join(os.Args[1:len(os.Args)-1], " ")
+			request(key, i)
+		}
+		break
 	}
 }
 
