@@ -14,8 +14,8 @@ import (
 )
 
 const executableName string = "gogo-cli"
-const version string = "0.2"
-const host string = "176.122.157.73"
+const version string = "0.21"
+const host string = "176.122.157.231"
 const port int = 5000
 
 // Entry 条目
