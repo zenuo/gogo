@@ -21,7 +21,7 @@
 
 ### 网页
 
-> 可访问[实例](https://176.122.157.73:5000)体验
+> 可访问[实例](https://176.122.157.231:5000)体验
 
 首页截图：
 
@@ -48,7 +48,7 @@ $ gogo-cli github 1
 #### 搜索
 
 ```bash
-$ curl -X GET -k "https://176.122.157.73:5000/api/search?q=github&p=1"
+$ curl -X GET -k "https://176.122.157.231:5000/api/search?q=github&p=1"
 {
   "key": "github",
   "page": 1,
@@ -68,7 +68,7 @@ $ curl -X GET -k "https://176.122.157.73:5000/api/search?q=github&p=1"
 #### 关键词提示
 
 ```bash
-$ curl -X GET -k "https://176.122.157.73:5000/api/lint?q=github"
+$ curl -X GET -k "https://176.122.157.231:5000/api/lint?q=github"
 {
   "key": "github",
   "lints": [
