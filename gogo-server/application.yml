@@ -16,7 +16,7 @@ http.client:
   #从连接池中获取到连接的最长时间
   connectionRequestTimeout: 500
   #数据传输的最长时间
-  socketTimeout: 2000
+  socketTimeout: 500
 ...
 
 # Redis配置
