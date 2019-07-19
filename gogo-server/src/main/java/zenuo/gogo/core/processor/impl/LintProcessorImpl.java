@@ -5,12 +5,15 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 import zenuo.gogo.core.ResponseType;
 import zenuo.gogo.core.config.Constants;
+import zenuo.gogo.core.processor.IHttpClientProvider;
 import zenuo.gogo.core.processor.IProcessor;
 import zenuo.gogo.model.LintResponse;
 import zenuo.gogo.util.GoogleDomainUtils;
@@ -57,7 +60,6 @@ public final class LintProcessorImpl implements IProcessor {
         final String url = String.format(Constants.GOOGLE_SEARCH_COMPLETE_URL_TEMPLATE,
                 GoogleDomainUtils.get(),
                 URLEncoder.encode(key, StandardCharsets.UTF_8));
-        //log.info("get [{}]", url);
         return Jsoup.connect(url)
                 .header("User-Agent", UserAgentUtils.get())
                 .timeout(Constants.TIME_OUT)

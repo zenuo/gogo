@@ -35,7 +35,7 @@ public final class Constants {
     /**
      * 请求超时，毫秒
      */
-    public static final int TIME_OUT = 3000;
+    public static final int TIME_OUT = 500;
     /**
      * Object mapper
      */
