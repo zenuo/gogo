@@ -67,4 +67,8 @@ public final class Constants {
      * 键「搜索响应」模式
      */
     public static final String KEY_SEARCH_RESPONSE_PATTERN = "sr_%d_%d";
+    /**
+     * 搜索结果缓存别名
+     */
+    public static final String SEARCH_RESULT_CACHE_ALIAS = "searchResult";
 }
