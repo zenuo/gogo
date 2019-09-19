@@ -10,19 +10,14 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import zenuo.gogo.core.config.GogoConfig;
-import zenuo.gogo.core.config.SslConfig;
 
 import javax.annotation.PostConstruct;
-import javax.net.ssl.SSLException;
-import java.io.File;
 
 /**
  * 服务器
@@ -41,22 +36,8 @@ public final class Server {
     @NonNull
     private final Handler handler;
 
-    @NonNull
-    private final SslConfig sslConfig;
-
-    private SslContext sslContext;
-
     @PostConstruct
-    private void postConstruct() throws SSLException {
-        //若SSL被启用
-        if (sslConfig.getEnabled()) {
-            sslContext = SslContextBuilder
-                    .forServer(
-                            new File(sslConfig.getKeyCertChainFile()),
-                            new File(sslConfig.getKeyFile()))
-                    .build();
-        }
-
+    private void postConstruct() {
         //acceptor
         final NioEventLoopGroup boss = new NioEventLoopGroup(1);
         //client
@@ -75,11 +56,6 @@ public final class Server {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) {
-                            //SSl处理器
-                            if (sslConfig.getEnabled()) {
-                                ch.pipeline()
-                                        .addLast(sslContext.newHandler(ch.alloc()));
-                            }
                             ch.pipeline()
                                     //HTTP服务器编码
                                     .addLast(new HttpServerCodec())

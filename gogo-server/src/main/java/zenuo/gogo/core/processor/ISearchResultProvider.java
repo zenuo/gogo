@@ -37,16 +37,8 @@ public interface ISearchResultProvider extends Ordered {
         //从缓存服务中读取
         final String cacheKey = String.format(Constants.KEY_SEARCH_RESPONSE_PATTERN, key.hashCode(), page);
         final Optional<String> value = cacheService.get(cacheKey);
-        //若存在
-        if (value.isPresent()) {
-            //更新存活时间
-            cacheService.expire(cacheKey, Constants.SEARCH_RESPONSE_CACHE_TTL_IN_SECONDS);
-            //反序列化
-            return Optional.ofNullable(JsonUtils.fromJson(value.get(), SearchResponse.class));
-        } else {
-            //不存在
-            return Optional.empty();
-        }
+        //若存在，反序列化
+        return value.map(s -> JsonUtils.fromJson(s, SearchResponse.class));
     }
 
     /**
@@ -62,6 +54,6 @@ public interface ISearchResultProvider extends Ordered {
         //值
         final String value = JsonUtils.toJson(searchResponse);
         //写入缓存
-        cacheService.setex(cacheKey, Constants.SEARCH_RESPONSE_CACHE_TTL_IN_SECONDS, value);
+        cacheService.set(cacheKey, value);
     }
 }
