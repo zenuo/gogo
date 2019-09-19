@@ -43,12 +43,12 @@ public interface IProcessor {
                 body == null ? Unpooled.buffer() : Unpooled.copiedBuffer(body.getBytes(StandardCharsets.UTF_8)));
         //设置头信息
         response.headers().add(HttpHeaderNames.SERVER, "gogo");
+        response.headers().add(HttpHeaderNames.CACHE_CONTROL, "private, max-age=0");
         if (responseType == ResponseType.API) {
             //若是API请求
             response.headers().add(HttpHeaderNames.CONTENT_TYPE, "application/json; charset=utf-8");
             response.headers().add(HttpHeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
             response.headers().add(HttpHeaderNames.ACCESS_CONTROL_ALLOW_METHODS, "GET");
-            response.headers().add(HttpHeaderNames.CACHE_CONTROL, "private, max-age=0");
         } else {
             //若是网页请求
             response.headers().add(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=utf-8");
