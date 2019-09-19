@@ -3,11 +3,7 @@ package zenuo.gogo.core.processor;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.handler.codec.http.*;
 import zenuo.gogo.core.ResponseType;
 
 import java.nio.charset.StandardCharsets;
@@ -52,6 +48,7 @@ public interface IProcessor {
             response.headers().add(HttpHeaderNames.CONTENT_TYPE, "application/json; charset=utf-8");
             response.headers().add(HttpHeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
             response.headers().add(HttpHeaderNames.ACCESS_CONTROL_ALLOW_METHODS, "GET");
+            response.headers().add(HttpHeaderNames.CACHE_CONTROL, "private, max-age=0");
         } else {
             //若是网页请求
             response.headers().add(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=utf-8");
