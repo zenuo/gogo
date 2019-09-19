@@ -6,7 +6,7 @@
 
     <groupId>zenuo</groupId>
     <artifactId>gogo</artifactId>
-    <version>1.7</version>
+    <version>1.7.0</version>
 
     <packaging>jar</packaging>
 
@@ -29,7 +29,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>11</source>
                     <target>11</target>
