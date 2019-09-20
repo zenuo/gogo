@@ -2,13 +2,12 @@
 
 ## 是什么
 
-「勾勾」是一个搜索工具，搜索结果基于[谷歌搜索](https://google.com)，致力于「安全和简洁」的搜索体验。
+「勾勾」是一个搜索工具，搜索结果基于[谷歌搜索](https://google.com)和[Startpage](https://www.startpage.com/en/)，致力于「安全、简洁」的搜索体验。
 
 ### 安全
 
 - 「勾勾」是一个在`用户`与`谷歌`之间的代理，谷歌无法得知用户的隐私（如UserAgent、Cookie等），也无法`跟踪用户的结果点击`
-
-- 部署简单，基于`JDK 11`，仅需一台处于`可以访问谷歌的网络`的主机即可
+- 部署简单，基于`JDK 11`（提供有[Docker镜像](https://hub.docker.com/r/zenuo/gogo/)），仅需一台处于`可以访问谷歌的网络`的主机即可
 
 ### 简洁
 
@@ -143,3 +142,7 @@ $ python3 gogo.py restart
 # 停止（可选）
 $ python3 gogo.py stop
 ```
+
+## 实例集合
+
+欢迎通过Issue分享实例供学习使用😌
