@@ -21,6 +21,7 @@ public final class StringUtils {
     public static String htmlSterilize(@NonNull String source) {
         return source
                 .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;");
+                .replaceAll(">", "&gt;")
+                .replaceAll("\"", "\\\"");
     }
 }
