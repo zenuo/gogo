@@ -10,13 +10,18 @@ import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import zenuo.gogo.core.processor.IProcessor;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 处理器类，通道读取事件的回调
@@ -24,7 +29,6 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 @Component
 @ChannelHandler.Sharable
-@RequiredArgsConstructor
 public final class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     /**
@@ -42,8 +46,44 @@ public final class Handler extends SimpleChannelInboundHandler<FullHttpRequest> 
      */
     private final IProcessor lintProcessor;
 
+    /**
+     * 处理工作者线程池
+     */
+    private final ThreadPoolExecutor processWorkers;
+
+    /**
+     * 工作队列
+     */
+    private final BlockingQueue<Runnable> workQueue;
+
+    public Handler(IProcessor indexProcessor, IProcessor searchProcessor, IProcessor lintProcessor) {
+        this.indexProcessor = indexProcessor;
+        this.searchProcessor = searchProcessor;
+        this.lintProcessor = lintProcessor;
+        this.workQueue = new ArrayBlockingQueue<>(256);
+        this.processWorkers = new ThreadPoolExecutor(2, 8,
+                30, TimeUnit.SECONDS,
+                workQueue,
+                new GogoThreadFactory(),
+                new ThreadPoolExecutor.DiscardPolicy());
+    }
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) {
+        if (workQueue.remainingCapacity() <= 0) {
+            log.warn("too many requests, client: {}, request: {}", ctx.channel(), request);
+            indexProcessor.response(ctx,
+                    request,
+                    ResponseType.API,
+                    "{\"error\": \"too many requests, please try again later.\"}",
+                    HttpResponseStatus.TOO_MANY_REQUESTS);
+        } else {
+            // 此处线程是事件循环worker，由processWorkers完成逻辑、搜索请求解析，再由processWorkers触发worker线程响应客户端
+            processWorkers.execute(() -> doChannelRead0(ctx, request));
+        }
+    }
+
+    private void doChannelRead0(ChannelHandlerContext ctx, FullHttpRequest request) {
         //若方法不是GET
         if (request.method() != HttpMethod.GET) {
             //响应错误
@@ -92,5 +132,18 @@ public final class Handler extends SimpleChannelInboundHandler<FullHttpRequest> 
                 ctx.close();
             }
         }
+    }
+}
+
+/**
+ * 线程池
+ */
+class GogoThreadFactory implements ThreadFactory {
+    private final static String PREFIX = "gogo-worker-";
+    private final AtomicInteger nextId = new AtomicInteger();
+
+    @Override
+    public Thread newThread(Runnable runnable) {
+        return new Thread(null, runnable, PREFIX + nextId.incrementAndGet(), 0, false);
     }
 }
