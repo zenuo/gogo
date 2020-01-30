@@ -103,7 +103,7 @@ $ curl -X GET -k "https://176.122.157.231:5000/api/lint?q=github"
 
 ### 1 Docker
 
-> 感谢[liusen373](https://github.com/liusen373)同学的建议😉😉😉，我们创建了镜像仓库[zenuo/gogo](https://hub.docker.com/r/zenuo/gogo/tags)，参考如下：
+> 感谢[liusen373](https://github.com/liusen373)同学的建议，我们创建了镜像仓库[zenuo/gogo](https://hub.docker.com/r/zenuo/gogo)，参考如下：
 
 ```
 # 拉取镜像
@@ -118,7 +118,7 @@ $ docker start gogo
 $ docker logs -f gogo
 ```
 
-### 2 构建
+### 2 从源代码构建
 
 ```
 # 克隆工程到本地
@@ -143,4 +143,4 @@ $ python3 gogo.py stop
 
 ## 实例集合
 
-欢迎通过Issue分享实例供学习使用😌
+欢迎通过Issue分享实例供学习使用🏇
