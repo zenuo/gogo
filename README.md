@@ -103,13 +103,13 @@ $ curl -X GET -k "https://176.122.157.231:5000/api/lint?q=github"
 
 ### 1 Docker
 
-> 感谢[liusen373](https://github.com/liusen373)同学的建议😉😉😉，我们创建了镜像仓库[zenuo/gogo](https://hub.docker.com/r/zenuo/gogo/tags)，本描述以Tag`1.7.0`为例，请以目前最新版本为准
+> 感谢[liusen373](https://github.com/liusen373)同学的建议😉😉😉，我们创建了镜像仓库[zenuo/gogo](https://hub.docker.com/r/zenuo/gogo/tags)，参考如下：
 
 ```
 # 拉取镜像
-$ docker pull zenuo/gogo:1.7.0
+$ docker pull zenuo/gogo
 # 创建容器
-$ docker create -p 4999:4999 --name gogo zenuo/gogo:1.7.0
+$ docker create -p 4999:4999 --name gogo zenuo/gogo
 # 复制配置文件到容器（可选）
 $ docker cp application.yml gogo:/opt/gogo/application.yml
 # 运行镜像
@@ -119,8 +119,6 @@ $ docker logs -f gogo
 ```
 
 ### 2 构建
-
-> 本描述以版本`1.7.0`为例，请以目前`master`分支版本为准
 
 ```
 # 克隆工程到本地
