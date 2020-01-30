@@ -21,6 +21,7 @@
     </parent>
 
     <build>
+        <finalName>gogo</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
