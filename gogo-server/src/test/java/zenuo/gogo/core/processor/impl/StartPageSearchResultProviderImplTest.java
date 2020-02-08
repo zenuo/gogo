@@ -13,8 +13,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.testng.Assert.*;
-
 /**
  * 测试
  *
@@ -36,14 +34,14 @@ public class StartPageSearchResultProviderImplTest {
                 continue;
             }
             final Element a = h3.child(0);
-            entryBuilder.name(StringUtils.htmlSterilize(a.text()));
+            entryBuilder.name(StringUtils.escapeHtmlEntities(a.text()));
             entryBuilder.url(a.attr("href"));
             final Element p = result.getElementsByClass("search-item__body").first();
             if (p == null) {
                 entries.add(entryBuilder.build());
                 continue;
             }
-            entryBuilder.desc(StringUtils.htmlSterilize(p.text()));
+            entryBuilder.desc(StringUtils.escapeHtmlEntities(p.text()));
             entries.add(entryBuilder.build());
         }
         System.out.println(entries);
