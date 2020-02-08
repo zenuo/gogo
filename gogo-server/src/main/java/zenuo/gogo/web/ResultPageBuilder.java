@@ -105,10 +105,12 @@ public final class ResultPageBuilder implements IPageBuilder {
      * @param iResponse 响应实例
      * @return 响应页面HTML字符串
      */
+    @Override
     public String build(IResponse iResponse) {
         final SearchResponse response = (SearchResponse) iResponse;
         final StringBuilder sb = new StringBuilder(HTML_BEFORE_TITLE);
-        sb.append(StringUtils.htmlSterilize(response.getKey()))
+        final String entitiesEscapedKey = StringUtils.escapeHtmlEntities(response.getKey());
+        sb.append(entitiesEscapedKey)
                 .append(HTML_BEFORE_STYLE);
         final LocalTime now = LocalTime.now();
         //若不是日间模式
@@ -119,7 +121,7 @@ public final class ResultPageBuilder implements IPageBuilder {
             sb.append(HTML_DAY_MODE_STYLE);
         }
         sb.append(HTML_AFTER_STYLE)
-                .append(StringUtils.htmlSterilize(response.getKey()))
+                .append(entitiesEscapedKey)
                 .append(HTML_BEFORE_RESULT);
         if (response.getEntries() != null) {
             response.getEntries().forEach(e -> EntryBuilder.build(sb, e));

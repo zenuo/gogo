@@ -68,7 +68,7 @@ final class StartPageSearchResultProviderImpl implements ISearchResultProvider {
         try {
             document = httpPost(key, page);
         } catch (IOException e) {
-            final String message = "exception occurred during request google search";
+            final String message = "exception occurred during request StartPage search";
             log.error(message, e);
             throw new SearchException(message, e);
         }
@@ -86,14 +86,14 @@ final class StartPageSearchResultProviderImpl implements ISearchResultProvider {
                 continue;
             }
             final Element a = h3.child(0);
-            entryBuilder.name(StringUtils.htmlSterilize(a.text()));
+            entryBuilder.name(StringUtils.escapeHtmlEntities(a.text()));
             entryBuilder.url(a.attr("href"));
             final Element p = result.getElementsByClass("search-item__body").first();
             if (p == null) {
                 entries.add(entryBuilder.build());
                 continue;
             }
-            entryBuilder.desc(StringUtils.htmlSterilize(p.text()));
+            entryBuilder.desc(StringUtils.escapeHtmlEntities(p.text()));
             entries.add(entryBuilder.build());
         }
         builder.entries(entries);
