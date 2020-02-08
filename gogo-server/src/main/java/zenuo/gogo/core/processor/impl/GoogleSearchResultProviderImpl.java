@@ -87,14 +87,14 @@ final class GoogleSearchResultProviderImpl implements ISearchResultProvider {
             if (name == null) {
                 continue;
             }
-            entryBuilder.name(StringUtils.htmlSterilize(name.text()));
+            entryBuilder.name(StringUtils.escapeHtmlEntities(name.text()));
             //url
             final Element url = name.parent();
             entryBuilder.url(url.attr("href"));
             //description
             final Element desc = result.getElementsByClass("st").first();
             if (desc != null) {
-                entryBuilder.desc(StringUtils.htmlSterilize(desc.text()));
+                entryBuilder.desc(StringUtils.escapeHtmlEntities(desc.text()));
                 final Entry entry = entryBuilder.build();
                 //name and url are not null
                 if (entry.getName() != null && entry.getUrl() != null) {

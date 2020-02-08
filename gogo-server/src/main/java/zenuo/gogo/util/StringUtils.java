@@ -13,15 +13,18 @@ public final class StringUtils {
     }
 
     /**
-     * HTML消毒处理
+     * 转义HTML实体
+     * <p>
+     * 参考: https://developer.mozilla.org/en-US/docs/Glossary/Entity
      *
      * @param source 源字符串
      * @return 处理之后的字符串
      */
-    public static String htmlSterilize(@NonNull String source) {
+    public static String escapeHtmlEntities(@NonNull String source) {
         return source
+                .replaceAll("&", "&amp;")
                 .replaceAll("<", "&lt;")
                 .replaceAll(">", "&gt;")
-                .replaceAll("\"", "\\\"");
+                .replaceAll("\"", "&quot;");
     }
 }
