@@ -73,13 +73,13 @@ final class GoogleSearchResultProviderImpl implements ISearchResultProvider {
             log.error(message, e);
             throw new SearchException(message, e);
         }
-        final Elements results = document.getElementsByClass("rc");
-        if (results.isEmpty()) {
+        final Elements webResults = document.getElementsByClass("rc");
+        if (webResults.isEmpty()) {
             return patternChanged(builder);
         }
         final List<Entry> entries = new ArrayList<>();
         //traverse search result entries
-        for (Element result : results) {
+        for (Element result : webResults) {
             //entry builder
             final Entry.EntryBuilder entryBuilder = Entry.builder();
             //name
@@ -101,6 +101,15 @@ final class GoogleSearchResultProviderImpl implements ISearchResultProvider {
                     entries.add(entry);
                 }
             }
+        }
+        final Elements videoResults = document.getElementsByClass("y8AWGd llvJ5e");
+        for (Element videoResult : videoResults) {
+            final Element a = videoResult.child(0);
+            entries.add(Entry.builder()
+                    .url(a.attr("href"))
+                    .name(a.child(1).text())
+                    .desc(videoResult.child(2).text())
+                    .build());
         }
         builder.entries(entries);
         return builder.status(HttpResponseStatus.OK).build();
