@@ -3,13 +3,15 @@ var input = null;
 var lastRequestLints = new Date();
 var lastInputValue = null;
 function requestLints() {
+    // check
     if (lints == null) {
         lints = document.getElementById("lints");
     }
     if (input == null) {
         input = document.getElementById("input");
     }
-    let value = input.value;
+    // read input value
+    let value = input.value.trim();
     if (lastInputValue != value) {
         lastInputValue = value;
     } else {
@@ -18,16 +20,19 @@ function requestLints() {
     if (value == "") {
         return;
     }
-    var now = Date.now();
+    let now = Date.now();
     if (now - lastRequestLints < 2000) {
         return;
+    } else{
+        lastRequestLints = now;
     }
-    lastRequestLints = now;
+    // clear all children in datalist
     while(lints.childElementCount > 0) {
         lints.children[0].remove();
     }
-    var xhttp = new XMLHttpRequest();
-    xhttp.timeout = 5000;
+    // http request
+    let xhttp = new XMLHttpRequest();
+    xhttp.timeout = 2000;
     xhttp.onreadystatechange = function () {
         if (this.readyState != 4 || this.status != 200) {
             return;
