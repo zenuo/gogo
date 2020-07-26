@@ -27,36 +27,26 @@ public final class StaticProcessorImpl implements IStaticProcessor {
     @Override
     public void process(ChannelHandlerContext ctx, FullHttpRequest request, QueryStringDecoder decoder, ResponseType responseType) {
         final String path = "web" + decoder.path();
+        final byte[] bytes;
         try (final InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(path)) {
-            final byte[] bytes = IOUtils.toByteArray(inputStream);
-            response(ctx,
-                    request,
-                    responseType,
-                    bytes,
-                    HttpResponseStatus.OK);
+            bytes = IOUtils.toByteArray(inputStream);
         } catch (Exception e) {
             log.error("process static '{}' error", path, e);
+            throw new RuntimeException(e);
         }
-    }
-
-
-    @Override
-    public void response(
-            final ChannelHandlerContext ctx,
-            final FullHttpRequest request,
-            final ResponseType responseType,
-            final byte[] body,
-            final HttpResponseStatus status
-    ) {
         //响应对象
         final DefaultFullHttpResponse response = new DefaultFullHttpResponse(
                 request.protocolVersion(),
-                status,
-                body == null ? Unpooled.buffer() : Unpooled.copiedBuffer(body));
+                HttpResponseStatus.OK,
+                Unpooled.copiedBuffer(bytes));
         //设置头信息
         response.headers().add(HttpHeaderNames.SERVER, "gogo");
         response.headers().add(HttpHeaderNames.CACHE_CONTROL, "private, max-age=120");
-        response.headers().add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.FILE);
+        if (path.endsWith(".js")) {
+            response.headers().add(HttpHeaderNames.CONTENT_TYPE, "text/javascript");
+        } else {
+            response.headers().add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.FILE);
+        }
         //响应后关闭通道
         ctx.writeAndFlush(response)
                 .addListener(ChannelFutureListener.CLOSE);
