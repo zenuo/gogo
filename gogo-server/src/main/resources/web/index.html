@@ -5,28 +5,92 @@
     <meta charset="utf-8"/>
     <title>勾勾</title>
     <style>
-        body{text-align:center;background-color:#000;color:#B6C5D4}h1{font-size:50px;font-family:"Times New Roman",Times,serif}footer{font-size:15px;font-family:Roboto,arial,sans-serif}.main{margin:0 auto;width:50%;padding-bottom:50px}
+        body {
+            text-align: center;
+            background-color: #F8F4E7;
+            color: #552800
+        }
 
+        h1 {
+            font-size: 50px;
+            font-family: "Times New Roman", Times, serif
+        }
 
+        footer {
+            font-size: 15px;
+            font-family: Roboto, arial, sans-serif
+        }
+
+        .main {
+            margin: 0 auto;
+            width: 50%;
+            padding-bottom: 50px
+        }
 
     </style>
+    <script>
+        var lints = null;
+        var input = null;
+        var lastRequestLints = new Date();
+        var lastInputValue = null;
+        function requestLints() {
+            if (lints == null) {
+                lints = document.getElementById("lints");
+            }
+            if (input == null) {
+                input = document.getElementById("input");
+            }
+            let value = input.value;
+            if (lastInputValue != value) {
+                lastInputValue = value;
+            } else {
+                return;
+            }
+            console.log(value);
+            if (value == "") {
+                return;
+            }
+            var now = Date.now();
+            if (now - lastRequestLints < 2000) {
+                return;
+            }
+            lastRequestLints = now;
+            while(lints.childElementCount > 0) {
+                lints.children[0].remove();
+            }
+            var xhttp = new XMLHttpRequest();
+            xhttp.timeout = 5000;
+            xhttp.onreadystatechange = function () {
+                if (this.readyState != 4 || this.status != 200) {
+                    return;
+                }
+                let responseText = this.responseText;
+                let data = JSON.parse(responseText);
+                data.lints.forEach(l => lints.appendChild(new Option(l.replace("<b>", "").replace("</b>", ""))));
+            };
+            xhttp.open('GET', "/api/lint?q=" + value);
+            xhttp.send();
+        };
+
+    </script>
 </head>
 
 <body>
-<a href="https://github.com/zenuo/gogo"><img alt="Fork me on GitHub" class="attachment-full size-full"
-                                             data-recalc-dims="1" height="149"
+<a href="https://github.com/zenuo/gogo"><img style="position: absolute; top: 0; right: 0; border: 0;" width="149"
+                                             height="149"
                                              src="https://github.blog/wp-content/uploads/2008/12/forkme_right_orange_ff7600.png?resize=149%2C149"
-                                             style="position: absolute; top: 0; right: 0; border: 0;" width="149"></a>
+                                             class="attachment-full size-full" alt="Fork me on GitHub"
+                                             data-recalc-dims="1"></a>
 <div class="main">
-    <h1>Gogo</h1>
+    <h1>勾勾</h1>
+    <datalist id="lints"></datalist>
     <form action="/search" method="GET" onsubmit="return q.value!=''">
-        <input name="q" autocomplete="off" autofocus="autofocus" type="text">
+        <input id="input" name="q" autocomplete="off" autofocus="autofocus" list="lints" onkeyup="requestLints()"
+               type="text">
         <button value="Search" type="submit">Go</button>
     </form>
 </div>
-<footer>
-    Powered by Google Search, <a href="https://github.com/zenuo/gogo">source code</a>
-</footer>
+<footer>__SLOGAN__</footer>
 </body>
 
 </html>
