@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import zenuo.gogo.core.processor.IIndexProcessor;
 import zenuo.gogo.core.processor.ILintProcessor;
 import zenuo.gogo.core.processor.ISearchProcessor;
+import zenuo.gogo.core.processor.IStaticProcessor;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -48,6 +49,11 @@ public final class Handler extends SimpleChannelInboundHandler<FullHttpRequest> 
     private final ILintProcessor lintProcessor = ServiceLoader.load(ILintProcessor.class).iterator().next();
 
     /**
+     * 静态文件处理器
+     */
+    private final IStaticProcessor staticProcessor = ServiceLoader.load(IStaticProcessor.class).iterator().next();
+
+    /**
      * 处理工作者线程池
      */
     private final ThreadPoolExecutor processWorkers;
@@ -73,7 +79,7 @@ public final class Handler extends SimpleChannelInboundHandler<FullHttpRequest> 
             indexProcessor.response(ctx,
                     request,
                     ResponseType.API,
-                    "{\"error\": \"too many requests, please try again later.\"}",
+                    "{\"error\": \"too many requests, please try again later.\"}".getBytes(StandardCharsets.UTF_8),
                     HttpResponseStatus.TOO_MANY_REQUESTS);
         } else {
             // 此处线程是事件循环worker，由processWorkers完成逻辑、搜索请求解析，再由processWorkers触发worker线程响应客户端
@@ -88,7 +94,7 @@ public final class Handler extends SimpleChannelInboundHandler<FullHttpRequest> 
             indexProcessor.response(ctx,
                     request,
                     ResponseType.API,
-                    "{\"error\", \"the http method should be GET only\"}",
+                    "{\"error\", \"the http method should be GET only\"}".getBytes(StandardCharsets.UTF_8),
                     HttpResponseStatus.BAD_REQUEST);
         } else {
             final QueryStringDecoder decoder = new QueryStringDecoder(request.uri());
@@ -112,11 +118,15 @@ public final class Handler extends SimpleChannelInboundHandler<FullHttpRequest> 
                     lintProcessor.process(ctx, request, decoder, null);
                     break;
                 default:
-                    indexProcessor.response(ctx,
-                            request,
-                            ResponseType.API,
-                            "{\"error\": \"BAD_GATEWAY\"}",
-                            HttpResponseStatus.BAD_GATEWAY);
+                    if (decoder.path().startsWith("/static")) {
+                        staticProcessor.process(ctx, request, decoder, null);
+                    } else {
+                        indexProcessor.response(ctx,
+                                request,
+                                ResponseType.API,
+                                "{\"error\": \"BAD_GATEWAY\"}".getBytes(StandardCharsets.UTF_8),
+                                HttpResponseStatus.BAD_GATEWAY);
+                    }
             }
         }
     }

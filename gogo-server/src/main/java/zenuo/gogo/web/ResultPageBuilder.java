@@ -72,13 +72,14 @@ public final class ResultPageBuilder implements IResultPageBuilder {
             "<body>\n" +
             "<div class=\"search\">\n" +
             "<a href=\"/\"><span class=\"logo\"><b>勾勾</b></span></a>\n" +
+            "<datalist id=\"lints\"></datalist>\n" +
             "<form action=\"/search\" method=\"GET\" onsubmit=\"return q.value!=''\">\n" +
-            "<input name=\"q\" autocomplete=\"off\" type=\"text\" value=\"";
+            "<input id=\"input\" name=\"q\" autocomplete=\"off\" list=\"lints\" type=\"text\" value=\"";
 
     /**
      * 结果条目之后的样式表
      */
-    private static final String HTML_BEFORE_RESULT = "\">\n" +
+    private static final String HTML_BEFORE_RESULT = "\" onkeyup=\"requestLints()\">\n" +
             "<button type=\"submit\">Go</button>\n" +
             "</form>\n" +
             "</div>\n";
@@ -87,6 +88,7 @@ public final class ResultPageBuilder implements IResultPageBuilder {
      * 尾部的HTML
      */
     private static final String HTML_TAIL = "</body>\n" +
+            "<script src=\"static/script.js\"></script>\n" +
             "</html>";
 
     /**
@@ -101,7 +103,7 @@ public final class ResultPageBuilder implements IResultPageBuilder {
      * @return 响应页面HTML字符串
      */
     @Override
-    public String build(IResponse iResponse) {
+    public byte[] build(IResponse iResponse) {
         final SearchResponse response = (SearchResponse) iResponse;
         final StringBuilder sb = new StringBuilder(HTML_BEFORE_TITLE);
         final String entitiesEscapedKey = StringUtils.escapeHtmlEntities(response.getKey());
@@ -125,7 +127,7 @@ public final class ResultPageBuilder implements IResultPageBuilder {
             sb.append(String.format(HTML_ERROR, URLEncoder.encode(response.getKey(), StandardCharsets.UTF_8)));
         }
         sb.append(HTML_TAIL);
-        return sb.toString();
+        return sb.toString().getBytes(StandardCharsets.UTF_8);
     }
 }
 

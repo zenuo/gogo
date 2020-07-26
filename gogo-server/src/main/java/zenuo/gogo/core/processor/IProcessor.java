@@ -10,8 +10,6 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import zenuo.gogo.core.ResponseType;
 
-import java.nio.charset.StandardCharsets;
-
 interface IProcessor {
 
     /**
@@ -37,14 +35,14 @@ interface IProcessor {
             final ChannelHandlerContext ctx,
             final FullHttpRequest request,
             final ResponseType responseType,
-            final String body,
+            final byte[] body,
             final HttpResponseStatus status
     ) {
         //响应对象
         final DefaultFullHttpResponse response = new DefaultFullHttpResponse(
                 request.protocolVersion(),
                 status,
-                body == null ? Unpooled.buffer() : Unpooled.copiedBuffer(body.getBytes(StandardCharsets.UTF_8)));
+                body == null ? Unpooled.buffer() : Unpooled.copiedBuffer(body));
         //设置头信息
         response.headers().add(HttpHeaderNames.SERVER, "gogo");
         response.headers().add(HttpHeaderNames.CACHE_CONTROL, "private, max-age=120");

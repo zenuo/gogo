@@ -9,9 +9,12 @@ import zenuo.gogo.core.processor.IIndexProcessor;
 import zenuo.gogo.web.IIndexPageBuilder;
 import zenuo.gogo.web.IPageBuilder;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ServiceLoader;
 
 public final class IndexProcessorImpl implements IIndexProcessor {
+
+    private static final byte[] RESPONSE_BODY_WELCOME = "{\"info\":\"Hello, welcome to Gogo API, https://github.com/zenuo/gogo\"}".getBytes(StandardCharsets.UTF_8);
 
     /**
      * 页面构建器
@@ -24,7 +27,7 @@ public final class IndexProcessorImpl implements IIndexProcessor {
             response(ctx,
                     request,
                     ResponseType.API,
-                    "{\"info\":\"Hello, welcome to Gogo API, https://github.com/zenuo/gogo\"}",
+                    RESPONSE_BODY_WELCOME,
                     HttpResponseStatus.OK);
         } else {
             response(ctx,

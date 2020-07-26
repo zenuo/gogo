@@ -15,5 +15,5 @@ public interface IPageBuilder {
      * @param response 响应
      * @return 网页的HTML字符串
      */
-    String build(final IResponse response);
+    byte[] build(final IResponse response);
 }
