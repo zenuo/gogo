@@ -1,7 +1,6 @@
 package zenuo.gogo;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import zenuo.gogo.core.Server;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -12,7 +11,6 @@ import java.nio.file.Paths;
  * @author zenuo
  * 2018-06-02 19:12:15
  */
-@SpringBootApplication
 public class GogoApplication {
     public static void main(String[] args) {
         //若当前目录存在配置文件
@@ -22,6 +20,6 @@ public class GogoApplication {
             System.setProperty("spring.config.location", "file:" + configFilePath);
         }
         //启动
-        SpringApplication.run(GogoApplication.class, args);
+        new Server();
     }
 }

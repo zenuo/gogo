@@ -1,8 +1,7 @@
 package zenuo.gogo.core.processor.impl;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import zenuo.gogo.core.config.ApplicationConfig;
 import zenuo.gogo.core.config.GogoConfig;
 import zenuo.gogo.core.processor.ISubstituteProcessor;
 
@@ -14,12 +13,9 @@ import java.util.Map;
  * @author zenuo
  * @date 2019/05/15
  */
-@Component
-@RequiredArgsConstructor
-final class SubstituteProcessorImpl implements ISubstituteProcessor {
+public final class SubstituteProcessorImpl implements ISubstituteProcessor {
 
-    @NonNull
-    private final GogoConfig gogoConfig;
+    private final GogoConfig gogoConfig = ApplicationConfig.gogoConfig();
 
     @Override
     public String substitute(@NonNull String source) {

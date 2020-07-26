@@ -4,43 +4,35 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import zenuo.gogo.core.ResponseType;
-import zenuo.gogo.core.processor.IProcessor;
+import zenuo.gogo.core.processor.ISearchProcessor;
 import zenuo.gogo.core.processor.ISearchResultProvider;
 import zenuo.gogo.exception.SearchException;
 import zenuo.gogo.model.SearchResponse;
 import zenuo.gogo.service.ICacheService;
 import zenuo.gogo.util.JsonUtils;
 import zenuo.gogo.web.IPageBuilder;
+import zenuo.gogo.web.IResultPageBuilder;
 
-import javax.annotation.PostConstruct;
-import java.util.Iterator;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.ServiceLoader;
+import java.util.stream.Collectors;
 
 @Slf4j
-@Component("searchProcessor")
-@RequiredArgsConstructor
-final class SearchProcessorImpl implements IProcessor {
+public final class SearchProcessorImpl implements ISearchProcessor {
 
-    @NonNull
-    private final IPageBuilder resultPageBuilder;
+    private final IPageBuilder resultPageBuilder = ServiceLoader.load(IResultPageBuilder.class).iterator().next();
 
-    @NonNull
-    private final ICacheService cacheService;
+    private final ICacheService cacheService = ServiceLoader.load(ICacheService.class).iterator().next();
 
-    @NonNull
-    private final List<ISearchResultProvider> searchResultProviders;
-
-    @PostConstruct
-    public void postConstruct() {
-        //打印日志，搜索结果提供者列表
-        log.info("searchResultProviders={}", searchResultProviders);
-    }
+    private final List<ISearchResultProvider> searchResultProviders = ServiceLoader.load(ISearchResultProvider.class)
+            .stream()
+            .map(ServiceLoader.Provider::get)
+            .sorted(Comparator.comparingInt(ISearchResultProvider::priority))
+            .collect(Collectors.toList());
 
     @Override
     public void process(ChannelHandlerContext ctx, FullHttpRequest request, QueryStringDecoder decoder, ResponseType responseType) {

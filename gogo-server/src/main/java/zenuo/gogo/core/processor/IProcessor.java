@@ -3,12 +3,16 @@ package zenuo.gogo.core.processor;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.QueryStringDecoder;
 import zenuo.gogo.core.ResponseType;
 
 import java.nio.charset.StandardCharsets;
 
-public interface IProcessor {
+interface IProcessor {
 
     /**
      * 处理

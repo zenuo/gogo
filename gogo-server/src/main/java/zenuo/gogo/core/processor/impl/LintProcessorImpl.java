@@ -5,16 +5,12 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.springframework.stereotype.Component;
 import zenuo.gogo.core.ResponseType;
 import zenuo.gogo.core.config.Constants;
-import zenuo.gogo.core.processor.IHttpClientProvider;
-import zenuo.gogo.core.processor.IProcessor;
+import zenuo.gogo.core.processor.ILintProcessor;
 import zenuo.gogo.model.LintResponse;
 import zenuo.gogo.util.GoogleDomainUtils;
 import zenuo.gogo.util.JsonUtils;
@@ -27,8 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Component("lintProcessor")
-public final class LintProcessorImpl implements IProcessor {
+public final class LintProcessorImpl implements ILintProcessor {
 
     @Override
     public void process(ChannelHandlerContext ctx, FullHttpRequest request, QueryStringDecoder decoder, ResponseType responseType) {

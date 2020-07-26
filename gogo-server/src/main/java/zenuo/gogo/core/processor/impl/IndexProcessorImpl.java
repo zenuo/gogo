@@ -4,22 +4,19 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import zenuo.gogo.core.ResponseType;
-import zenuo.gogo.core.processor.IProcessor;
+import zenuo.gogo.core.processor.IIndexProcessor;
+import zenuo.gogo.web.IIndexPageBuilder;
 import zenuo.gogo.web.IPageBuilder;
 
-@Component("indexProcessor")
-@RequiredArgsConstructor
-public final class IndexProcessorImpl implements IProcessor {
+import java.util.ServiceLoader;
+
+public final class IndexProcessorImpl implements IIndexProcessor {
 
     /**
      * 页面构建器
      */
-    @NonNull
-    private final IPageBuilder indexPageBuilder;
+    private final IPageBuilder indexPageBuilder = ServiceLoader.load(IIndexPageBuilder.class).iterator().next();
 
     @Override
     public void process(ChannelHandlerContext ctx, FullHttpRequest request, QueryStringDecoder decoder, ResponseType responseType) {

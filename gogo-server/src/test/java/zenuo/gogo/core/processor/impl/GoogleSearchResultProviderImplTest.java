@@ -1,7 +1,6 @@
 package zenuo.gogo.core.processor.impl;
 
 import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;
 import zenuo.gogo.TestEnvironment;
 import zenuo.gogo.core.config.Constants;
@@ -10,12 +9,12 @@ import zenuo.gogo.model.SearchResponse;
 import zenuo.gogo.util.JsonUtils;
 
 import java.io.IOException;
+import java.util.ServiceLoader;
 import java.util.regex.Matcher;
 
 public class GoogleSearchResultProviderImplTest extends TestEnvironment {
 
-    @Autowired
-    private GoogleSearchResultProviderImpl searchResultProvider;
+    private GoogleSearchResultProviderImpl searchResultProvider = ServiceLoader.load(GoogleSearchResultProviderImpl.class).iterator().next();
 
     @Test
     public void request() throws IOException {

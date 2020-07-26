@@ -1,8 +1,6 @@
 package zenuo.gogo.core.processor.impl;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -11,7 +9,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.stereotype.Component;
 import zenuo.gogo.core.processor.IHttpClientProvider;
 import zenuo.gogo.core.processor.ISearchResultProvider;
 import zenuo.gogo.exception.SearchException;
@@ -24,6 +21,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ServiceLoader;
 
 /**
  * StartPage搜索
@@ -34,9 +32,7 @@ import java.util.List;
  * @date 2019/05/15
  */
 @Slf4j
-@Component
-@RequiredArgsConstructor
-final class StartPageSearchResultProviderImpl implements ISearchResultProvider {
+public final class StartPageSearchResultProviderImpl implements ISearchResultProvider {
 
     private static final String URL = "https://www.startpage.com/do/search";
 
@@ -45,17 +41,16 @@ final class StartPageSearchResultProviderImpl implements ISearchResultProvider {
             new BasicNameValuePair("cmd", "process_search"),
             new BasicNameValuePair("language", "english"));
 
-    @NonNull
-    private final IHttpClientProvider httpClientProvider;
+    private final IHttpClientProvider httpClientProvider = ServiceLoader.load(IHttpClientProvider.class).iterator().next();
+
+    @Override
+    public int priority() {
+        return 1;
+    }
 
     @Override
     public SearchResponse search(String key, int page) throws SearchException {
         return search0(key, page);
-    }
-
-    @Override
-    public int getOrder() {
-        return 1;
     }
 
     SearchResponse search0(String key, int page) throws SearchException {

@@ -11,13 +11,10 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import zenuo.gogo.core.config.ApplicationConfig;
 import zenuo.gogo.core.config.GogoConfig;
 
-import javax.annotation.PostConstruct;
 
 /**
  * 服务器
@@ -25,19 +22,14 @@ import javax.annotation.PostConstruct;
  * @author zenuo
  * @date 2019/05/08
  */
-@Component
 @Slf4j
-@RequiredArgsConstructor
 public final class Server {
 
-    @NonNull
-    private final GogoConfig gogoConfig;
+    private final GogoConfig gogoConfig = ApplicationConfig.gogoConfig();
 
-    @NonNull
-    private final Handler handler;
+    private final Handler handler = new Handler();
 
-    @PostConstruct
-    private void postConstruct() {
+    public Server() {
         //acceptor
         final NioEventLoopGroup boss = new NioEventLoopGroup(1);
         //client
