@@ -1,15 +1,12 @@
 package zenuo.gogo.core.processor.impl;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.HttpGet;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.stereotype.Component;
 import zenuo.gogo.core.config.Constants;
 import zenuo.gogo.core.processor.IHttpClientProvider;
 import zenuo.gogo.core.processor.ISearchResultProvider;
@@ -25,6 +22,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ServiceLoader;
 
 /**
  * 谷歌搜索
@@ -35,21 +33,18 @@ import java.util.List;
  * @date 2019/05/15
  */
 @Slf4j
-@Component
-@RequiredArgsConstructor
-final class GoogleSearchResultProviderImpl implements ISearchResultProvider {
+public final class GoogleSearchResultProviderImpl implements ISearchResultProvider {
 
-    @NonNull
-    private final IHttpClientProvider httpClientProvider;
+    private final IHttpClientProvider httpClientProvider = ServiceLoader.load(IHttpClientProvider.class).iterator().next();
+
+    @Override
+    public int priority() {
+        return 0;
+    }
 
     @Override
     public SearchResponse search(String key, int page) throws SearchException {
         return search0(key, page);
-    }
-
-    @Override
-    public int getOrder() {
-        return 0;
     }
 
     /**

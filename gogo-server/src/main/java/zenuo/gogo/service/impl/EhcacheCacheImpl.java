@@ -1,17 +1,14 @@
 package zenuo.gogo.service.impl;
 
 import org.ehcache.Cache;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import zenuo.gogo.core.config.EhcacheConfig;
 import zenuo.gogo.service.ICacheService;
 
 import java.util.Optional;
 
-@Component
-final class EhcacheCacheImpl implements ICacheService {
+public final class EhcacheCacheImpl implements ICacheService {
 
-    @Autowired
-    private Cache<String, String> cache;
+    private final Cache<String, String> cache = EhcacheConfig.get();
 
     @Override
     public void set(String key, String value) {

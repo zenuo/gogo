@@ -1,12 +1,9 @@
 package zenuo.gogo.web;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import zenuo.gogo.core.config.ApplicationConfig;
 import zenuo.gogo.core.config.GogoConfig;
 import zenuo.gogo.model.IResponse;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalTime;
 
 /**
@@ -15,12 +12,9 @@ import java.time.LocalTime;
  * @author zenuo
  * 2018-07-08 20:50:25
  */
-@RequiredArgsConstructor
-@Component("indexPageBuilder")
-public final class IndexPageBuilder implements IPageBuilder {
+public final class IndexPageBuilder implements IIndexPageBuilder {
 
-    @NonNull
-    private final GogoConfig gogoConfig;
+    private final GogoConfig gogoConfig = ApplicationConfig.gogoConfig();
 
     /**
      * 样式表之前的HTML字符串
@@ -54,8 +48,7 @@ public final class IndexPageBuilder implements IPageBuilder {
             "footer{font-size:15px;font-family:Roboto,arial,sans-serif}" +
             ".main{margin:0 auto;width:50%;padding-bottom:50px}";
 
-    @PostConstruct
-    private void init() {
+    public IndexPageBuilder() {
         htmlAfterStyle = "</style>" +
                 "</head>" +
                 "<body>" +
@@ -79,6 +72,7 @@ public final class IndexPageBuilder implements IPageBuilder {
      *
      * @return 主页的字符串
      */
+    @Override
     public String build(IResponse response) {
         //字符串构建器，初始化内容为样式表之前的HTML
         final StringBuilder sb = new StringBuilder(HTML_BEFORE_STYLE);

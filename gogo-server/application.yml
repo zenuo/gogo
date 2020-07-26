@@ -1,11 +1,4 @@
-# 全局配置
----
-spring:
-  application.name: gogo
-...
-
 # HTTP客户端设置
----
 http.client:
   #最大连接数
   maxTotal: 40
@@ -17,10 +10,8 @@ http.client:
   connectionRequestTimeout: 500
   #数据传输的最长时间
   socketTimeout: 500
-...
 
 # Gogo配置
----
 gogo:
   # 监听端口
   port: 4999
@@ -33,4 +24,3 @@ gogo:
   # 搜索结果替换规则
   substitute:
     - https://zh.wikipedia.org#https://176.122.157.73:3457
-...

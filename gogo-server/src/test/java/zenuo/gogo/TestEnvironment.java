@@ -1,8 +1,6 @@
 package zenuo.gogo;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 
 /**
  * 测试环境
@@ -11,7 +9,6 @@ import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
  * @date 2019/05/08
  */
 @Slf4j
-@SpringBootTest(classes = GogoApplication.class)
-public class TestEnvironment extends AbstractTestNGSpringContextTests {
+public class TestEnvironment {
 
 }

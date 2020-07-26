@@ -2,7 +2,6 @@ package zenuo.gogo.core.processor.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;
 import zenuo.gogo.TestEnvironment;
 import zenuo.gogo.core.config.Constants;
@@ -11,11 +10,11 @@ import zenuo.gogo.util.JsonUtils;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.ServiceLoader;
 
 public class LintProcessorImplTest extends TestEnvironment {
 
-    @Autowired
-    private LintProcessorImpl lintProcessor;
+    private LintProcessorImpl lintProcessor = ServiceLoader.load(LintProcessorImpl.class).iterator().next();
 
     @Test
     public void request() throws IOException {

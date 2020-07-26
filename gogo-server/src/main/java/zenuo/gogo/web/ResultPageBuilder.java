@@ -1,8 +1,6 @@
 package zenuo.gogo.web;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import zenuo.gogo.core.config.ApplicationConfig;
 import zenuo.gogo.core.config.GogoConfig;
 import zenuo.gogo.model.Entry;
 import zenuo.gogo.model.IResponse;
@@ -20,12 +18,9 @@ import java.time.LocalTime;
  * @author zenuo
  * 2018-07-08 20:50:25
  */
-@Component("resultPageBuilder")
-@RequiredArgsConstructor
-public final class ResultPageBuilder implements IPageBuilder {
+public final class ResultPageBuilder implements IResultPageBuilder {
 
-    @NonNull
-    private final GogoConfig gogoConfig;
+    private final GogoConfig gogoConfig = ApplicationConfig.gogoConfig();
 
     /**
      * 标题前的HTML

@@ -11,11 +11,13 @@ import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import zenuo.gogo.core.processor.IProcessor;
+import zenuo.gogo.core.processor.IIndexProcessor;
+import zenuo.gogo.core.processor.ILintProcessor;
+import zenuo.gogo.core.processor.ISearchProcessor;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ServiceLoader;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -27,24 +29,23 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 处理器类，通道读取事件的回调
  */
 @Slf4j
-@Component
 @ChannelHandler.Sharable
 public final class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     /**
      * 首页处理器
      */
-    private final IProcessor indexProcessor;
+    private final IIndexProcessor indexProcessor = ServiceLoader.load(IIndexProcessor.class).iterator().next();
 
     /**
      * 搜索处理器
      */
-    private final IProcessor searchProcessor;
+    private final ISearchProcessor searchProcessor = ServiceLoader.load(ISearchProcessor.class).iterator().next();
 
     /**
      * 补全处理器
      */
-    private final IProcessor lintProcessor;
+    private final ILintProcessor lintProcessor = ServiceLoader.load(ILintProcessor.class).iterator().next();
 
     /**
      * 处理工作者线程池
@@ -56,10 +57,7 @@ public final class Handler extends SimpleChannelInboundHandler<FullHttpRequest> 
      */
     private final BlockingQueue<Runnable> workQueue;
 
-    public Handler(IProcessor indexProcessor, IProcessor searchProcessor, IProcessor lintProcessor) {
-        this.indexProcessor = indexProcessor;
-        this.searchProcessor = searchProcessor;
-        this.lintProcessor = lintProcessor;
+    public Handler() {
         this.workQueue = new ArrayBlockingQueue<>(256);
         this.processWorkers = new ThreadPoolExecutor(2, 8,
                 30, TimeUnit.SECONDS,

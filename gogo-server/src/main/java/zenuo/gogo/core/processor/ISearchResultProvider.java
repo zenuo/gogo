@@ -1,6 +1,5 @@
 package zenuo.gogo.core.processor;
 
-import org.springframework.core.Ordered;
 import zenuo.gogo.core.config.Constants;
 import zenuo.gogo.exception.SearchException;
 import zenuo.gogo.model.SearchResponse;
@@ -15,7 +14,15 @@ import java.util.Optional;
  * @author zenuo
  * @date 2019/05/15
  */
-public interface ISearchResultProvider extends Ordered {
+public interface ISearchResultProvider {
+
+    /**
+     * 优先级
+     *
+     * @return 优先级；值越小，越优先
+     */
+    int priority();
+
     /**
      * 请求
      *

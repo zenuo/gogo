@@ -2,11 +2,11 @@ package zenuo.gogo.core.processor.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.HttpGet;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;
 import zenuo.gogo.TestEnvironment;
 
 import java.io.IOException;
+import java.util.ServiceLoader;
 
 /**
  * 测试
@@ -17,8 +17,7 @@ import java.io.IOException;
 @Slf4j
 public class HttpClientProviderImplTest extends TestEnvironment {
 
-    @Autowired
-    private HttpClientProviderImpl httpClientProvider;
+    private final HttpClientProviderImpl httpClientProvider = ServiceLoader.load(HttpClientProviderImpl.class).iterator().next();
 
     @Test
     public void testHttpGet() throws InterruptedException {

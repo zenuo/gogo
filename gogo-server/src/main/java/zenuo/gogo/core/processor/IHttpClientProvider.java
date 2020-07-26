@@ -1,10 +1,8 @@
 package zenuo.gogo.core.processor;
 
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * HTTP客户端提供者

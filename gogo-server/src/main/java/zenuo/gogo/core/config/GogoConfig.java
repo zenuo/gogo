@@ -1,13 +1,11 @@
 package zenuo.gogo.core.config;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,8 +20,6 @@ import java.util.regex.Matcher;
 @Slf4j
 @Getter
 @Setter
-@Configuration
-@ConfigurationProperties(prefix = "gogo")
 public class GogoConfig {
 
     /**
@@ -33,17 +29,20 @@ public class GogoConfig {
     /**
      * 端口
      */
+    @JsonProperty("port")
     private Integer port;
     /**
      * 日间模式开始时间
      */
     private LocalTime dayModeStartTime;
+    @JsonProperty("day-mode-start-time-string")
     private String dayModeStartTimeString;
 
     /**
      * 日间模式结束时间
      */
     private LocalTime dayModeEndTime;
+    @JsonProperty("day-mode-end-time-string")
     private String dayModeEndTimeString;
     /**
      * 标语
@@ -55,8 +54,7 @@ public class GogoConfig {
      */
     private List<String> substitute;
 
-    @PostConstruct
-    private void postConstruct() {
+    void postConstruct() {
         if (port == null) {
             port = Constants.DEFAULT_PORT;
         }
