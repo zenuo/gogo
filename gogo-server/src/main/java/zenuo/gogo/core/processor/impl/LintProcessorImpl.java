@@ -25,6 +25,8 @@ import java.util.List;
 @Slf4j
 public final class LintProcessorImpl implements ILintProcessor {
 
+    final byte[] RESPONSE_BODY_KEYWORD_EMPTY = "{\"error\": \"the keyword should not be empty\"}".getBytes(StandardCharsets.UTF_8);
+
     @Override
     public void process(ChannelHandlerContext ctx, FullHttpRequest request, QueryStringDecoder decoder, ResponseType responseType) {
         final List<String> keys = decoder.parameters().get("q");
@@ -32,14 +34,14 @@ public final class LintProcessorImpl implements ILintProcessor {
             response(ctx,
                     request,
                     ResponseType.API,
-                    "{\"error\": \"the keyword should not be empty\"}",
+                    RESPONSE_BODY_KEYWORD_EMPTY,
                     HttpResponseStatus.BAD_REQUEST);
         } else {
             final LintResponse response = response(keys.get(0));
             response(ctx,
                     request,
                     ResponseType.API,
-                    JsonUtils.toJson(response),
+                    JsonUtils.toJsonBytes(response),
                     response.getStatus());
         }
     }

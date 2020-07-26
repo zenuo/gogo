@@ -21,12 +21,12 @@ public final class IndexPageBuilder implements IIndexPageBuilder {
 
     private final GogoConfig gogoConfig = ApplicationConfig.gogoConfig();
 
-    private final String html;
+    private final byte[] htmlBytes;
 
     {
         try (final InputStream resourceAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("web/index.html")) {
             final String indexHtml = IOUtils.toString(Objects.requireNonNull(resourceAsStream), StandardCharsets.UTF_8);
-            html = indexHtml.replace("__SLOGAN__", gogoConfig.getSlogan());
+            htmlBytes = indexHtml.replace("__SLOGAN__", gogoConfig.getSlogan()).getBytes(StandardCharsets.UTF_8);
         } catch (Exception e) {
             log.error("build index error", e);
             throw new RuntimeException(e);
@@ -39,8 +39,8 @@ public final class IndexPageBuilder implements IIndexPageBuilder {
      * @return 主页的字符串
      */
     @Override
-    public String build(IResponse response) {
+    public byte[] build(IResponse response) {
         //返回字符串
-        return html;
+        return htmlBytes;
     }
 }

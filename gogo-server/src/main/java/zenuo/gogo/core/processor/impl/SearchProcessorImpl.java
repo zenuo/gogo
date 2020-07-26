@@ -15,6 +15,7 @@ import zenuo.gogo.util.JsonUtils;
 import zenuo.gogo.web.IPageBuilder;
 import zenuo.gogo.web.IResultPageBuilder;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -34,14 +35,17 @@ public final class SearchProcessorImpl implements ISearchProcessor {
             .sorted(Comparator.comparingInt(ISearchResultProvider::priority))
             .collect(Collectors.toList());
 
+    private static final byte[] RESPONSE_BODY_KEYWORD_EMPTY = "{\"error\": \"the keyword should not be empty\"}".getBytes(StandardCharsets.UTF_8);
+
     @Override
     public void process(ChannelHandlerContext ctx, FullHttpRequest request, QueryStringDecoder decoder, ResponseType responseType) {
         final List<String> keys = decoder.parameters().get("q");
         if (keys == null || "".equals(keys.get(0))) {
+
             response(ctx,
                     request,
                     ResponseType.API,
-                    "{\"error\": \"the keyword should not be empty\"}",
+                    RESPONSE_BODY_KEYWORD_EMPTY,
                     HttpResponseStatus.BAD_REQUEST);
         } else {
             final List<String> pages = decoder.parameters().get("p");
@@ -85,7 +89,7 @@ public final class SearchProcessorImpl implements ISearchProcessor {
                 response(ctx,
                         request,
                         responseType,
-                        responseType == ResponseType.API ? "{\"error\": \"" + searchException.getMessage() + "\"}"
+                        responseType == ResponseType.API ? ("{\"error\": \"" + searchException.getMessage() + "\"}").getBytes(StandardCharsets.UTF_8)
                                 : resultPageBuilder.build(SearchResponse.builder().key(key).error(searchException.getMessage()).build()),
                         HttpResponseStatus.OK);
 
@@ -93,7 +97,7 @@ public final class SearchProcessorImpl implements ISearchProcessor {
                 response(ctx,
                         request,
                         responseType,
-                        responseType == ResponseType.API ? JsonUtils.toJson(response) : resultPageBuilder.build(response),
+                        responseType == ResponseType.API ? JsonUtils.toJsonBytes(response) : resultPageBuilder.build(response),
                         response.getStatus() == null ? HttpResponseStatus.OK : response.getStatus());
             }
         }

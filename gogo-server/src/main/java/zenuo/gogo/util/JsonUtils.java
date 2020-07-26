@@ -29,6 +29,15 @@ public final class JsonUtils {
         }
     }
 
+    public static byte[] toJsonBytes(final Object object) {
+        try {
+            return Constants.MAPPER.writeValueAsBytes(object);
+        } catch (Exception e) {
+            log.error("toJson", e);
+            throw new IllegalStateException(e);
+        }
+    }
+
     public static <T> T fromJson(String json, Class<? extends T> clazz) {
         try {
             return Constants.MAPPER.readValue(json, clazz);
