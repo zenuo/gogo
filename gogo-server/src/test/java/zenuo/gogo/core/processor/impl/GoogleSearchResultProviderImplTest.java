@@ -9,6 +9,7 @@ import zenuo.gogo.model.SearchResponse;
 import zenuo.gogo.util.JsonUtils;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.ServiceLoader;
 import java.util.regex.Matcher;
 
@@ -36,8 +37,8 @@ public class GoogleSearchResultProviderImplTest extends TestEnvironment {
     @Test
     public void response() throws SearchException {
         final SearchResponse searchResponse = searchResultProvider.search0("udp", 2);
-        final String json = JsonUtils.toJson(searchResponse);
-        System.out.println(json);
+        final byte[] json = JsonUtils.toJsonBytes(searchResponse);
+        System.out.println(Arrays.toString(json));
     }
 
     @Test

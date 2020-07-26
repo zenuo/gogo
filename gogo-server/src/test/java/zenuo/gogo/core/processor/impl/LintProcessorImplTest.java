@@ -9,6 +9,7 @@ import zenuo.gogo.model.LintResponse;
 import zenuo.gogo.util.JsonUtils;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -44,6 +45,6 @@ public class LintProcessorImplTest extends TestEnvironment {
     @Test
     public void response() {
         final LintResponse response = lintProcessor.response("udp");
-        System.out.println(JsonUtils.toJson(response));
+        System.out.println(Arrays.toString(JsonUtils.toJsonBytes(response)));
     }
 }

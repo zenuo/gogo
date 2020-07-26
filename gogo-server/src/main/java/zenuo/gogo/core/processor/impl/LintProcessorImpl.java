@@ -12,6 +12,7 @@ import zenuo.gogo.core.ResponseType;
 import zenuo.gogo.core.config.Constants;
 import zenuo.gogo.core.processor.ILintProcessor;
 import zenuo.gogo.model.LintResponse;
+import zenuo.gogo.service.ICacheService;
 import zenuo.gogo.util.GoogleDomainUtils;
 import zenuo.gogo.util.JsonUtils;
 import zenuo.gogo.util.UserAgentUtils;
@@ -21,11 +22,15 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.ServiceLoader;
 
 @Slf4j
 public final class LintProcessorImpl implements ILintProcessor {
 
-    final byte[] RESPONSE_BODY_KEYWORD_EMPTY = "{\"error\": \"the keyword should not be empty\"}".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] RESPONSE_BODY_KEYWORD_EMPTY = "{\"error\": \"the keyword should not be empty\"}".getBytes(StandardCharsets.UTF_8);
+
+    private final ICacheService cacheService = ServiceLoader.load(ICacheService.class).iterator().next();
 
     @Override
     public void process(ChannelHandlerContext ctx, FullHttpRequest request, QueryStringDecoder decoder, ResponseType responseType) {
@@ -37,11 +42,26 @@ public final class LintProcessorImpl implements ILintProcessor {
                     RESPONSE_BODY_KEYWORD_EMPTY,
                     HttpResponseStatus.BAD_REQUEST);
         } else {
-            final LintResponse response = response(keys.get(0));
+            final String key = keys.get(0);
+            final String cacheKey = String.format(Constants.KEY_LINT_PATTERN, key.hashCode());
+            final Optional<byte[]> cache = cacheService.get(cacheKey);
+            if (cache.isPresent()) {
+                response(ctx,
+                        request,
+                        ResponseType.API,
+                        cache.get(),
+                        HttpResponseStatus.OK);
+                return;
+            }
+            final LintResponse response = response(key);
+            final byte[] body = JsonUtils.toJsonBytes(response);
+            if (HttpResponseStatus.OK.equals(response.getStatus())) {
+                cacheService.set(cacheKey, body);
+            }
             response(ctx,
                     request,
                     ResponseType.API,
-                    JsonUtils.toJsonBytes(response),
+                    body,
                     response.getStatus());
         }
     }

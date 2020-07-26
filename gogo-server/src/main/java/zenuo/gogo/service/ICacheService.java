@@ -13,10 +13,10 @@ public interface ICacheService {
     /**
      * 设置键值对，并设置存活时间
      *
-     * @param key     键
-     * @param value   值
+     * @param key   键
+     * @param value 值
      */
-    void set(String key, String value);
+    void set(String key, byte[] value);
 
     /**
      * 根据键获取值
@@ -24,5 +24,5 @@ public interface ICacheService {
      * @param key 键
      * @return 值
      */
-    Optional<String> get(String key);
+    Optional<byte[]> get(String key);
 }

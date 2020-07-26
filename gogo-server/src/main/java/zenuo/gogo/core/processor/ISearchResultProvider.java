@@ -43,9 +43,9 @@ public interface ISearchResultProvider {
     default Optional<SearchResponse> readCache(ICacheService cacheService, String key, int page) {
         //从缓存服务中读取
         final String cacheKey = String.format(Constants.KEY_SEARCH_RESPONSE_PATTERN, key.hashCode(), page);
-        final Optional<String> value = cacheService.get(cacheKey);
+        final Optional<byte[]> value = cacheService.get(cacheKey);
         //若存在，反序列化
-        return value.map(s -> JsonUtils.fromJson(s, SearchResponse.class));
+        return value.map(s -> JsonUtils.fromJsonBytes(s, SearchResponse.class));
     }
 
     /**
@@ -58,9 +58,7 @@ public interface ISearchResultProvider {
     default void writeCache(ICacheService cacheService, String key, int page, SearchResponse searchResponse) {
         //序列化，键
         final String cacheKey = String.format(Constants.KEY_SEARCH_RESPONSE_PATTERN, key.hashCode(), page);
-        //值
-        final String value = JsonUtils.toJson(searchResponse);
         //写入缓存
-        cacheService.set(cacheKey, value);
+        cacheService.set(cacheKey, JsonUtils.toJsonBytes(searchResponse));
     }
 }
