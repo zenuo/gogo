@@ -74,7 +74,7 @@ public final class ResultPageBuilder implements IResultPageBuilder {
             "<a href=\"/\"><span class=\"logo\"><b>勾勾</b></span></a>\n" +
             "<datalist id=\"lints\"></datalist>\n" +
             "<form action=\"/search\" method=\"GET\" onsubmit=\"return q.value!=''\">\n" +
-            "<input id=\"input\" name=\"q\" autocomplete=\"off\" list=\"lints\" type=\"text\" value=\"";
+            "<input id=\"input\" name=\"q\" autocomplete=\"off\" list=\"lints\" type=\"search\" value=\"";
 
     /**
      * 结果条目之后的样式表

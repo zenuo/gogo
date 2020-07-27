@@ -1,7 +1,7 @@
-var lints = null;
-var input = null;
-var lastRequestLints = new Date();
-var lastInputValue = null;
+let lints = null;
+let input = null;
+let lastInputValue = null;
+let xhttp = null;
 function requestLints() {
     // check
     if (lints == null) {
@@ -20,18 +20,15 @@ function requestLints() {
     if (value == "") {
         return;
     }
-    let now = Date.now();
-    if (now - lastRequestLints < 2000) {
-        return;
-    } else{
-        lastRequestLints = now;
-    }
     // clear all children in datalist
     while(lints.childElementCount > 0) {
         lints.children[0].remove();
     }
     // http request
-    let xhttp = new XMLHttpRequest();
+    if (xhttp != null) {
+        xhttp.abort();
+    }
+    xhttp = new XMLHttpRequest();
     xhttp.timeout = 2000;
     xhttp.onreadystatechange = function () {
         if (this.readyState != 4 || this.status != 200) {
@@ -40,6 +37,7 @@ function requestLints() {
         let responseText = this.responseText;
         let data = JSON.parse(responseText);
         data.lints.forEach(l => lints.appendChild(new Option(l.replace("<b>", "").replace("</b>", ""))));
+        xhttp = null;
     };
     xhttp.open('GET', "/api/lint?q=" + value);
     xhttp.send();
