@@ -62,10 +62,10 @@ public final class SearchProcessorImpl implements ISearchProcessor {
                         .build();
             } else {
                 // try to read cache
-                final Optional<SearchResponse> optional = readCache(key, page);
-                if (optional.isPresent()) {
+                final Optional<SearchResponse> cache = readCache(key, page);
+                if (cache.isPresent()) {
                     // if hit
-                    response = optional.get();
+                    response = cache.get();
                 } else {
                     // if not hit
                     for (ISearchResultProvider srp : searchResultProviders) {
