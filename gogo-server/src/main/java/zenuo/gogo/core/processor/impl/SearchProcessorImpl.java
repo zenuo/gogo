@@ -61,25 +61,27 @@ public final class SearchProcessorImpl implements ISearchProcessor {
                         .status(HttpResponseStatus.BAD_REQUEST)
                         .build();
             } else {
-                //尝试读取缓存
+                // try to read cache
                 final Optional<SearchResponse> optional = readCache(key, page);
                 if (optional.isPresent()) {
-                    //若缓存存在
+                    // if hit
                     response = optional.get();
                 } else {
-                    //若不存在
+                    // if not hit
                     for (ISearchResultProvider srp : searchResultProviders) {
                         try {
                             response = srp.search(key, page);
-                            //若不抛出异常，则退出循环
-                            break;
+                            if (!response.getEntries().isEmpty()) {
+                                // if response entries is not empty
+                                break;
+                            }
                         } catch (SearchException e) {
                             //忽略
                             searchException = e;
                         }
                     }
-                    //若结果不为null，则写入缓存
-                    if (response != null) {
+                    // cache
+                    if (response != null && !response.getEntries().isEmpty()) {
                         writeCache(key, page, response);
                     }
                 }
