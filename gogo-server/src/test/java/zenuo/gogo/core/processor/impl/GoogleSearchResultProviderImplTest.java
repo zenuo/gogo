@@ -29,8 +29,8 @@ public class GoogleSearchResultProviderImplTest extends TestEnvironment {
     @Test
     public void search() throws SearchException {
         final SearchResponse response = searchResultProvider.search0("udp", 1);
-        if (response.getEntries() != null) {
-            response.getEntries().forEach(e -> System.out.println(e.getName()));
+        if (response.getEntries().isPresent()) {
+            response.getEntries().get().forEach(e -> System.out.println(e.getName()));
         }
     }
 

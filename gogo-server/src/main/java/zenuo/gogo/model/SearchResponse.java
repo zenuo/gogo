@@ -8,7 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Builder
 @AllArgsConstructor
@@ -20,7 +22,7 @@ public final class SearchResponse implements IResponse {
     private Integer page;
     private Long amount;
     private Float elapsed;
-    private List<Entry> entries;
+    private Optional<List<Entry>> entries;
     private String error;
     @JsonIgnore
     private HttpResponseStatus status;

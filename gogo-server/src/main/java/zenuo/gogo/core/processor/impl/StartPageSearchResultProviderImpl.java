@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ServiceLoader;
 
 /**
@@ -91,7 +92,7 @@ public final class StartPageSearchResultProviderImpl implements ISearchResultPro
             entryBuilder.desc(StringUtils.escapeHtmlEntities(p.text()));
             entries.add(entryBuilder.build());
         }
-        builder.entries(entries);
+        builder.entries(Optional.of(entries));
         return builder.status(HttpResponseStatus.OK).build();
     }
 
@@ -119,6 +120,7 @@ public final class StartPageSearchResultProviderImpl implements ISearchResultPro
     private SearchResponse patternChanged(final SearchResponse.SearchResponseBuilder builder) {
         return builder.status(HttpResponseStatus.INTERNAL_SERVER_ERROR)
                 .error("Please contact developer")
+                .entries(Optional.empty())
                 .build();
     }
 }

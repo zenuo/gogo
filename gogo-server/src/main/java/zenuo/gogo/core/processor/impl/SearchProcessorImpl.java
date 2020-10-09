@@ -71,7 +71,7 @@ public final class SearchProcessorImpl implements ISearchProcessor {
                     for (ISearchResultProvider srp : searchResultProviders) {
                         try {
                             response = srp.search(key, page);
-                            if (!response.getEntries().isEmpty()) {
+                            if (response.getEntries().isPresent()) {
                                 // if response entries is not empty
                                 break;
                             }
@@ -81,7 +81,7 @@ public final class SearchProcessorImpl implements ISearchProcessor {
                         }
                     }
                     // cache
-                    if (response != null && !response.getEntries().isEmpty()) {
+                    if (response != null && response.getEntries().isPresent()) {
                         writeCache(key, page, response);
                     }
                 }
