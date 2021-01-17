@@ -45,22 +45,9 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
 
     @Override
     public SearchResponse search(String key, int page) throws SearchException {
-        return search0(key, page);
-    }
-
-    /**
-     * Get entries of google search0 result
-     *
-     * @param key  keyword
-     * @param page page number
-     * @return entries if succeed, null otherwise
-     */
-    SearchResponse search0(String key, int page) throws SearchException {
-        //builder
         final SearchResponse.SearchResponseBuilder builder = SearchResponse.builder();
         builder.key(key);
         builder.page(page);
-        //document
         final Document document;
         try {
             document = httpGet(key, page);
@@ -69,8 +56,9 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
             log.error(message, e);
             throw new SearchException(message, e);
         }
-        final Elements webResults = document.getElementsByClass("rc");
+        final Elements webResults = document.getElementsByClass("g");
         if (webResults.isEmpty()) {
+            log.error("pattern changed");
             return patternChanged(builder);
         }
         final List<Entry> entries = new ArrayList<>();
@@ -79,7 +67,7 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
             //entry builder
             final Entry.EntryBuilder entryBuilder = Entry.builder();
             //name
-            final Element name = result.getElementsByClass("LC20lb").first();
+            final Element name = result.getElementsByClass("LC20lb DKV0Md").first();
             if (name == null) {
                 continue;
             }

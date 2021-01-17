@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import zenuo.gogo.core.ResponseType;
 import zenuo.gogo.core.processor.ISearchProcessor;
 import zenuo.gogo.core.processor.ISearchResultProvider;
-import zenuo.gogo.exception.SearchException;
 import zenuo.gogo.model.SearchResponse;
 import zenuo.gogo.service.ICacheService;
 import zenuo.gogo.util.JsonUtils;
@@ -49,12 +48,10 @@ public final class SearchProcessorImpl implements ISearchProcessor {
                     HttpResponseStatus.BAD_REQUEST);
         } else {
             final List<String> pages = decoder.parameters().get("p");
-            //根据优先级调用提供者
             final String key = keys.get(0);
             final int page = pages == null || "".equals(pages.get(0)) ? 1 : Integer.parseInt(pages.get(0));
 
             SearchResponse response = null;
-            SearchException searchException = null;
 
             if (page < 1) {
                 response = SearchResponse.builder().error("page must be greater than zero!")
@@ -75,9 +72,8 @@ public final class SearchProcessorImpl implements ISearchProcessor {
                                 // if response entries is not empty
                                 break;
                             }
-                        } catch (SearchException e) {
-                            //忽略
-                            searchException = e;
+                        } catch (Exception e) {
+                            log.error("exception {}", srp, e);
                         }
                     }
                     // cache
@@ -91,8 +87,8 @@ public final class SearchProcessorImpl implements ISearchProcessor {
                 response(ctx,
                         request,
                         responseType,
-                        responseType == ResponseType.API ? ("{\"error\": \"" + searchException.getMessage() + "\"}").getBytes(StandardCharsets.UTF_8)
-                                : resultPageBuilder.build(SearchResponse.builder().key(key).error(searchException.getMessage()).build()),
+                        responseType == ResponseType.API ? ("{\"error\": \"try again later\"}").getBytes(StandardCharsets.UTF_8)
+                                : resultPageBuilder.build(SearchResponse.builder().key(key).error("try again later").build()),
                         HttpResponseStatus.OK);
 
             } else {

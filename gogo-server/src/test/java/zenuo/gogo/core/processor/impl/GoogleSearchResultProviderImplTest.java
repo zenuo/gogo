@@ -28,7 +28,7 @@ public class GoogleSearchResultProviderImplTest extends TestEnvironment {
 
     @Test
     public void search() throws SearchException {
-        final SearchResponse response = searchResultProvider.search0("udp", 1);
+        final SearchResponse response = searchResultProvider.search("udp", 1);
         if (response.getEntries().isPresent()) {
             response.getEntries().get().forEach(e -> System.out.println(e.getName()));
         }
@@ -36,7 +36,7 @@ public class GoogleSearchResultProviderImplTest extends TestEnvironment {
 
     @Test
     public void response() throws SearchException {
-        final SearchResponse searchResponse = searchResultProvider.search0("udp", 2);
+        final SearchResponse searchResponse = searchResultProvider.search("udp", 2);
         final byte[] json = JsonUtils.toJsonBytes(searchResponse);
         System.out.println(Arrays.toString(json));
     }
