@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+  <Properties>
+    <property name="PATTERN">%d [%t] %-5level %logger{36} - %msg%n</property>
+    <Property name="filename">./log/gogo.log</Property>
+  </Properties>
+  <Filter type="ThresholdFilter" level="trace"/>
+ 
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="${PATTERN}"/>
+    </Console>
+
+    <RollingRandomAccessFile name="File" filePattern="${filename}.%d.log.gz">
+      <PatternLayout pattern="${PATTERN}"/>
+      <Policies>
+        <TimeBasedTriggeringPolicy />
+      </Policies>
+    </RollingRandomAccessFile>
+  </Appenders>
+ 
+  <Loggers>
+    <Root level="INFO">
+      <AppenderRef ref="Console"/>
+      <AppenderRef ref="File"/>
+    </Root>
+
+    <AsyncLogger name="gogo" additivity="false">
+      <AppenderRef ref="Console"/>
+      <AppenderRef ref="File"/>
+    </AsyncLogger>
+  </Loggers>
+ 
+</Configuration>
