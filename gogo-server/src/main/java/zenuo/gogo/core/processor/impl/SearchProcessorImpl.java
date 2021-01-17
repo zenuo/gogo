@@ -76,6 +76,7 @@ public final class SearchProcessorImpl implements ISearchProcessor {
                                 break;
                             }
                         } catch (SearchException e) {
+                            log.error("exception {}", srp, e);
                             //忽略
                             searchException = e;
                         }
