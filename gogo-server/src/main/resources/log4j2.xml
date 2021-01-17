@@ -4,7 +4,6 @@
     <property name="PATTERN">%d [%t] %-5level %logger{36} - %msg%n</property>
     <Property name="filename">./log/gogo.log</Property>
   </Properties>
-  <Filter type="ThresholdFilter" level="trace"/>
  
   <Appenders>
     <Console name="Console" target="SYSTEM_OUT">
