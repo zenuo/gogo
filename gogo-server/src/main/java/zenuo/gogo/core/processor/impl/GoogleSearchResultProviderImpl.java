@@ -71,6 +71,7 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
         }
         final Elements webResults = document.getElementsByClass("rc");
         if (webResults.isEmpty()) {
+            log.error("pattern changed");
             return patternChanged(builder);
         }
         final List<Entry> entries = new ArrayList<>();
