@@ -1,6 +1,7 @@
 package zenuo.gogo.core.processor.impl;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -17,11 +18,11 @@ import zenuo.gogo.model.SearchResponse;
 import zenuo.gogo.util.StringUtils;
 import zenuo.gogo.util.UserAgentUtils;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ServiceLoader;
 
 /**
  * StartPage搜索
@@ -32,6 +33,7 @@ import java.util.ServiceLoader;
  * @date 2019/05/15
  */
 @Slf4j
+@RequiredArgsConstructor(onConstructor = @__(@Inject))
 public final class StartPageSearchResultProviderImpl implements ISearchResultProvider {
 
     private static final String URL = "https://www.startpage.com/do/search";
@@ -41,7 +43,7 @@ public final class StartPageSearchResultProviderImpl implements ISearchResultPro
             new BasicNameValuePair("cmd", "process_search"),
             new BasicNameValuePair("language", "english"));
 
-    private final IHttpClientProvider httpClientProvider = ServiceLoader.load(IHttpClientProvider.class).iterator().next();
+    private final IHttpClientProvider httpClientProvider;
 
     @Override
     public int priority() {

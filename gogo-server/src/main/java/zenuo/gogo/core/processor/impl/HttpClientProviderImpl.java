@@ -8,13 +8,12 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import zenuo.gogo.core.config.ApplicationConfig;
-import zenuo.gogo.core.config.HttpClientConfig;
 import zenuo.gogo.core.processor.IHttpClientProvider;
 import zenuo.gogo.core.processor.ISubstituteProcessor;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ServiceLoader;
 
 /**
  * HTTP客户端提供者实现
@@ -24,15 +23,19 @@ import java.util.ServiceLoader;
  */
 public final class HttpClientProviderImpl implements IHttpClientProvider {
 
-    private final ISubstituteProcessor substituteProcessor = ServiceLoader.load(ISubstituteProcessor.class).iterator().next();
+    private final ISubstituteProcessor substituteProcessor;
 
-    private final HttpClientConfig httpClientConfig = ApplicationConfig.httpClientConfig();
+    private final ApplicationConfig applicationConfig;
 
     private final CloseableHttpClient closeableHttpClient;
 
     private final RequestConfig requestConfig;
 
-    public HttpClientProviderImpl() {
+    @Inject
+    public HttpClientProviderImpl(ISubstituteProcessor substituteProcessor,
+                                  ApplicationConfig applicationConfig) {
+        this.substituteProcessor = substituteProcessor;
+        this.applicationConfig = applicationConfig;
         closeableHttpClient = getCloseableHttpClient();
         requestConfig = getRequestConfig();
     }
@@ -53,9 +56,9 @@ public final class HttpClientProviderImpl implements IHttpClientProvider {
     private CloseableHttpClient getCloseableHttpClient() {
         final PoolingHttpClientConnectionManager httpClientConnectionManager = new PoolingHttpClientConnectionManager();
         //最大连接数
-        httpClientConnectionManager.setMaxTotal(httpClientConfig.getMaxTotal());
+        httpClientConnectionManager.setMaxTotal(applicationConfig.getHttpClientConfig().getMaxTotal());
         //并发数
-        httpClientConnectionManager.setDefaultMaxPerRoute(httpClientConfig.getDefaultMaxPerRoute());
+        httpClientConnectionManager.setDefaultMaxPerRoute(applicationConfig.getHttpClientConfig().getDefaultMaxPerRoute());
         return HttpClientBuilder.create()
                 .setConnectionManager(httpClientConnectionManager)
                 .build();
@@ -63,9 +66,9 @@ public final class HttpClientProviderImpl implements IHttpClientProvider {
 
     private RequestConfig getRequestConfig() {
         RequestConfig.Builder builder = RequestConfig.custom();
-        return builder.setConnectTimeout(httpClientConfig.getConnectTimeout())
-                .setConnectionRequestTimeout(httpClientConfig.getConnectionRequestTimeout())
-                .setSocketTimeout(httpClientConfig.getSocketTimeout())
+        return builder.setConnectTimeout(applicationConfig.getHttpClientConfig().getConnectTimeout())
+                .setConnectionRequestTimeout(applicationConfig.getHttpClientConfig().getConnectionRequestTimeout())
+                .setSocketTimeout(applicationConfig.getHttpClientConfig().getSocketTimeout())
                 .build();
     }
 }

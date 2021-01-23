@@ -11,10 +11,11 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import zenuo.gogo.core.config.ApplicationConfig;
-import zenuo.gogo.core.config.GogoConfig;
 
+import javax.inject.Inject;
 
 /**
  * 服务器
@@ -23,13 +24,14 @@ import zenuo.gogo.core.config.GogoConfig;
  * @date 2019/05/08
  */
 @Slf4j
+@RequiredArgsConstructor(onConstructor = @__(@Inject))
 public final class Server {
 
-    private final GogoConfig gogoConfig = ApplicationConfig.gogoConfig();
+    private final ApplicationConfig applicationConfig;
 
-    private final Handler handler = new Handler();
+    private final Handler handler;
 
-    public Server() {
+    public void start() {
         //acceptor
         final NioEventLoopGroup boss = new NioEventLoopGroup(1);
         //client
@@ -62,10 +64,10 @@ public final class Server {
                     //验证
                     .validate();
             //绑定端口
-            bootstrap.bind(gogoConfig.getPort())
+            bootstrap.bind(applicationConfig.getGogoConfig().getPort())
                     //阻塞
                     .sync();
-            log.info("端口{}已绑定", gogoConfig.getPort());
+            log.info("端口{}已绑定", applicationConfig.getGogoConfig().getPort());
         } catch (Exception e) {
             log.error("引导服务器异常", e);
         }

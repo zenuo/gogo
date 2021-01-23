@@ -14,27 +14,31 @@ import zenuo.gogo.util.JsonUtils;
 import zenuo.gogo.web.IPageBuilder;
 import zenuo.gogo.web.IResultPageBuilder;
 
+import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
 public final class SearchProcessorImpl implements ISearchProcessor {
 
-    private final IPageBuilder resultPageBuilder = ServiceLoader.load(IResultPageBuilder.class).iterator().next();
-
-    private final ICacheService cacheService = ServiceLoader.load(ICacheService.class).iterator().next();
-
-    private final List<ISearchResultProvider> searchResultProviders = ServiceLoader.load(ISearchResultProvider.class)
-            .stream()
-            .map(ServiceLoader.Provider::get)
-            .sorted(Comparator.comparingInt(ISearchResultProvider::priority))
-            .collect(Collectors.toList());
-
     private static final byte[] RESPONSE_BODY_KEYWORD_EMPTY = "{\"error\": \"the keyword should not be empty\"}".getBytes(StandardCharsets.UTF_8);
+    private final IPageBuilder resultPageBuilder;
+    private final ICacheService cacheService;
+    private final List<ISearchResultProvider> searchResultProviders;
+
+    @Inject
+    public SearchProcessorImpl(IResultPageBuilder resultPageBuilder, ICacheService cacheService, Set<ISearchResultProvider> searchResultProviderSet) {
+        this.resultPageBuilder = resultPageBuilder;
+        this.cacheService = cacheService;
+        this.searchResultProviders = searchResultProviderSet
+                .stream()
+                .sorted(Comparator.comparingInt(ISearchResultProvider::priority))
+                .collect(Collectors.toList());
+    }
 
     @Override
     public void process(ChannelHandlerContext ctx, FullHttpRequest request, QueryStringDecoder decoder, ResponseType responseType) {

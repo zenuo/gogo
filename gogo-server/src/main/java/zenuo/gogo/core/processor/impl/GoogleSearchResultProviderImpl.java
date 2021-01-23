@@ -1,6 +1,7 @@
 package zenuo.gogo.core.processor.impl;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.HttpGet;
 import org.jsoup.Jsoup;
@@ -17,12 +18,12 @@ import zenuo.gogo.util.GoogleDomainUtils;
 import zenuo.gogo.util.StringUtils;
 import zenuo.gogo.util.UserAgentUtils;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ServiceLoader;
 
 /**
  * 谷歌搜索
@@ -33,9 +34,10 @@ import java.util.ServiceLoader;
  * @date 2019/05/15
  */
 @Slf4j
+@RequiredArgsConstructor(onConstructor = @__(@Inject))
 public final class GoogleSearchResultProviderImpl implements ISearchResultProvider {
 
-    private final IHttpClientProvider httpClientProvider = ServiceLoader.load(IHttpClientProvider.class).iterator().next();
+    private final IHttpClientProvider httpClientProvider;
 
     @Override
     public int priority() {

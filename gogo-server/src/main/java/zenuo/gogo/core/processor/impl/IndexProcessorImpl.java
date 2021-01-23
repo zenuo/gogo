@@ -4,14 +4,15 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import lombok.RequiredArgsConstructor;
 import zenuo.gogo.core.ResponseType;
 import zenuo.gogo.core.processor.IIndexProcessor;
 import zenuo.gogo.web.IIndexPageBuilder;
-import zenuo.gogo.web.IPageBuilder;
 
+import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
-import java.util.ServiceLoader;
 
+@RequiredArgsConstructor(onConstructor = @__(@Inject))
 public final class IndexProcessorImpl implements IIndexProcessor {
 
     private static final byte[] RESPONSE_BODY_WELCOME = "{\"info\":\"Hello, welcome to Gogo API, https://github.com/zenuo/gogo\"}".getBytes(StandardCharsets.UTF_8);
@@ -19,7 +20,7 @@ public final class IndexProcessorImpl implements IIndexProcessor {
     /**
      * 页面构建器
      */
-    private final IPageBuilder indexPageBuilder = ServiceLoader.load(IIndexPageBuilder.class).iterator().next();
+    private final IIndexPageBuilder indexPageBuilder;
 
     @Override
     public void process(ChannelHandlerContext ctx, FullHttpRequest request, QueryStringDecoder decoder, ResponseType responseType) {

@@ -10,15 +10,16 @@ import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import zenuo.gogo.core.processor.IIndexProcessor;
 import zenuo.gogo.core.processor.ILintProcessor;
 import zenuo.gogo.core.processor.ISearchProcessor;
 import zenuo.gogo.core.processor.IStaticProcessor;
 
+import javax.inject.Inject;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ServiceLoader;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -31,46 +32,42 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Slf4j
 @ChannelHandler.Sharable
+@RequiredArgsConstructor(onConstructor = @__(@Inject))
 public final class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     /**
      * 首页处理器
      */
-    private final IIndexProcessor indexProcessor = ServiceLoader.load(IIndexProcessor.class).iterator().next();
+    private final IIndexProcessor indexProcessor;
 
     /**
      * 搜索处理器
      */
-    private final ISearchProcessor searchProcessor = ServiceLoader.load(ISearchProcessor.class).iterator().next();
+    private final ISearchProcessor searchProcessor;
 
     /**
      * 补全处理器
      */
-    private final ILintProcessor lintProcessor = ServiceLoader.load(ILintProcessor.class).iterator().next();
+    private final ILintProcessor lintProcessor;
 
     /**
      * 静态文件处理器
      */
-    private final IStaticProcessor staticProcessor = ServiceLoader.load(IStaticProcessor.class).iterator().next();
-
-    /**
-     * 处理工作者线程池
-     */
-    private final ThreadPoolExecutor processWorkers;
+    private final IStaticProcessor staticProcessor;
 
     /**
      * 工作队列
      */
-    private final BlockingQueue<Runnable> workQueue;
+    private final BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(256);
 
-    public Handler() {
-        this.workQueue = new ArrayBlockingQueue<>(256);
-        this.processWorkers = new ThreadPoolExecutor(2, 8,
-                30, TimeUnit.SECONDS,
-                workQueue,
-                new GogoThreadFactory(),
-                new ThreadPoolExecutor.DiscardPolicy());
-    }
+    /**
+     * 处理工作者线程池
+     */
+    private final ThreadPoolExecutor processWorkers = new ThreadPoolExecutor(2, 8,
+            30, TimeUnit.SECONDS,
+            workQueue,
+            new GogoThreadFactory(),
+            new ThreadPoolExecutor.DiscardPolicy());
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) {
