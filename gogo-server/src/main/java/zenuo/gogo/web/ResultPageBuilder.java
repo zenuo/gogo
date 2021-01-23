@@ -120,8 +120,8 @@ public final class ResultPageBuilder implements IResultPageBuilder {
         sb.append(HTML_AFTER_STYLE)
                 .append(entitiesEscapedKey)
                 .append(HTML_BEFORE_RESULT);
-        if (response.getEntries().isPresent()) {
-            response.getEntries().get().forEach(e -> EntryBuilder.build(sb, e));
+        if (!response.getEntries().isEmpty()) {
+            response.getEntries().forEach(e -> EntryBuilder.build(sb, e));
             NextBuilder.build(sb, response.getKey(), response.getPage());
         } else {
             sb.append(String.format(HTML_ERROR, URLEncoder.encode(response.getKey(), StandardCharsets.UTF_8)));

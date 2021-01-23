@@ -1,33 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN">
+<Configuration status="WARN" monitorInterval="5">
   <Properties>
-    <property name="PATTERN">%d [%t] %-5level %logger{36} - %msg%n</property>
-    <Property name="filename">./log/gogo.log</Property>
+    <Property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss} %5p [%t] %logger{1.} - %m%n</Property>
+    <Property name="LOG_FILE_DIRECTORY">./logs</Property>
   </Properties>
- 
+
   <Appenders>
     <Console name="Console" target="SYSTEM_OUT">
-      <PatternLayout pattern="${PATTERN}"/>
+      <PatternLayout pattern="${PATTERN}" charset="UTF-8"/>
     </Console>
 
-    <RollingRandomAccessFile name="File" filePattern="${filename}.%d.log.gz">
-      <PatternLayout pattern="${PATTERN}"/>
+    <RollingRandomAccessFile name="File"
+                             fileName="${LOG_FILE_DIRECTORY}/gogo.log"
+                             filePattern="${LOG_FILE_DIRECTORY}/gogo-%d{yyyy-MM-dd}-%i.log.gz">
+      <PatternLayout pattern="${PATTERN}" charset="UTF-8"/>
       <Policies>
         <TimeBasedTriggeringPolicy />
+        <SizeBasedTriggeringPolicy size="128 MB"/>
       </Policies>
     </RollingRandomAccessFile>
   </Appenders>
- 
+
   <Loggers>
-    <Root level="INFO">
+    <Root level="INFO" includeLocation="false">
       <AppenderRef ref="Console"/>
       <AppenderRef ref="File"/>
     </Root>
-
-    <AsyncLogger name="gogo" additivity="false">
-      <AppenderRef ref="Console"/>
-      <AppenderRef ref="File"/>
-    </AsyncLogger>
   </Loggers>
- 
+
 </Configuration>

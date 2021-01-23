@@ -34,12 +34,10 @@ public final class StaticProcessorImpl implements IStaticProcessor {
             log.error("process static '{}' error", path, e);
             throw new RuntimeException(e);
         }
-        //响应对象
         final DefaultFullHttpResponse response = new DefaultFullHttpResponse(
                 request.protocolVersion(),
                 HttpResponseStatus.OK,
                 Unpooled.copiedBuffer(bytes));
-        //设置头信息
         response.headers().add(HttpHeaderNames.SERVER, "gogo");
         response.headers().add(HttpHeaderNames.CACHE_CONTROL, "private, max-age=120");
         if (path.endsWith(".js")) {
@@ -47,7 +45,6 @@ public final class StaticProcessorImpl implements IStaticProcessor {
         } else {
             response.headers().add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.FILE);
         }
-        //响应后关闭通道
         ctx.writeAndFlush(response)
                 .addListener(ChannelFutureListener.CLOSE);
     }

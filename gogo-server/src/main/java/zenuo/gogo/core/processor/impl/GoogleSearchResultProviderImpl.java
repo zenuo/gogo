@@ -22,7 +22,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.ServiceLoader;
 
 /**
@@ -94,7 +93,7 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
                     .desc(videoResult.child(2).text())
                     .build());
         }
-        builder.entries(Optional.of(entries));
+        builder.entries(entries);
         return builder.status(HttpResponseStatus.OK).build();
     }
 
@@ -128,7 +127,6 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
     private SearchResponse patternChanged(final SearchResponse.SearchResponseBuilder builder) {
         return builder.status(HttpResponseStatus.INTERNAL_SERVER_ERROR)
                 .error("Please contact developer")
-                .entries(Optional.empty())
                 .build();
     }
 }

@@ -40,7 +40,7 @@ public interface ISearchResultProvider {
      * @param page 页码
      * @return 搜索结果
      */
-    default Optional<SearchResponse> readCache(ICacheService cacheService, String key, int page) {
+    static Optional<SearchResponse> readCache(ICacheService cacheService, String key, int page) {
         //从缓存服务中读取
         final String cacheKey = String.format(Constants.KEY_SEARCH_RESPONSE_PATTERN, key.hashCode(), page);
         final Optional<byte[]> value = cacheService.get(cacheKey);
@@ -55,7 +55,7 @@ public interface ISearchResultProvider {
      * @param page           页码
      * @param searchResponse 搜索结果
      */
-    default void writeCache(ICacheService cacheService, String key, int page, SearchResponse searchResponse) {
+    static void writeCache(ICacheService cacheService, String key, int page, SearchResponse searchResponse) {
         //序列化，键
         final String cacheKey = String.format(Constants.KEY_SEARCH_RESPONSE_PATTERN, key.hashCode(), page);
         //写入缓存

@@ -19,6 +19,6 @@ public class SearchResponseTest {
     public void deserialize() throws IOException {
         final String json = "{\"key\":\"LRU\",\"page\":1,\"amount\":5490000,\"elapsed\":0.46,\"entries\":[{\"name\":\"Cache replacement policies - Wikipedia\",\"url\":\"https://en.wikipedia.org/wiki/Cache_replacement_policies\",\"desc\":\"In computing, cache algorithms are optimizing instructions, or algorithms, that a computer ... Even worse, many cache algorithms (in particular, LRU) allow this streaming data to fill the cache, pushing out of the cache information that will be ...\"}]}";
         final SearchResponse searchResponse = JsonUtils.fromJsonBytes(json.getBytes(StandardCharsets.UTF_8), SearchResponse.class);
-        Assert.assertEquals(searchResponse.getEntries().get().size(), 1);
+        Assert.assertEquals(searchResponse.getEntries().size(), 1);
     }
 }

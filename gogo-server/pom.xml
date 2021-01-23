@@ -6,7 +6,7 @@
 
     <groupId>zenuo</groupId>
     <artifactId>gogo</artifactId>
-    <version>1.7.7</version>
+    <version>1.7.8</version>
 
     <packaging>jar</packaging>
 
@@ -54,7 +54,7 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.12.1</version>
+            <version>1.13.1</version>
         </dependency>
         <dependency>
             <groupId>com.lmax</groupId>
@@ -63,33 +63,23 @@
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j18-impl</artifactId>
-            <version>2.14.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>2.14.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
+            <artifactId>log4j-slf4j-impl</artifactId>
             <version>2.14.0</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.11.1</version>
+            <version>2.12.1</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>4.1.45.Final</version>
+            <version>4.1.58.Final</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
-            <version>2.8.0</version>
+            <version>2.9.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -99,7 +89,7 @@
         <dependency>
             <groupId>org.ehcache</groupId>
             <artifactId>ehcache</artifactId>
-            <version>3.8.1</version>
+            <version>3.9.0</version>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
@@ -110,7 +100,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>2.11.1</version>
+            <version>2.12.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -126,7 +116,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.10</version>
+            <version>1.18.16</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

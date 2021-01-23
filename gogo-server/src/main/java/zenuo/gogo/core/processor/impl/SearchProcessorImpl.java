@@ -40,7 +40,6 @@ public final class SearchProcessorImpl implements ISearchProcessor {
     public void process(ChannelHandlerContext ctx, FullHttpRequest request, QueryStringDecoder decoder, ResponseType responseType) {
         final List<String> keys = decoder.parameters().get("q");
         if (keys == null || "".equals(keys.get(0))) {
-
             response(ctx,
                     request,
                     ResponseType.API,
@@ -58,18 +57,14 @@ public final class SearchProcessorImpl implements ISearchProcessor {
                         .status(HttpResponseStatus.BAD_REQUEST)
                         .build();
             } else {
-                // try to read cache
                 final Optional<SearchResponse> cache = readCache(key, page);
                 if (cache.isPresent()) {
-                    // if hit
                     response = cache.get();
                 } else {
-                    // if not hit
                     for (ISearchResultProvider srp : searchResultProviders) {
                         try {
                             response = srp.search(key, page);
-                            if (response.getEntries().isPresent()) {
-                                // if response entries is not empty
+                            if (!response.getEntries().isEmpty()) {
                                 break;
                             }
                         } catch (Exception e) {
@@ -77,7 +72,7 @@ public final class SearchProcessorImpl implements ISearchProcessor {
                         }
                     }
                     // cache
-                    if (response != null && response.getEntries().isPresent()) {
+                    if (response != null && !response.getEntries().isEmpty()) {
                         writeCache(key, page, response);
                     }
                 }
@@ -102,10 +97,10 @@ public final class SearchProcessorImpl implements ISearchProcessor {
     }
 
     private Optional<SearchResponse> readCache(String key, int page) {
-        return searchResultProviders.get(0).readCache(cacheService, key, page);
+        return ISearchResultProvider.readCache(cacheService, key, page);
     }
 
     private void writeCache(String key, int page, SearchResponse searchResponse) {
-        searchResultProviders.get(0).writeCache(cacheService, key, page, searchResponse);
+        ISearchResultProvider.writeCache(cacheService, key, page, searchResponse);
     }
 }
