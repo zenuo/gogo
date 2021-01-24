@@ -1,7 +1,6 @@
 package zenuo.gogo.web;
 
 import lombok.RequiredArgsConstructor;
-import zenuo.gogo.core.config.ApplicationConfig;
 import zenuo.gogo.model.Entry;
 import zenuo.gogo.model.IResponse;
 import zenuo.gogo.model.SearchResponse;
@@ -11,18 +10,9 @@ import javax.inject.Inject;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalTime;
 
-/**
- * 结果页面构建器
- *
- * @author zenuo
- * 2018-07-08 20:50:25
- */
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public final class ResultPageBuilder implements IResultPageBuilder {
-
-    private final ApplicationConfig applicationConfig;
 
     /**
      * 标题前的HTML
@@ -111,14 +101,7 @@ public final class ResultPageBuilder implements IResultPageBuilder {
         final String entitiesEscapedKey = StringUtils.escapeHtmlEntities(response.getKey());
         sb.append(entitiesEscapedKey)
                 .append(HTML_BEFORE_STYLE);
-        final LocalTime now = LocalTime.now();
-        //若不是日间模式
-        if (now.isBefore(applicationConfig.getGogoConfig().getDayModeStartTime()) ||
-                now.isAfter(applicationConfig.getGogoConfig().getDayModeEndTime())) {
-            sb.append(HTML_NIGHT_MODE_STYLE);
-        } else {
-            sb.append(HTML_DAY_MODE_STYLE);
-        }
+        sb.append(HTML_DAY_MODE_STYLE);
         sb.append(HTML_AFTER_STYLE)
                 .append(entitiesEscapedKey)
                 .append(HTML_BEFORE_RESULT);

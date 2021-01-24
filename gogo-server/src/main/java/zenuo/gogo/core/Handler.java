@@ -27,9 +27,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * 处理器类，通道读取事件的回调
- */
 @Slf4j
 @ChannelHandler.Sharable
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
@@ -130,25 +127,20 @@ public final class Handler extends SimpleChannelInboundHandler<FullHttpRequest> 
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
-        //若时间为空闲状态事件
         if (evt instanceof IdleStateEvent) {
             if (((IdleStateEvent) evt).state() == IdleState.ALL_IDLE) {
-                //关闭
                 ctx.close();
             }
         }
     }
-}
 
-/**
- * 线程池
- */
-class GogoThreadFactory implements ThreadFactory {
-    private final static String PREFIX = "gogo-worker-";
-    private final AtomicInteger nextId = new AtomicInteger();
+    private static class GogoThreadFactory implements ThreadFactory {
+        private final static String PREFIX = "gogo-worker-";
+        private final AtomicInteger nextId = new AtomicInteger();
 
-    @Override
-    public Thread newThread(Runnable runnable) {
-        return new Thread(null, runnable, PREFIX + nextId.incrementAndGet(), 0, false);
+        @Override
+        public Thread newThread(Runnable runnable) {
+            return new Thread(null, runnable, PREFIX + nextId.incrementAndGet(), 0, false);
+        }
     }
 }

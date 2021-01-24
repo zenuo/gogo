@@ -8,13 +8,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import zenuo.gogo.core.config.Constants;
 import zenuo.gogo.core.processor.IHttpClientProvider;
 import zenuo.gogo.core.processor.ISearchResultProvider;
-import zenuo.gogo.exception.SearchException;
 import zenuo.gogo.model.Entry;
 import zenuo.gogo.model.SearchResponse;
-import zenuo.gogo.util.GoogleDomainUtils;
 import zenuo.gogo.util.StringUtils;
 import zenuo.gogo.util.UserAgentUtils;
 
@@ -44,8 +41,10 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
         return 0;
     }
 
+    public static final String GOOGLE_SEARCH_URL_TEMPLATE = "https://www.google.com/search?q=%s&start=%d";
+
     @Override
-    public SearchResponse search(String key, int page) throws SearchException {
+    public SearchResponse search(String key, int page) {
         final SearchResponse.SearchResponseBuilder builder = SearchResponse.builder();
         builder.key(key);
         builder.page(page);
@@ -53,9 +52,7 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
         try {
             document = httpGet(key, page);
         } catch (IOException e) {
-            final String message = "exception occurred during request google search";
-            log.error(message, e);
-            throw new SearchException(message, e);
+            throw new RuntimeException(e);
         }
         final Elements webResults = document.getElementsByClass("g");
         if (webResults.isEmpty()) {
@@ -109,8 +106,7 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
     Document httpGet(final String key, final int page) throws IOException {
         //构造URL
         final int start = page > 1 ? (page - 1) * 10 : 0;
-        final String url = String.format(Constants.GOOGLE_SEARCH_URL_TEMPLATE,
-                GoogleDomainUtils.get(),
+        final String url = String.format(GOOGLE_SEARCH_URL_TEMPLATE,
                 URLEncoder.encode(key, StandardCharsets.UTF_8),
                 start);
         final HttpGet httpGet = new HttpGet(url);

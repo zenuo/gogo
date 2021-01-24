@@ -17,12 +17,6 @@ import zenuo.gogo.core.config.ApplicationConfig;
 
 import javax.inject.Inject;
 
-/**
- * 服务器
- *
- * @author zenuo
- * @date 2019/05/08
- */
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public final class Server {

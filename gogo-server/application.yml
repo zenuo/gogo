@@ -15,12 +15,6 @@ http.client:
 gogo:
   # 监听端口
   port: 4999
-  # 日间模式开始时间
-  day-mode-start-time-string: "07:00"
-  # 日间模式结束时间
-  day-mode-end-time-string: "19:00"
-  # 首页标语
-  slogan: 欢迎<a href="https://github.com/zenuo/gogo">star</a>，蟹蟹支持🥳
   # 搜索结果替换规则
   substitute:
     - https://zh.wikipedia.org#https://176.122.157.73:3457

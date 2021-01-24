@@ -1,5 +1,6 @@
 package zenuo.gogo.core.processor.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -12,9 +13,7 @@ import org.jsoup.nodes.Document;
 import zenuo.gogo.core.ResponseType;
 import zenuo.gogo.core.config.Constants;
 import zenuo.gogo.core.processor.ILintProcessor;
-import zenuo.gogo.model.LintResponse;
 import zenuo.gogo.service.ICacheService;
-import zenuo.gogo.util.GoogleDomainUtils;
 import zenuo.gogo.util.JsonUtils;
 import zenuo.gogo.util.UserAgentUtils;
 
@@ -33,6 +32,8 @@ public final class LintProcessorImpl implements ILintProcessor {
     private static final byte[] RESPONSE_BODY_KEYWORD_EMPTY = "{\"error\": \"the keyword should not be empty\"}".getBytes(StandardCharsets.UTF_8);
 
     private final ICacheService cacheService;
+
+    public static final String GOOGLE_SEARCH_COMPLETE_URL_TEMPLATE = "https://www.google.com/complete/search?client=psy-ab&q=%s";
 
     @Override
     public void process(ChannelHandlerContext ctx, FullHttpRequest request, QueryStringDecoder decoder, ResponseType responseType) {
@@ -57,9 +58,7 @@ public final class LintProcessorImpl implements ILintProcessor {
             }
             final LintResponse response = response(key);
             final byte[] body = JsonUtils.toJsonBytes(response);
-            if (HttpResponseStatus.OK.equals(response.getStatus())) {
-                cacheService.set(cacheKey, body);
-            }
+            cacheService.set(cacheKey, body);
             response(ctx,
                     request,
                     ResponseType.API,
@@ -75,15 +74,18 @@ public final class LintProcessorImpl implements ILintProcessor {
      * @return document instance if succeed
      * @throws IOException io exception occurred
      */
-    Document request(final String key) throws IOException {
-        final String url = String.format(Constants.GOOGLE_SEARCH_COMPLETE_URL_TEMPLATE,
-                GoogleDomainUtils.get(),
+    Document request(final String key) {
+        final String url = String.format(GOOGLE_SEARCH_COMPLETE_URL_TEMPLATE,
                 URLEncoder.encode(key, StandardCharsets.UTF_8));
-        return Jsoup.connect(url)
-                .header("User-Agent", UserAgentUtils.get())
-                .timeout(Constants.TIME_OUT)
-                .ignoreContentType(true)
-                .get();
+        try {
+            return Jsoup.connect(url)
+                    .header("User-Agent", UserAgentUtils.get())
+                    .timeout(Constants.TIME_OUT)
+                    .ignoreContentType(true)
+                    .get();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -93,9 +95,15 @@ public final class LintProcessorImpl implements ILintProcessor {
      * @return lint list
      * @throws IOException io exception occurred
      */
-    List<String> lint(final String key) throws IOException {
+    @Override
+    public List<String> lint(final String key) {
         final Document document = request(key);
-        final JsonNode bodyNode = Constants.MAPPER.readTree(document.body().text());
+        final JsonNode bodyNode;
+        try {
+            bodyNode = Constants.MAPPER.readTree(document.body().text());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         final JsonNode lintNode = bodyNode.get(1);
         if (lintNode == null) {
             return null;
@@ -113,7 +121,6 @@ public final class LintProcessorImpl implements ILintProcessor {
      * @return response instance
      */
     LintResponse response(final String key) {
-        //builder
         final LintResponse.LintResponseBuilder builder = LintResponse.builder();
         builder.key(key);
         try {

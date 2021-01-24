@@ -45,21 +45,6 @@ public final class Constants {
         MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
     /**
-     * 搜索结果统计的正则表达式
-     */
-    public static final Pattern STATS_RESULTS_PATTERN =
-            Pattern.compile("About (.+?) results \\((.+?) seconds\\)");
-    /**
-     * 谷歌搜索URL模板
-     */
-    public static final String GOOGLE_SEARCH_URL_TEMPLATE
-            = "https://%s/search?safe=strict&q=%s&start=%d";
-    /**
-     * 谷歌搜索补全URL模板
-     */
-    public static final String GOOGLE_SEARCH_COMPLETE_URL_TEMPLATE
-            = "https://%s/complete/search?client=psy-ab&q=%s";
-    /**
      * 搜索响应存活时间
      */
     public static final long SEARCH_RESPONSE_CACHE_TTL_IN_SECONDS = 3600L;

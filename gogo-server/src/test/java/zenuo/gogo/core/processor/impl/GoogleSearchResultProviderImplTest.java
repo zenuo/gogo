@@ -3,15 +3,12 @@ package zenuo.gogo.core.processor.impl;
 import org.jsoup.nodes.Document;
 import org.testng.annotations.Test;
 import zenuo.gogo.TestEnvironment;
-import zenuo.gogo.core.config.Constants;
-import zenuo.gogo.exception.SearchException;
 import zenuo.gogo.model.SearchResponse;
 import zenuo.gogo.util.JsonUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.ServiceLoader;
-import java.util.regex.Matcher;
 
 public class GoogleSearchResultProviderImplTest extends TestEnvironment {
 
@@ -27,7 +24,7 @@ public class GoogleSearchResultProviderImplTest extends TestEnvironment {
     }
 
     @Test
-    public void search() throws SearchException {
+    public void search() {
         final SearchResponse response = searchResultProvider.search("udp", 1);
         if (!response.getEntries().isEmpty()) {
             response.getEntries().forEach(e -> System.out.println(e.getName()));
@@ -35,18 +32,9 @@ public class GoogleSearchResultProviderImplTest extends TestEnvironment {
     }
 
     @Test
-    public void response() throws SearchException {
+    public void response() {
         final SearchResponse searchResponse = searchResultProvider.search("udp", 2);
         final byte[] json = JsonUtils.toJsonBytes(searchResponse);
         System.out.println(Arrays.toString(json));
-    }
-
-    @Test
-    public void stats() {
-        final Matcher matcher = Constants.STATS_RESULTS_PATTERN.matcher("About 41,400,000 results (0.31 seconds)");
-        System.out.println(matcher.find());
-        System.out.println(matcher.groupCount());
-        System.out.println(matcher.group(1));
-        System.out.println(matcher.group(2));
     }
 }

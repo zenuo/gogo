@@ -1,7 +1,6 @@
 package zenuo.gogo.core.processor;
 
 import zenuo.gogo.core.config.Constants;
-import zenuo.gogo.exception.SearchException;
 import zenuo.gogo.model.SearchResponse;
 import zenuo.gogo.service.ICacheService;
 import zenuo.gogo.util.JsonUtils;
@@ -29,9 +28,8 @@ public interface ISearchResultProvider {
      * @param key  关键词
      * @param page 页码
      * @return 搜索结果
-     * @throws SearchException 搜索异常
      */
-    SearchResponse search(final String key, final int page) throws SearchException;
+    SearchResponse search(final String key, final int page);
 
     /**
      * 读取缓存

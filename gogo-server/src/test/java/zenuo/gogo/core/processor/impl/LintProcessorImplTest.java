@@ -5,7 +5,7 @@ import org.jsoup.nodes.Document;
 import org.testng.annotations.Test;
 import zenuo.gogo.TestEnvironment;
 import zenuo.gogo.core.config.Constants;
-import zenuo.gogo.model.LintResponse;
+import zenuo.gogo.core.processor.ILintProcessor;
 import zenuo.gogo.util.JsonUtils;
 
 import java.io.IOException;
@@ -44,7 +44,7 @@ public class LintProcessorImplTest extends TestEnvironment {
 
     @Test
     public void response() {
-        final LintResponse response = lintProcessor.response("udp");
+        final ILintProcessor.LintResponse response = lintProcessor.response("udp");
         System.out.println(Arrays.toString(JsonUtils.toJsonBytes(response)));
     }
 }

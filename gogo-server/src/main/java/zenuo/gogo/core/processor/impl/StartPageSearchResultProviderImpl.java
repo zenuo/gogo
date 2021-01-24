@@ -12,7 +12,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import zenuo.gogo.core.processor.IHttpClientProvider;
 import zenuo.gogo.core.processor.ISearchResultProvider;
-import zenuo.gogo.exception.SearchException;
 import zenuo.gogo.model.Entry;
 import zenuo.gogo.model.SearchResponse;
 import zenuo.gogo.util.StringUtils;
@@ -51,11 +50,11 @@ public final class StartPageSearchResultProviderImpl implements ISearchResultPro
     }
 
     @Override
-    public SearchResponse search(String key, int page) throws SearchException {
+    public SearchResponse search(String key, int page) {
         return search0(key, page);
     }
 
-    SearchResponse search0(String key, int page) throws SearchException {
+    SearchResponse search0(String key, int page) {
         //builder
         final SearchResponse.SearchResponseBuilder builder = SearchResponse.builder();
         builder.key(key);
@@ -65,9 +64,7 @@ public final class StartPageSearchResultProviderImpl implements ISearchResultPro
         try {
             document = httpPost(key, page);
         } catch (IOException e) {
-            final String message = "exception occurred during request StartPage search";
-            log.error(message, e);
-            throw new SearchException(message, e);
+            throw new RuntimeException(e);
         }
         //根据class获取结果列表
         final Elements results = document.getElementsByClass("search-result search-item");
