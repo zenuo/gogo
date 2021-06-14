@@ -1,18 +1,17 @@
 package zenuo.gogo.core.processor.impl;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.QueryStringDecoder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.HttpGet;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import zenuo.gogo.core.processor.IHttpClientProvider;
 import zenuo.gogo.core.processor.ISearchResultProvider;
 import zenuo.gogo.model.Entry;
 import zenuo.gogo.model.SearchResponse;
-import zenuo.gogo.util.StringUtils;
 import zenuo.gogo.util.UserAgentUtils;
 
 import javax.inject.Inject;
@@ -21,6 +20,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 谷歌搜索
@@ -54,45 +54,26 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        final Elements webResults = document.getElementsByClass("g");
-        if (webResults.isEmpty()) {
-            log.error("pattern changed");
-            return patternChanged(builder);
-        }
-        final List<Entry> entries = new ArrayList<>();
-        //traverse search result entries
-        for (Element result : webResults) {
-            //entry builder
-            final Entry.EntryBuilder entryBuilder = Entry.builder();
-            //name
-            final Element name = result.getElementsByClass("LC20lb DKV0Md").first();
-            if (name == null) {
+        final List<Element> searchResultElements = document.getElementsByTag("a").stream()
+                .filter(a -> a.hasAttr("href")
+                        && a.attr("href").startsWith("/url?")
+                        && a.childrenSize() == 2
+                        && "h3".equals(a.child(0).tagName()))
+                .collect(Collectors.toList());
+        final List<Entry> entries = new ArrayList<>(searchResultElements.size());
+        builder.entries(entries);
+        for (Element element : searchResultElements) {
+            final QueryStringDecoder decoder = new QueryStringDecoder(element.attr("href"));
+            final List<String> q = decoder.parameters().get("q");
+            if (q == null) {
                 continue;
             }
-            entryBuilder.name(StringUtils.escapeHtmlEntities(name.text()));
-            //url
-            final Element url = name.parent();
-            entryBuilder.url(url.attr("href"));
-            //description
-            final Element desc = result.getElementsByClass("aCOpRe").first();
-            entryBuilder.desc(StringUtils.escapeHtmlEntities(desc.text()));
-            //build
-            final Entry entry = entryBuilder.build();
-            //name and url are not null
-            if (entry.getName() != null && entry.getUrl() != null) {
-                entries.add(entry);
-            }
+            final Entry entry = new Entry();
+            entries.add(entry);
+            entry.setUrl(q.get(0));
+            entry.setName(element.child(0).text());
+            entry.setDesc(element.parent().parent().child(2).text());
         }
-        final Elements videoResults = document.getElementsByClass("y8AWGd llvJ5e");
-        for (Element videoResult : videoResults) {
-            final Element a = videoResult.child(0);
-            entries.add(Entry.builder()
-                    .url(a.attr("href"))
-                    .name(a.child(1).text())
-                    .desc(videoResult.child(2).text())
-                    .build());
-        }
-        builder.entries(entries);
         return builder.status(HttpResponseStatus.OK).build();
     }
 

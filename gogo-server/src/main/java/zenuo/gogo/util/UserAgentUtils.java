@@ -11,11 +11,11 @@ public final class UserAgentUtils {
     /**
      * 用户代理字符串数组
      */
-    private static String[] USER_AGENTS = {
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.117 Safari/537.36",
-            "Mozilla/5.0 (X11; FreeBSD amd64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.117 Safari/537.36",
-            "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.117 Safari/537.36",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.117 Safari/537.36",
+    private static final String[] USER_AGENTS = {
+            "Mozilla/5.0 (Mobile; Nokia 8110 4G; rv:46.0) Gecko/46.0 Firefox/46.0 KAIOS/2.5",
+            "Mozilla/5.0 (Mobile; Nokia 8110 4G; rv:47.0) Gecko/47.0 Firefox/47.0 KAIOS/2.5",
+            "Mozilla/5.0 (Mobile; Nokia 8110 4G; rv:48.0) Gecko/48.0 Firefox/48.0 KAIOS/2.5",
+            "Mozilla/5.0 (Mobile; Nokia 8110 4G; rv:49.0) Gecko/49.0 Firefox/49.0 KAIOS/2.5",
     };
     /**
      * 最后一次使用的索引

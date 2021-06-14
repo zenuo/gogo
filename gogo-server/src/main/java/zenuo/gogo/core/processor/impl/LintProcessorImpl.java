@@ -63,7 +63,7 @@ public final class LintProcessorImpl implements ILintProcessor {
                     request,
                     ResponseType.API,
                     body,
-                    response.getStatus());
+                    HttpResponseStatus.OK);
         }
     }
 
@@ -125,11 +125,10 @@ public final class LintProcessorImpl implements ILintProcessor {
         builder.key(key);
         try {
             final List<String> lints = lint(key);
-            builder.lints(lints).status(HttpResponseStatus.OK);
+            builder.lints(lints);
         } catch (Exception e) {
             log.error("lint {}", key, e);
-            builder.error(e.getMessage())
-                    .status(HttpResponseStatus.GATEWAY_TIMEOUT);
+            builder.error(e.getMessage());
         }
         return builder.build();
     }
