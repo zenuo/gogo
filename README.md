@@ -150,14 +150,16 @@ $ python3 gogo.py stop
 
 ## 实现思路
 
+思路参考了[MarioVilas/googlesearch](https://github.com/MarioVilas/googlesearch)，感谢🌷
+
 ```javascript
 // User-Agent: Mozilla/5.0 (Mobile; Nokia 8110 4G; rv:48.0) Gecko/48.0 Firefox/48.0 KAIOS/2.5
 
 let searchResultElements = Array.from(document.getElementsByTagName("a"))
-  .filter(a => a.hasAttribute("href") 
-    && a.getAttribute("href").startsWith("/url?") 
-    && a.childElementCount == 2
-    && a.childNodes[0].tagName == "H3");
+  .filter(e => e.hasAttribute("href") 
+    && e.getAttribute("href").startsWith("/url?") 
+    && e.childElementCount == 2
+    && e.childNodes[0].tagName == "H3");
 
 let entries = searchResultElements.map(e => {
   let url = new URL(e).searchParams.get("q");
