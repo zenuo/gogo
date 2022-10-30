@@ -69,6 +69,7 @@ public final class HttpClientProviderImpl implements IHttpClientProvider {
         return builder.setConnectTimeout(applicationConfig.getHttpClientConfig().getConnectTimeout())
                 .setConnectionRequestTimeout(applicationConfig.getHttpClientConfig().getConnectionRequestTimeout())
                 .setSocketTimeout(applicationConfig.getHttpClientConfig().getSocketTimeout())
+                .setExpectContinueEnabled(true)
                 .build();
     }
 }

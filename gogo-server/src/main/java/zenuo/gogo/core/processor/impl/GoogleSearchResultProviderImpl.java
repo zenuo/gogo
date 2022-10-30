@@ -8,6 +8,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+
+import zenuo.gogo.core.config.ApplicationConfig;
 import zenuo.gogo.core.processor.IHttpClientProvider;
 import zenuo.gogo.core.processor.ISearchResultProvider;
 import zenuo.gogo.model.Entry;
@@ -37,6 +39,7 @@ import java.util.stream.Collectors;
 public final class GoogleSearchResultProviderImpl implements ISearchResultProvider {
 
     private final IHttpClientProvider httpClientProvider;
+    private final ApplicationConfig applicationConfig;
 
     @Override
     public int priority() {
@@ -54,6 +57,7 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
         try {
             document = httpGet(key, page);
         } catch (IOException e) {
+            log.error("http error", e);
             throw new RuntimeException(e);
         }
         final List<Element> searchResultElements = document.getElementsByTag("a").stream()
@@ -95,18 +99,8 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
         httpGet.setHeader("Accept-Language", "en");
         httpGet.setHeader("User-Agent", UserAgentUtils.get());
         //HTTP请求
-        return Jsoup.parse(httpClientProvider.execute(httpGet));
-    }
-
-    /**
-     * 模式已改变
-     *
-     * @param builder 搜索响应构建器
-     * @return 搜索响应构建
-     */
-    private SearchResponse patternChanged(final SearchResponse.SearchResponseBuilder builder) {
-        return builder.status(HttpResponseStatus.INTERNAL_SERVER_ERROR)
-                .error("Please contact developer")
-                .build();
+        return Jsoup.connect(url)
+        .timeout(10000)
+        .userAgent(UserAgentUtils.get()).get();
     }
 }
