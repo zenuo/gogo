@@ -1,11 +1,8 @@
 package zenuo.gogo.util;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * 用户代理工具类
  */
-@Slf4j
 public final class UserAgentUtils {
 
     /**
