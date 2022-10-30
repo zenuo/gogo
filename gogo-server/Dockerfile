@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 FROM azul/zulu-openjdk-alpine:17-jre-headless-latest
 ENV TZ=Asia/Shanghai
 WORKDIR /opt/gogo
