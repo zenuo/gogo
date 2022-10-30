@@ -4,25 +4,19 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.client.methods.HttpGet;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-
 import zenuo.gogo.core.config.ApplicationConfig;
-import zenuo.gogo.core.processor.IHttpClientProvider;
 import zenuo.gogo.core.processor.ISearchResultProvider;
 import zenuo.gogo.model.Entry;
 import zenuo.gogo.model.SearchResponse;
 import zenuo.gogo.util.UserAgentUtils;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +32,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public final class GoogleSearchResultProviderImpl implements ISearchResultProvider {
 
-    private final IHttpClientProvider httpClientProvider;
     private final ApplicationConfig applicationConfig;
 
     @Override
@@ -95,12 +88,9 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
         final String url = String.format(GOOGLE_SEARCH_URL_TEMPLATE,
                 URLEncoder.encode(key, StandardCharsets.UTF_8),
                 start);
-        final HttpGet httpGet = new HttpGet(url);
-        httpGet.setHeader("Accept-Language", "en");
-        httpGet.setHeader("User-Agent", UserAgentUtils.get());
         //HTTP请求
         return Jsoup.connect(url)
-        .timeout(10000)
-        .userAgent(UserAgentUtils.get()).get();
+                .timeout(applicationConfig.getHttpClientConfig().getConnectTimeout())
+                .userAgent(UserAgentUtils.get()).get();
     }
 }
