@@ -22,7 +22,7 @@ public final class SubstituteProcessorImpl implements ISubstituteProcessor {
     @Override
     public String substitute(@NonNull String source) {
         //遍历替换规则
-        for (Map.Entry<String, String> rule : applicationConfig.getGogoConfig().getSubstituteRuleMap().entrySet()) {
+        for (Map.Entry<String, String> rule : applicationConfig.getSubstituteRuleMap().entrySet()) {
             source = source.replaceAll(rule.getKey(), rule.getValue());
         }
         //返回

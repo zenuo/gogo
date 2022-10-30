@@ -90,7 +90,7 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
                 start);
         //HTTP请求
         return Jsoup.connect(url)
-                .timeout(applicationConfig.getHttpClientConfig().getConnectTimeout())
+                .timeout(applicationConfig.getHttpTimeout())
                 .userAgent(UserAgentUtils.get()).get();
     }
 }

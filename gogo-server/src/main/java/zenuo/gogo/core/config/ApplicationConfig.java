@@ -27,62 +27,36 @@ public class ApplicationConfig {
             log.error("loading config error", e);
             throw new RuntimeException(e);
         }
-        INSTANCE.gogoConfig.postConstruct();
+        INSTANCE.postConstruct();
     }
 
-    public static HttpClientConfig httpClientConfig() {
-        return INSTANCE.httpClientConfig;
-    }
+    private final ConcurrentHashMap<String, String> substituteRuleMap = new ConcurrentHashMap<>();
 
-    public static GogoConfig gogoConfig() {
-        return INSTANCE.gogoConfig;
-    }
+    @JsonProperty("port")
+    private Integer port;
 
-    @JsonProperty("http.client")
-    private HttpClientConfig httpClientConfig;
+    @JsonProperty("httpTimeout")
+    private int httpTimeout = 10000;
 
-    @JsonProperty("gogo")
-    private GogoConfig gogoConfig;
+    /**
+     * 替换规则列表
+     */
+    private List<String> substitute;
 
-    @Slf4j
-    @Getter
-    @Setter
-    public static class GogoConfig {
-
-        private final ConcurrentHashMap<String, String> substituteRuleMap = new ConcurrentHashMap<>();
-        @JsonProperty("port")
-        private Integer port;
-
-        /**
-         * 替换规则列表
-         */
-        private List<String> substitute;
-
-        void postConstruct() {
-            if (port == null) {
-                port = Constants.DEFAULT_PORT;
-            }
-            if (substitute != null) {
-                substitute.forEach(line -> {
-                    final Matcher matcher = Constants.SUBSTITUTE_RULE_PATTERN.matcher(line);
-                    if (matcher.find()) {
-                        final String source = matcher.group(1).trim();
-                        final String target = matcher.group(2).trim();
-                        this.substituteRuleMap.put(source, target);
-                    }
-                });
-            }
-            log.info("port={}, substituteRuleMap={}", port, substituteRuleMap);
+    void postConstruct() {
+        if (port == null) {
+            port = Constants.DEFAULT_PORT;
         }
-    }
-
-    @Setter
-    @Getter
-    public static class HttpClientConfig {
-        private Integer maxTotal;
-        private Integer defaultMaxPerRoute;
-        private Integer connectTimeout;
-        private Integer connectionRequestTimeout;
-        private Integer socketTimeout;
+        if (substitute != null) {
+            substitute.forEach(line -> {
+                final Matcher matcher = Constants.SUBSTITUTE_RULE_PATTERN.matcher(line);
+                if (matcher.find()) {
+                    final String source = matcher.group(1).trim();
+                    final String target = matcher.group(2).trim();
+                    this.substituteRuleMap.put(source, target);
+                }
+            });
+        }
+        log.info("port={}, substituteRuleMap={}", port, substituteRuleMap);
     }
 }

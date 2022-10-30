@@ -58,10 +58,10 @@ public final class Server {
                     //验证
                     .validate();
             //绑定端口
-            bootstrap.bind(applicationConfig.getGogoConfig().getPort())
+            bootstrap.bind(applicationConfig.getPort())
                     //阻塞
                     .sync();
-            log.info("端口{}已绑定", applicationConfig.getGogoConfig().getPort());
+            log.info("端口{}已绑定", applicationConfig.getPort());
         } catch (Exception e) {
             log.error("引导服务器异常", e);
         }

@@ -92,7 +92,7 @@ public final class StartPageSearchResultProviderImpl implements ISearchResultPro
                 .data("language", "english")
                 .data("query", key)
                 .data("startat", String.valueOf(startat))
-                .timeout(applicationConfig.getHttpClientConfig().getConnectTimeout())
+                .timeout(applicationConfig.getHttpTimeout())
                 .post();
     }
 
