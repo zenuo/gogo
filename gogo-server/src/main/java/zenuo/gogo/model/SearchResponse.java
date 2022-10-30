@@ -21,7 +21,7 @@ public final class SearchResponse implements IResponse {
     private Integer page;
     private Long amount;
     private Float elapsed;
-    private List<Entry> entries = new LinkedList<>();
+    private final List<Entry> entries = new LinkedList<>();
     private String error;
     @JsonIgnore
     private HttpResponseStatus status;

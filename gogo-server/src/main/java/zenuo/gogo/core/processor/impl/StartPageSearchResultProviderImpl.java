@@ -71,7 +71,7 @@ public final class StartPageSearchResultProviderImpl implements ISearchResultPro
         if (results.isEmpty()) {
             return patternChanged(builder);
         }
-        final List<Entry> entries = new ArrayList<>(10);
+        final SearchResponse searchResponse = builder.status(HttpResponseStatus.OK).build();
         //遍历
         for (Element result: results) {
             final Entry.EntryBuilder entryBuilder = Entry.builder();
@@ -84,14 +84,14 @@ public final class StartPageSearchResultProviderImpl implements ISearchResultPro
             entryBuilder.url(a.attr("href"));
             final Element p = result.getElementsByClass("search-item__body").first();
             if (p == null) {
-                entries.add(entryBuilder.build());
-                continue;
+                searchResponse.getEntries().add(entryBuilder.build());
+            } else  {
+                entryBuilder.desc(StringUtils.escapeHtmlEntities(p.text()));
+                searchResponse.getEntries().add(entryBuilder.build());
             }
-            entryBuilder.desc(StringUtils.escapeHtmlEntities(p.text()));
-            entries.add(entryBuilder.build());
         }
-        builder.entries(entries);
-        return builder.status(HttpResponseStatus.OK).build();
+
+        return searchResponse;
     }
 
     Document httpPost(String key, int page) throws IOException {

@@ -15,6 +15,8 @@ import zenuo.gogo.model.SearchResponse;
 import zenuo.gogo.util.UserAgentUtils;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -60,8 +62,7 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
                         && a.childrenSize() == 2
                         && "h3".equals(a.child(0).tagName()))
                 .collect(Collectors.toList());
-        final List<Entry> entries = new ArrayList<>(searchResultElements.size());
-        builder.entries(entries);
+        final SearchResponse searchResponse = builder.status(HttpResponseStatus.OK).build();
         for (Element element : searchResultElements) {
             final QueryStringDecoder decoder = new QueryStringDecoder(element.attr("href"));
             final List<String> q = decoder.parameters().get("q");
@@ -69,12 +70,12 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
                 continue;
             }
             final Entry entry = new Entry();
-            entries.add(entry);
+            searchResponse.getEntries().add(entry);
             entry.setUrl(q.get(0));
             entry.setName(element.child(0).text());
             entry.setDesc(element.parent().parent().child(2).text());
         }
-        return builder.status(HttpResponseStatus.OK).build();
+        return searchResponse;
     }
 
     /**
@@ -94,7 +95,7 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
         httpGet.setHeader("Accept-Language", "en");
         httpGet.setHeader("User-Agent", UserAgentUtils.get());
         //HTTP请求
-        return Jsoup.parse(httpClientProvider.execute(httpGet));
+        return Jsoup.parse(new File("/Users/zenuo/Downloads/nginx - Google Search.html"), StandardCharsets.UTF_8.name());
     }
 
     /**

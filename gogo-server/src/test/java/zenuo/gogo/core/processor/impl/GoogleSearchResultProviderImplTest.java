@@ -6,16 +6,18 @@ import zenuo.gogo.TestEnvironment;
 import zenuo.gogo.model.SearchResponse;
 import zenuo.gogo.util.JsonUtils;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.ServiceLoader;
 
 public class GoogleSearchResultProviderImplTest extends TestEnvironment {
 
-    private GoogleSearchResultProviderImpl searchResultProvider = ServiceLoader.load(GoogleSearchResultProviderImpl.class).iterator().next();
+    @Inject
+    private GoogleSearchResultProviderImpl searchResultProvider;
 
     @Test
-    public void request() throws IOException {
+    public void request() throws Exception {
 
         final Document document = searchResultProvider.httpGet("udp", 1);
         if (document != null) {

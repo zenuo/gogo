@@ -9,6 +9,6 @@ import lombok.extern.slf4j.Slf4j;
  * @date 2019/05/08
  */
 @Slf4j
-public class TestEnvironment {
-
+@org.testng.annotations.Guice(modules = GogoModule.class)
+public abstract class TestEnvironment {
 }
