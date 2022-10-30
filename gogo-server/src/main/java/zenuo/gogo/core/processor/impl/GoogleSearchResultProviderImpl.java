@@ -95,7 +95,7 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
         httpGet.setHeader("Accept-Language", "en");
         httpGet.setHeader("User-Agent", UserAgentUtils.get());
         //HTTP请求
-        return Jsoup.parse(new File("/Users/zenuo/Downloads/nginx - Google Search.html"), StandardCharsets.UTF_8.name());
+        return Jsoup.parse(httpClientProvider.execute(httpGet));
     }
 
     /**
