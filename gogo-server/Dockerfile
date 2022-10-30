@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk-alpine:17-jre
+FROM azul/zulu-openjdk-alpine:17-jre-headless-latest
 ENV TZ=Asia/Shanghai
 WORKDIR /opt/gogo
 ADD target/gogo.jar /opt/gogo/gogo.jar
