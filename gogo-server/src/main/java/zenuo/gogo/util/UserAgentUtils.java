@@ -2,6 +2,8 @@ package zenuo.gogo.util;
 
 /**
  * 用户代理工具类
+ * 
+ * https://www.zytrax.com/tech/web/mobile_ids.html
  */
 public final class UserAgentUtils {
 
@@ -33,5 +35,6 @@ public final class UserAgentUtils {
             INDEX = 0;
         }
         return USER_AGENTS[INDEX++];
+        // return "NokiaN-Gage/1.0 SymbianOS/6.1 Series60/1.2 Profile/MIDP-1.0 Configuration/CLDC-1.0";
     }
 }

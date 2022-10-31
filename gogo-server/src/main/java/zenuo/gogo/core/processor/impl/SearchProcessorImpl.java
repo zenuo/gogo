@@ -25,13 +25,15 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class SearchProcessorImpl implements ISearchProcessor {
 
-    private static final byte[] RESPONSE_BODY_KEYWORD_EMPTY = "{\"error\": \"the keyword should not be empty\"}".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] RESPONSE_BODY_KEYWORD_EMPTY = "{\"error\": \"the keyword should not be empty\"}"
+            .getBytes(StandardCharsets.UTF_8);
     private final IPageBuilder resultPageBuilder;
     private final ICacheService cacheService;
     private final List<ISearchResultProvider> searchResultProviders;
 
     @Inject
-    public SearchProcessorImpl(IResultPageBuilder resultPageBuilder, ICacheService cacheService, Set<ISearchResultProvider> searchResultProviderSet) {
+    public SearchProcessorImpl(IResultPageBuilder resultPageBuilder, ICacheService cacheService,
+            Set<ISearchResultProvider> searchResultProviderSet) {
         this.resultPageBuilder = resultPageBuilder;
         this.cacheService = cacheService;
         this.searchResultProviders = searchResultProviderSet
@@ -41,7 +43,8 @@ public final class SearchProcessorImpl implements ISearchProcessor {
     }
 
     @Override
-    public void process(ChannelHandlerContext ctx, FullHttpRequest request, QueryStringDecoder decoder, ResponseType responseType) {
+    public void process(ChannelHandlerContext ctx, FullHttpRequest request, QueryStringDecoder decoder,
+            ResponseType responseType) {
         final List<String> keys = decoder.parameters().get("q");
         if (keys == null || "".equals(keys.get(0))) {
             response(ctx,
@@ -86,15 +89,18 @@ public final class SearchProcessorImpl implements ISearchProcessor {
                 response(ctx,
                         request,
                         responseType,
-                        responseType == ResponseType.API ? ("{\"error\": \"try again later\"}").getBytes(StandardCharsets.UTF_8)
-                                : resultPageBuilder.build(SearchResponse.builder().key(key).error("try again later").build()),
+                        responseType == ResponseType.API
+                                ? ("{\"error\": \"try again later\"}").getBytes(StandardCharsets.UTF_8)
+                                : resultPageBuilder
+                                        .build(SearchResponse.builder().key(key).error("try again later").build()),
                         HttpResponseStatus.OK);
 
             } else {
                 response(ctx,
                         request,
                         responseType,
-                        responseType == ResponseType.API ? JsonUtils.toJsonBytes(response) : resultPageBuilder.build(response),
+                        responseType == ResponseType.API ? JsonUtils.toJsonBytes(response)
+                                : resultPageBuilder.build(response),
                         response.getStatus() == null ? HttpResponseStatus.OK : response.getStatus());
             }
         }

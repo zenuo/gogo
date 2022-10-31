@@ -7,18 +7,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import zenuo.gogo.core.config.ApplicationConfig;
 import zenuo.gogo.core.processor.ISearchResultProvider;
 import zenuo.gogo.model.Entry;
 import zenuo.gogo.model.SearchResponse;
 import zenuo.gogo.util.UserAgentUtils;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.net.http.*;
+import java.net.http.HttpResponse.BodyHandlers;
 
 /**
  * 谷歌搜索
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public final class GoogleSearchResultProviderImpl implements ISearchResultProvider {
 
-    private final ApplicationConfig applicationConfig;
+    private final HttpClient httpClient;
 
     @Override
     public int priority() {
@@ -46,10 +46,11 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
         final SearchResponse.SearchResponseBuilder builder = SearchResponse.builder();
         builder.key(key);
         builder.page(page);
+        // todo
         final Document document;
         try {
             document = httpGet(key, page);
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("http error", e);
             throw new RuntimeException(e);
         }
@@ -82,16 +83,19 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
      * @param page page number
      * @return document instance if succeed, null otherwise
      */
-    Document httpGet(final String key, final int page) throws IOException {
+    Document httpGet(final String key, final int page) throws Exception {
         //构造URL
         final int start = page > 1 ? (page - 1) * 10 : 0;
         final String url = String.format(GOOGLE_SEARCH_URL_TEMPLATE,
                 URLEncoder.encode(key, StandardCharsets.UTF_8),
                 start);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(java.net.URI.create(url))
+                .GET()
+                .header("User-Agent", UserAgentUtils.get())
+                .build();
+        String body = httpClient.send(request, BodyHandlers.ofString()).body();
         //HTTP请求
-        return Jsoup.connect(url)
-                .timeout(applicationConfig.getHttpTimeout())
-                .userAgent(UserAgentUtils.get())
-                .get();
+        return Jsoup.parse(body);
     }
 }

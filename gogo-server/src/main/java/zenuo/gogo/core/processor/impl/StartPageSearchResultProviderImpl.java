@@ -15,7 +15,9 @@ import zenuo.gogo.util.StringUtils;
 import zenuo.gogo.util.UserAgentUtils;
 
 import javax.inject.Inject;
-import java.io.IOException;
+import java.net.http.*;
+import java.net.http.HttpResponse.*;
+import java.net.http.HttpRequest.*;
 
 /**
  * StartPage搜索
@@ -31,7 +33,7 @@ public final class StartPageSearchResultProviderImpl implements ISearchResultPro
 
     private static final String URL = "https://www.startpage.com/do/search";
 
-    private final ApplicationConfig applicationConfig;
+    private final HttpClient httpClient;
 
     @Override
     public int priority() {
@@ -52,7 +54,8 @@ public final class StartPageSearchResultProviderImpl implements ISearchResultPro
         final Document document;
         try {
             document = httpPost(key, page);
-        } catch (IOException e) {
+        } catch (Exception e) {
+            log.error("http error", e);
             throw new RuntimeException(e);
         }
         //根据class获取结果列表
@@ -83,17 +86,24 @@ public final class StartPageSearchResultProviderImpl implements ISearchResultPro
         return searchResponse;
     }
 
-    Document httpPost(String key, int page) throws IOException {
+    Document httpPost(String key, int page) throws Exception {
         final int startat = page > 1 ? (page - 1) * 10 : 0;
-        return Jsoup.connect(URL)
-                .userAgent(UserAgentUtils.get())
-                .data("cat", "web")
-                .data("cmd", "process_search")
-                .data("language", "english")
-                .data("query", key)
-                .data("startat", String.valueOf(startat))
-                .timeout(applicationConfig.getHttpTimeout())
-                .post();
+        String body = java.util.Map.of("cat", "web", "cmd", "process_search", "language", "english",
+                "query", key, "startat", String.valueOf(startat))
+                .entrySet()
+                .stream()
+                .map(entry -> String.join("=",
+                        java.net.URLEncoder.encode(entry.getKey().toString(), java.nio.charset.StandardCharsets.UTF_8),
+                        java.net.URLEncoder.encode(entry.getValue().toString(),
+                                java.nio.charset.StandardCharsets.UTF_8)))
+                .collect(java.util.stream.Collectors.joining("&"));
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+        .uri(java.net.URI.create(URL))
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .header("User-Agent", UserAgentUtils.get())
+                .build();
+        String responseBody = httpClient.send(httpRequest, BodyHandlers.ofString()).body();
+        return Jsoup.parse(responseBody);
     }
 
     /**

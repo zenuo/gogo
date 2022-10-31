@@ -15,7 +15,6 @@ import zenuo.gogo.core.processor.impl.GoogleSearchResultProviderImpl;
 import zenuo.gogo.core.processor.impl.IndexProcessorImpl;
 import zenuo.gogo.core.processor.impl.LintProcessorImpl;
 import zenuo.gogo.core.processor.impl.SearchProcessorImpl;
-import zenuo.gogo.core.processor.impl.StartPageSearchResultProviderImpl;
 import zenuo.gogo.core.processor.impl.StaticProcessorImpl;
 import zenuo.gogo.core.processor.impl.SubstituteProcessorImpl;
 import zenuo.gogo.service.ICacheService;
@@ -25,11 +24,13 @@ import zenuo.gogo.web.IResultPageBuilder;
 import zenuo.gogo.web.IndexPageBuilder;
 import zenuo.gogo.web.ResultPageBuilder;
 
+import java.net.http.HttpClient;
+
 /**
  * 入口类
  *
  * @author zenuo
- * 2018-06-02 19:12:15
+ *         2018-06-02 19:12:15
  */
 public class GogoApplication {
     public static void main(String[] args) {
@@ -50,12 +51,15 @@ class GogoModule extends AbstractModule {
         bind(ICacheService.class).to(EhcacheCacheImpl.class);
         bind(IIndexPageBuilder.class).to(IndexPageBuilder.class);
         bind(IResultPageBuilder.class).to(ResultPageBuilder.class);
+        bind(HttpClient.class).toInstance(HttpClient.newBuilder()
+                .connectTimeout(java.time.Duration.ofMillis(ApplicationConfig.INSTANCE.getHttpTimeout()))
+                .followRedirects(HttpClient.Redirect.ALWAYS)
+                .build());
 
         bind(ApplicationConfig.class).toInstance(ApplicationConfig.INSTANCE);
 
-        final Multibinder<ISearchResultProvider> iSearchResultProviderMultibinder
-                = Multibinder.newSetBinder(binder(), ISearchResultProvider.class);
+        final Multibinder<ISearchResultProvider> iSearchResultProviderMultibinder = Multibinder.newSetBinder(binder(),
+                ISearchResultProvider.class);
         iSearchResultProviderMultibinder.addBinding().to(GoogleSearchResultProviderImpl.class);
-        iSearchResultProviderMultibinder.addBinding().to(StartPageSearchResultProviderImpl.class);
     }
 }
