@@ -13,6 +13,7 @@ import zenuo.gogo.model.SearchResponse;
 import zenuo.gogo.util.UserAgentUtils;
 
 import javax.inject.Inject;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -86,8 +87,8 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
                 .GET()
                 .header("User-Agent", UserAgentUtils.get())
                 .build();
-        String body = httpClient.send(request, BodyHandlers.ofString()).body();
-        //HTTP请求
-        return Jsoup.parse(body);
+        try (InputStream body = httpClient.send(request, BodyHandlers.ofInputStream()).body()) {
+            return Jsoup.parse(body, StandardCharsets.UTF_8.name(), url);
+        }
     }
 }
