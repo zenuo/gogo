@@ -14,11 +14,12 @@ import zenuo.gogo.util.UserAgentUtils;
 
 import javax.inject.Inject;
 import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.net.http.*;
-import java.net.http.HttpResponse.BodyHandlers;
 
 /**
  * 谷歌搜索
@@ -46,20 +47,28 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
         final SearchResponse.SearchResponseBuilder builder = SearchResponse.builder();
         builder.key(key);
         builder.page(page);
-        // todo
-        final Document document;
-        try {
-            document = httpGet(key, page);
-        } catch (Exception e) {
-            log.error("http error", e);
-            throw new RuntimeException(e);
+        List<Element> searchResultElements = null;
+        for (int i = 0; i < 5; i++) {
+            final Document document;
+            try {
+                document = httpGet(key, page);
+            } catch (Exception e) {
+                log.error("http error", e);
+                throw new RuntimeException(e);
+            }
+            searchResultElements = document.getElementsByTag("a").stream()
+                    .filter(a -> a.hasAttr("href")
+                            && a.attr("href").startsWith("/url?")
+                            && a.childrenSize() == 2
+                            && "h3".equals(a.child(0).tagName()))
+                    .collect(Collectors.toList());
+            if (!searchResultElements.isEmpty()) {
+                break;
+            }
         }
-        final List<Element> searchResultElements = document.getElementsByTag("a").stream()
-                .filter(a -> a.hasAttr("href")
-                        && a.attr("href").startsWith("/url?")
-                        && a.childrenSize() == 2
-                        && "h3".equals(a.child(0).tagName()))
-                .collect(Collectors.toList());
+        if (searchResultElements.isEmpty()) {
+            return builder.status(HttpResponseStatus.INTERNAL_SERVER_ERROR).build();
+        }
         final SearchResponse searchResponse = builder.status(HttpResponseStatus.OK).build();
         for (Element element : searchResultElements) {
             final QueryStringDecoder decoder = new QueryStringDecoder(element.attr("href"));
