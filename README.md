@@ -1,18 +1,4 @@
-# 勾勾：一个基于谷歌的搜索工具
-
-## 是什么
-
-「勾勾」是一个搜索工具，搜索结果基于[谷歌搜索](https://google.com)和[Startpage](https://www.startpage.com/en/)，致力于「安全、简洁」的搜索体验。
-
-### 安全
-
-- 「勾勾」是一个在`用户`与`谷歌`之间的代理，谷歌无法得知用户的隐私（如UserAgent、Cookie等），也无法`跟踪用户的结果点击`
-- 部署简单，基于`JDK 11`（提供有[Docker镜像](https://hub.docker.com/r/zenuo/gogo/)），仅需一台处于`可以访问谷歌的网络`的主机即可
-
-### 简洁
-
-- ~~精简~~（丑陋）到极致的Web前端
-- 提供Web API，轻松地自定义搜索前端
+「勾勾」是一个搜索工具，搜索结果基于[谷歌搜索](https://google.com)，致力于「安全、简洁」的搜索体验。
 
 ### 实例列表
 
@@ -89,24 +75,9 @@ $ curl -X GET -k "https://176.122.157.231:5000/api/lint?q=github"
 }
 ```
 
-## 开发计划
-
-- 后端实现细节文档
-
-## 使用框架
-
-> 站在巨人的肩膀上
-
-- [Netty](https://netty.io/)
-- [Ehcache](https://www.ehcache.org/)
-- [Jsoup](https://jsoup.org/)
-- [Spring Boot](https://github.com/spring-projects/spring-boot)
-
-## 如何部署
+## 上手
 
 ### 1 Docker
-
-> 感谢[liusen373](https://github.com/liusen373)同学的建议，我们创建了镜像仓库[zenuo/gogo](https://hub.docker.com/r/zenuo/gogo)，参考如下：
 
 ```
 # 拉取镜像
@@ -124,51 +95,9 @@ $ docker logs -f gogo
 ### 2 从源代码构建
 
 ```
-# 克隆工程到本地
 $ git clone https://github.com/zenuo/gogo.git
-# 切换到server文件夹
 $ cd gogo/gogo-server
-# 使用Maven构建，需要JDK 11
-$ mvn -DskipTests=true package
-# 拷贝Jar包到工作路径（假设为/opt/gogo）
-$ sudo mkdir -p /opt/gogo && sudo chown -R $(whoami) /opt/gogo && cp target/gogo-1.7.0.jar /opt/gogo/gogo.jar
-# 拷贝脚本（必须）和配置文件（可选）到工作路径
-$ cp ./gogo.py /opt/gogo && cp ./application.yml /opt/gogo
-# 切换到工作路径
-$ cd /opt/gogo 
-# 启动
-$ python3 gogo.py start
-# 重启（可选）
-$ python3 gogo.py restart
-# 停止（可选）
-$ python3 gogo.py stop
-```
-
-## 实例集合
-
-欢迎通过Issue分享实例供学习使用🏇
-
-## 实现思路
-
-思路参考了[MarioVilas/googlesearch](https://github.com/MarioVilas/googlesearch)，感谢🌷
-
-```javascript
-// User-Agent: Mozilla/5.0 (Mobile; Nokia 8110 4G; rv:48.0) Gecko/48.0 Firefox/48.0 KAIOS/2.5
-
-let searchResultElements = Array.from(document.getElementsByTagName("a"))
-  .filter(e => e.hasAttribute("href") 
-    && e.getAttribute("href").startsWith("/url?") 
-    && e.childElementCount == 2
-    && e.childNodes[0].tagName == "H3");
-
-let entries = searchResultElements.map(e => {
-  let url = new URL(e).searchParams.get("q");
-  let name = e.children[0].textContent;
-  let desc = e.parentNode.parentElement.children[2].textContent;
-  return {
-    "url": url,
-    "name": name,
-    "desc": desc
-  };
-})
+$ mvn -DskipTests=true clean package
+$ mv target/gogo.jar .
+$ sh ./gogo-server.sh
 ```

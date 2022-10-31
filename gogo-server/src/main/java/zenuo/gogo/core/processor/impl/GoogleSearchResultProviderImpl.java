@@ -21,14 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * 谷歌搜索
- * <p>
- * 网址：https://google.com
- *
- * @author zenuo
- * @date 2019/05/15
- */
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public final class GoogleSearchResultProviderImpl implements ISearchResultProvider {
@@ -39,8 +31,6 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
     public int priority() {
         return 0;
     }
-
-    public static final String GOOGLE_SEARCH_URL_TEMPLATE = "https://www.google.com/search?q=%s&start=%d";
 
     @Override
     public SearchResponse search(String key, int page) {
@@ -85,17 +75,10 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
         return searchResponse;
     }
 
-    /**
-     * Make the request of google search0
-     *
-     * @param key  keyword
-     * @param page page number
-     * @return document instance if succeed, null otherwise
-     */
     Document httpGet(final String key, final int page) throws Exception {
         //构造URL
         final int start = page > 1 ? (page - 1) * 10 : 0;
-        final String url = String.format(GOOGLE_SEARCH_URL_TEMPLATE,
+        final String url = String.format("https://www.google.com/search?q=%s&start=%d",
                 URLEncoder.encode(key, StandardCharsets.UTF_8),
                 start);
         HttpRequest request = HttpRequest.newBuilder()

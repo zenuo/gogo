@@ -1,7 +1,9 @@
 gogo.iml
 target
 .idea
-log
+log/*
+*.log
+*.log.gz
 *.jar
 *.sh
 dependency-reduced-pom.xml

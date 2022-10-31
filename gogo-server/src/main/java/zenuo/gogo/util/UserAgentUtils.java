@@ -35,6 +35,5 @@ public final class UserAgentUtils {
             INDEX = 0;
         }
         return USER_AGENTS[INDEX++];
-        // return "NokiaN-Gage/1.0 SymbianOS/6.1 Series60/1.2 Profile/MIDP-1.0 Configuration/CLDC-1.0";
     }
 }
