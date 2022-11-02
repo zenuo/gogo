@@ -21,11 +21,11 @@ async fn main() {
             "Mozilla/5.0 (Mobile; Nokia 8110 4G; rv:46.0) Gecko/46.0 Firefox/46.0 KAIOS/2.5",
         ),
     );
-    let proxy = reqwest::Proxy::http("socks5://127.0.0.1:1080").expect("socks proxy");
+    // let proxy = reqwest::Proxy::http("socks5://127.0.0.1:1080").expect("socks proxy");
     let http_client = reqwest::ClientBuilder::new()
         .connect_timeout(Duration::from_secs(60))
         .default_headers(headers)
-        .proxy(proxy)
+        // .proxy(proxy)
         .connection_verbose(true)
         .pool_max_idle_per_host(10)
         .build()
