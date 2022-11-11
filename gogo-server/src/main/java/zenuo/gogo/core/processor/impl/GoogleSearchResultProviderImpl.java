@@ -51,7 +51,7 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
                     .filter(a -> a.hasAttr("href")
                             && a.attr("href").startsWith("/url?")
                             && a.childrenSize() == 2
-                            && "h3".equals(a.child(0).tagName()))
+                            && "span".equals(a.child(0).tagName()))
                     .collect(Collectors.toList());
             if (!searchResultElements.isEmpty()) {
                 break;
@@ -71,7 +71,7 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
             searchResponse.getEntries().add(entry);
             entry.setUrl(q.get(0));
             entry.setName(element.child(0).text());
-            entry.setDesc(element.parent().parent().child(2).text());
+            entry.setDesc(element.parent().parent().child(1).text());
         }
         return searchResponse;
     }
