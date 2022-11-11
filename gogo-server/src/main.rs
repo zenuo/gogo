@@ -1,62 +1,91 @@
 use html5ever::tendril::TendrilSink;
-use reqwest::header;
+use once_cell::sync::Lazy;
+use reqwest::{Client};
 use serde::{Deserialize, Serialize};
 use std::{
-    collections::{HashMap, LinkedList, VecDeque},
-    time::Duration, vec, io::Read,
+    collections::{HashMap, VecDeque},
+    time::Duration,
 };
 use url::Url;
 use warp::Filter;
 
-#[tokio::main]
-async fn main() {
-    let proxy = reqwest::Proxy::http("socks5h://127.0.0.1:1080").expect("socks proxy");
-    let mut headers = header::HeaderMap::new();
-    headers.insert(
-        "user-agent",
-        header::HeaderValue::from_static(
-            "Lynx/2.8.5rel.1 libwww-FM/2.14 SSL-MM/1.4.1 GNUTLS/0.8.12",
-        ),
-    );
-    let http_client = reqwest::ClientBuilder::new()
+#[derive(Deserialize, Serialize)]
+struct SearchRequest {
+    q: String,
+    p: u16,
+}
+
+#[derive(Deserialize, Serialize)]
+struct ResultEntry {
+    name: String,
+    url: String,
+    desc: String,
+}
+
+#[derive(Deserialize, Serialize)]
+struct SearchResponse {
+    error: Option<String>,
+    entries: Option<VecDeque<ResultEntry>>,
+}
+
+static HTTP_CLIENT: Lazy<Client> = Lazy::new(|| {
+    reqwest::ClientBuilder::new()
         .connect_timeout(Duration::from_secs(60))
-        .default_headers(headers)
-        .proxy(proxy)
         .danger_accept_invalid_certs(true)
         .connection_verbose(true)
         .pool_max_idle_per_host(10)
         .build()
-        .expect("build client");
-    let res = http_client
-        .get("https://h02:5001/search") // todo
-        .query(&[("q", "nginx"), ("start", "0")])
+        .expect("build client")
+});
+
+#[tokio::main]
+async fn main() {
+    let api = warp::path("api");
+    let search = api
+        .and(warp::path("search"))
+        .and(warp::query::<SearchRequest>())
+        .and_then(render_response);
+    warp::serve(search).run(([127, 0, 0, 1], 3030)).await;
+}
+
+async fn fetch(request: SearchRequest) -> Result<String, reqwest::Error> {
+    let start = if request.p > 1 {
+        (request.p - 1) * 10
+    } else {
+        0
+    };
+    let res = HTTP_CLIENT
+        .get("https://google.com/search")
+        // .get("https://h02:5001/search")
+        .query(&[("q", request.q), ("start", start.to_string())])
+        .header(
+            "user-agent",
+            "Lynx/2.8.5rel.1 libwww-FM/2.14 SSL-MM/1.4.1 GNUTLS/0.8.12",
+        )
         .send()
-        .await
-        .expect("http request");
-    let body = res.text().await.expect("body");
-    // let mut file = std::fs::File::open("/Users/zenuo/Downloads/nginx - Google Search.html").expect("open file error");
-    // let mut buf = vec![];
-    // file.read_to_end(&mut buf).expect("read file");
-    // let body = String::from_utf8_lossy(&buf).to_string();
-    kuchiki(body);
+        .await?
+        .text()
+        .await?;
+    Ok(res)
 }
 
-async fn http_server() {
-    let hi = warp::path("hello")
-        .and(warp::path::param())
-        .and(warp::header("user-agent"))
-        .map(|param: String, agent: String| format!("Hello {}, whose agent is {}", param, agent));
-    let hello_world = warp::path::end().map(|| "Hello, World at root!");
-    let routes = warp::get().and(hello_world.or(hi));
-    warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
+async fn render_response(request: SearchRequest) -> Result<impl warp::Reply, warp::Rejection> {
+    let resp = fetch(request).await;
+    match resp {
+        Ok(body) => {
+            let result_enteries = kuchiki(body);
+            let response = SearchResponse {
+                error: None,
+                entries: Some(result_enteries),
+            };
+            Ok(warp::reply::json(&response))
+        }
+        Err(_err) => Err(warp::reject()),
+    }
 }
 
-//  fn google_search(page: u32, keyword: String) -> SearchResponse {
-
-// }
-
-fn kuchiki(body: String) {
-    let mut resultEnteries: VecDeque<ResultEntry> = VecDeque::new();
+fn kuchiki(body: String) -> VecDeque<ResultEntry> {
+    let mut result_enteries: VecDeque<ResultEntry> = VecDeque::new();
 
     let document = kuchiki::parse_html().one(body);
 
@@ -100,22 +129,11 @@ fn kuchiki(body: String) {
                 .children()
                 .last()
                 .unwrap()
-                .text_contents().trim().to_string(),
+                .text_contents()
+                .trim()
+                .to_string(),
         };
-        resultEnteries.push_back(re);
+        result_enteries.push_back(re);
     }
-    print!("{}", resultEnteries.len());
-}
-
-#[derive(Deserialize, Serialize)]
-struct ResultEntry {
-    name: String,
-    url: String,
-    desc: String,
-}
-
-#[derive(Deserialize, Serialize)]
-struct SearchResponse {
-    error: String,
-    entries: LinkedList<ResultEntry>,
+    result_enteries
 }
