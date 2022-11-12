@@ -168,9 +168,11 @@ final class EntryBuilder {
                 .append(entry.getName())
                 .append(HTML_BEFORE_URL)
                 .append(URLDecoder.decode(entry.getUrl(), StandardCharsets.UTF_8))
-                .append(HTML_BEFORE_DESC)
-                .append(entry.getDesc())
-                .append(HTML_TAIL);
+                .append(HTML_BEFORE_DESC);
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(entry.getDesc())) {
+            target.append(entry.getDesc())
+                    .append(HTML_TAIL);
+        }
     }
 }
 
