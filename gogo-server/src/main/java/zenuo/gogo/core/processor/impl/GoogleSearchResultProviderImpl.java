@@ -78,7 +78,7 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
             if (parent.childrenSize()>=2) {
                 final String text = parent.child(1).text();
                 if (StringUtils.isNotBlank(text)) {
-                    entry.setDesc(text);
+                    entry.setDesc(text.trim());
                 }
             }
         }
