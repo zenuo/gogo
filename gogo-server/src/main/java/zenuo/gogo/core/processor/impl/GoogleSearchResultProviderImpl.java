@@ -4,6 +4,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -50,8 +51,8 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
             searchResultElements = document.getElementsByTag("a").stream()
                     .filter(a -> a.hasAttr("href")
                             && a.attr("href").startsWith("/url?")
-                            && a.childrenSize() == 2
-                            && "h3".equals(a.child(0).tagName()))
+                            && a.childrenSize() > 0
+                    )
                     .collect(Collectors.toList());
             if (!searchResultElements.isEmpty()) {
                 break;
@@ -71,7 +72,13 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
             searchResponse.getEntries().add(entry);
             entry.setUrl(q.get(0));
             entry.setName(element.child(0).text());
-            entry.setDesc(element.parent().parent().child(2).text());
+            final Element parent = element.parent().parent();
+            if (parent.childrenSize()>2) {
+                final String text = parent.child(2).text();
+                if (StringUtils.isNotBlank(text)) {
+                    entry.setDesc(text);
+                }
+            }
         }
         return searchResponse;
     }
