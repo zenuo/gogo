@@ -51,6 +51,7 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
             searchResultElements = document.getElementsByTag("a").stream()
                     .filter(a -> a.hasAttr("href")
                             && a.attr("href").startsWith("/url?")
+
                             && a.childrenSize() > 0
                     )
                     .collect(Collectors.toList());
@@ -72,6 +73,7 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
             searchResponse.getEntries().add(entry);
             entry.setUrl(q.get(0));
             entry.setName(element.child(0).text());
+
             final Element parent = element.parent().parent();
             if (parent.childrenSize()>=2) {
                 final String text = parent.child(1).text();
