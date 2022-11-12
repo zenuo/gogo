@@ -73,8 +73,8 @@ public final class GoogleSearchResultProviderImpl implements ISearchResultProvid
             entry.setUrl(q.get(0));
             entry.setName(element.child(0).text());
             final Element parent = element.parent().parent();
-            if (parent.childrenSize()>2) {
-                final String text = parent.child(2).text();
+            if (parent.childrenSize()>=2) {
+                final String text = parent.child(1).text();
                 if (StringUtils.isNotBlank(text)) {
                     entry.setDesc(text);
                 }
