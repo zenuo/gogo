@@ -27,7 +27,7 @@ struct ResultEntry {
 #[derive(Deserialize, Serialize)]
 struct SearchResponse {
     error: Option<String>,
-    entries: Option<VecDeque<ResultEntry>>,
+    result: Option<VecDeque<ResultEntry>>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -68,7 +68,8 @@ async fn main() {
         .and(warp::path("search"))
         .and(warp::query::<SearchRequest>())
         .and_then(render_response);
-    warp::serve(search).run(listen_address).await;
+    let static_path = warp::fs::dir(&CONFIG.static_path);
+    warp::serve(search.or(static_path)).run(listen_address).await;
 }
 
 async fn fetch(request: SearchRequest) -> Result<String, reqwest::Error> {
@@ -98,7 +99,7 @@ async fn render_response(request: SearchRequest) -> Result<impl warp::Reply, war
             let result_enteries = kuchiki(body);
             let response = SearchResponse {
                 error: None,
-                entries: Some(result_enteries),
+                result: Some(result_enteries),
             };
             Ok(warp::reply::json(&response))
         }
