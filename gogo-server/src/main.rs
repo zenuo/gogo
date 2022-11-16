@@ -1,13 +1,15 @@
 use html5ever::tendril::TendrilSink;
 use once_cell::sync::Lazy;
-use reqwest::{Client};
+use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::{
     collections::{HashMap, VecDeque},
-    time::Duration,
+    time::Duration, fs::File, str::FromStr,
 };
 use url::Url;
 use warp::Filter;
+use clap::Parser;
+use std::net::SocketAddr;
 
 #[derive(Deserialize, Serialize)]
 struct SearchRequest {
@@ -28,6 +30,26 @@ struct SearchResponse {
     entries: Option<VecDeque<ResultEntry>>,
 }
 
+#[derive(Serialize, Deserialize)]
+struct Config {
+    listen_address: String,
+    google_base_url: String,
+    static_path: String,
+    substitution: Option<HashMap<String, String>>,
+}
+
+#[derive(Parser)]
+struct Args {
+    config: String,
+}
+
+static CONFIG: Lazy<Config> = Lazy::new(|| {
+    let args = Args::parse();
+    let config_file = File::open(args.config).expect("config file should open read only");
+    let config: Config = serde_json::from_reader(config_file).expect("file should be proper JSON");
+    config
+});
+
 static HTTP_CLIENT: Lazy<Client> = Lazy::new(|| {
     reqwest::ClientBuilder::new()
         .connect_timeout(Duration::from_secs(60))
@@ -40,12 +62,13 @@ static HTTP_CLIENT: Lazy<Client> = Lazy::new(|| {
 
 #[tokio::main]
 async fn main() {
+    let listen_address:SocketAddr = SocketAddr::from_str(&CONFIG.listen_address).expect("Invalid listen address");
     let api = warp::path("api");
     let search = api
         .and(warp::path("search"))
         .and(warp::query::<SearchRequest>())
         .and_then(render_response);
-    warp::serve(search).run(([127, 0, 0, 1], 3030)).await;
+    warp::serve(search).run(listen_address).await;
 }
 
 async fn fetch(request: SearchRequest) -> Result<String, reqwest::Error> {
@@ -55,8 +78,7 @@ async fn fetch(request: SearchRequest) -> Result<String, reqwest::Error> {
         0
     };
     let res = HTTP_CLIENT
-        .get("https://google.com/search")
-        // .get("https://h02:5001/search")
+        .get(format!("{}/search", CONFIG.google_base_url))
         .query(&[("q", request.q), ("start", start.to_string())])
         .header(
             "user-agent",

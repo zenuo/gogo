@@ -15,6 +15,7 @@ reqwest = { version = "0.11", features = ["socks"] }
 url = "2.3.1"
 kuchiki = "0.8.1"
 once_cell = "1.16.0"
+clap = { version = "4.0", features = ["derive"] }
 
 [profile.dev]
 opt-level = 0
