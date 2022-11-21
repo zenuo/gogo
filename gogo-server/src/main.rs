@@ -1,15 +1,17 @@
+use clap::Parser;
 use html5ever::tendril::TendrilSink;
 use once_cell::sync::Lazy;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
+use std::net::SocketAddr;
 use std::{
     collections::{HashMap, VecDeque},
-    time::Duration, fs::File, str::FromStr,
+    fs::File,
+    str::FromStr,
+    time::Duration,
 };
 use url::Url;
 use warp::Filter;
-use clap::Parser;
-use std::net::SocketAddr;
 
 #[derive(Deserialize, Serialize)]
 struct SearchRequest {
@@ -21,7 +23,7 @@ struct SearchRequest {
 struct ResultEntry {
     name: String,
     url: String,
-    desc: String,
+    desc: Option<String>,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -62,14 +64,17 @@ static HTTP_CLIENT: Lazy<Client> = Lazy::new(|| {
 
 #[tokio::main]
 async fn main() {
-    let listen_address:SocketAddr = SocketAddr::from_str(&CONFIG.listen_address).expect("Invalid listen address");
+    let listen_address: SocketAddr =
+        SocketAddr::from_str(&CONFIG.listen_address).expect("Invalid listen address");
     let api = warp::path("api");
     let search = api
         .and(warp::path("search"))
         .and(warp::query::<SearchRequest>())
         .and_then(render_response);
     let static_path = warp::fs::dir(&CONFIG.static_path);
-    warp::serve(search.or(static_path)).run(listen_address).await;
+    warp::serve(search.or(static_path))
+        .run(listen_address)
+        .await;
 }
 
 async fn fetch(request: SearchRequest) -> Result<String, reqwest::Error> {
@@ -125,38 +130,70 @@ fn kuchiki(body: String) -> VecDeque<ResultEntry> {
             continue;
         }
         let node = nd.as_node();
-        if node.children().count() != 4 {
+        if node.children().count() == 0 {
             continue;
         }
         let fc = node.first_child().unwrap();
-        let first_child = fc.as_element().unwrap();
-        let fc_tag = first_child.name.local.to_string();
-        if !fc_tag.eq("span") {
-            continue;
-        }
+        // let first_child = fc.as_element().unwrap();
+        // let fc_tag = first_child.name.local.to_string();
+        // if !fc_tag.eq("span") {
+        //     continue;
+        // }
         let hash_query: HashMap<_, _> = base_url
             .join(url)
             .unwrap()
             .query_pairs()
             .into_owned()
             .collect();
-        let re = ResultEntry {
-            name: fc.first_child().unwrap().text_contents(),
-            url: hash_query.get("q").unwrap().to_string(),
-            desc: nd
-                .as_node()
-                .parent()
-                .unwrap()
-                .parent()
-                .unwrap()
-                .children()
-                .last()
-                .unwrap()
-                .text_contents()
-                .trim()
-                .to_string(),
+        let parent = node.parent().unwrap().parent().unwrap();
+        let desc = if parent.children().count() >= 2 {
+            Some(
+                parent
+                    .children()
+                    .last()
+                    .unwrap()
+                    .text_contents()
+                    .trim()
+                    .to_string(),
+            )
+        } else {
+            None
         };
-        result_enteries.push_back(re);
+        match fc.first_child() {
+            Some(c) => {
+                let re = ResultEntry {
+                    name: c.text_contents(),
+                    url: hash_query.get("q").unwrap().to_string(),
+                    desc,
+                };
+                result_enteries.push_back(re);
+            }
+            None => {}
+        }
     }
     result_enteries
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::kuchiki;
+    use std::{fs::File, io::Read, path::Path};
+
+    #[test]
+    fn kuchiki_works() {
+        for page in std::fs::read_dir("test/webpage").unwrap() {
+            let path = page.unwrap().path();
+            println!("{}", path.display());
+            let body = read_file(path.as_path());
+            let result = kuchiki(body);
+            println!("{},len:{}", path.display(), result.len())
+        }
+    }
+
+    fn read_file(path: &Path) -> String {
+        let mut file = File::open(path).expect("Unable to open file");
+        let mut buf = vec![];
+        file.read_to_end(&mut buf).expect("read file");
+        String::from_utf8_lossy(&buf).to_string()
+    }
 }
