@@ -134,11 +134,6 @@ fn kuchiki(body: String) -> VecDeque<ResultEntry> {
             continue;
         }
         let fc = node.first_child().unwrap();
-        // let first_child = fc.as_element().unwrap();
-        // let fc_tag = first_child.name.local.to_string();
-        // if !fc_tag.eq("span") {
-        //     continue;
-        // }
         let hash_query: HashMap<_, _> = base_url
             .join(url)
             .unwrap()
