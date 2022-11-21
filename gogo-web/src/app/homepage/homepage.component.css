@@ -1,0 +1,21 @@
+body {
+    text-align: center;
+    background-color: #F8F4E7;
+    color: #552800
+}
+
+h1 {
+    font-size: 50px;
+    font-family: "Times New Roman", Times, serif
+}
+
+footer {
+    font-size: 15px;
+    font-family: Roboto, arial, sans-serif
+}
+
+.main {
+    margin: 0 auto;
+    width: 50%;
+    padding-bottom: 50px
+}

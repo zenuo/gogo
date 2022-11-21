@@ -1,0 +1,24 @@
+<div class="search">
+    <a href="/"><span class="logo"><b>勾勾</b></span></a>
+    <datalist id="lints"></datalist>
+    <form action="/search" method="GET" onsubmit="return q.value!=''">
+        <input id="input" name="q" autocomplete="off" list="lints" type="search" value="udp" onkeyup="requestLints()">
+        <button type="submit">Go</button>
+    </form>
+</div>
+<div *ngIf="error">
+    <h2>抱歉🥺，网络错误，请暂时使用<a href="https://cn.bing.com/search?q={{keyword}}">Bing Search</a></h2>
+</div>
+<ng-template #elseBlock>
+    
+</ng-template>
+<div *ngFor="let entry of result" class="entry">
+    <a class="name" href="{{entry.url}}">{{entry.name}}</a>
+    <br />
+    <span class="url">{{entry.url}}</span>
+    <br />
+    <span class="desc">{{entry.desc}}</span>
+</div>
+<div class="next">
+    <a href="/search?q={{keyword}}&p={{page! + 1}}"><button>Next</button></a>
+</div>
