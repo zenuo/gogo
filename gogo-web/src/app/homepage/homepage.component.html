@@ -3,12 +3,12 @@
         src="https://github.blog/wp-content/uploads/2008/12/forkme_right_orange_ff7600.png?resize=149%2C149"
         class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
 <div class="main">
-    <h1>勾勾</h1>
+    <img class="logo" src="../../assets/logo.svg" />
 
     <datalist id="lints"></datalist>
-    <form [formGroup]="formGroup" action="/search" method="GET" (ngSubmit)="onSubmit()">
-        <input id="input" name="q" formControlName="keyword" autocomplete="off" autofocus="autofocus" list="lints"
+    <form [formGroup]="formGroup" action="/search" method="GET" class="form-wrapper" (ngSubmit)="onSubmit()">
+        <input class="input" placeholder="输入你想搜索的内容" id="input" name="q" formControlName="keyword" autocomplete="off" autofocus="autofocus" list="lints"
             type="search">
-        <button [disabled]="!formGroup.valid" type="submit">Go</button>
+        <button class="button" [disabled]="!formGroup.valid" type="submit">GOGO</button>
     </form>
 </div>

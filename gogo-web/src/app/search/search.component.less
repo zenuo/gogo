@@ -1,0 +1,103 @@
+.search-page {
+    .logo-wrapper {
+        text-align: center;
+        .logo {
+            display: inline-block;
+            width: 120px;
+        }
+    }
+
+    .form-wrapper {
+        padding: 0 16px;
+        .button {
+            display: none;
+        }
+    }
+    .entry-list {
+        padding: 16px;
+        
+    }
+    .entry {
+        display: flex;
+        flex-direction: column;
+        padding: 8px 16px;
+        background-color: #fff;
+        border-radius: 8px;
+        margin-bottom: 12px;
+
+        box-shadow: 0 3px 4px 0 rgba(0,0,0,0.1);
+        &:hover {
+            box-shadow: 2px 4px 7px 0 rgba(0,0,0,0.3);
+            background-color: #ffffffde;
+        }
+
+        .name {
+            margin-bottom: 12px;
+            color: #1558d6;
+            font-size: 20px;
+            font-weight: 600;
+            &:hover {
+                text-decoration: underline;
+            }
+
+        }
+        .url {
+            margin-bottom: 8px;
+            font-size: 12px;
+            word-break: break-all;
+            color: #3c4043;
+        }
+        .desc {
+            display: -webkit-box;
+            font-size: 14px;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            -webkit-line-clamp: 4;
+        }
+    }
+
+    .next {
+        margin-bottom: 16px;
+        padding: 0 16px;
+        text-align: center;
+        .button {
+            width: 100%;
+            height: 40px;
+        }
+    }
+
+    @media screen and (min-width: 900px) {
+        .header {
+            display: flex;
+            align-items: center;
+
+            .form-wrapper {
+                .input {
+                    width: 800px;
+                    height: 40px;
+                }
+                .button {
+                    display: inline-block;
+                    margin-left: 20px;
+                    width: 120px;
+                    height: 38px;
+                    border-radius: 16px;
+                }
+            }
+        }
+        .entry-list {
+            padding-left: 140px;
+            width: 800px;
+            .entry {
+                padding-top: 16px;
+                padding-bottom: 16px;
+                margin-bottom: 16px;
+            }
+        }
+        .next {
+            padding-left: 140px;
+            width: 800px;
+        }
+    }
+
+}
