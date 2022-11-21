@@ -11,7 +11,7 @@ export class DataService {
     private http: HttpClient,
   ) { }
 
-  public search(keyword: string, page: number): Observable<GogoReponse<ResultEntry[]>> {
+  public search(keyword: string, page: number=1): Observable<GogoReponse<ResultEntry[]>> {
     return this.http.get<GogoReponse<ResultEntry[]>>(`/api/search?q=${keyword}&p=${page}`)
   }
 }
@@ -28,5 +28,5 @@ export interface ResultEntry extends GogoResult {
 
 export interface GogoReponse<GogoResult> {
   error?: string,
-  result?: GogoResult,
+  entries?: GogoResult,//todo result
 }

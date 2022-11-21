@@ -1,7 +1,7 @@
 {
   "/api": {
-    "target": "http://127.0.0.1:4999",
-    "secure": false,
+    "target": "https://gogo.webbillion.cn/",
+    "secure": true,
     "logLevel": "debug",
     "changeOrigin": true
   }

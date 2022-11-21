@@ -14,7 +14,7 @@ export class SearchComponent implements OnInit {
     private dataService: DataService,
     private readonly title: Title,
     private router: Router) {
-    
+
   }
 
   keyword?: string
@@ -25,7 +25,7 @@ export class SearchComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParamMap.subscribe((params) => {
       let keyword = params.get('q')
-      let page = Number(params.get('p'))
+      let page = Number(params.get('p') || 1)
       if (keyword == null || page == null) {
         this.router.navigate(['/'])
       } else {
@@ -34,7 +34,7 @@ export class SearchComponent implements OnInit {
         this.title.setTitle(`Gogo | ${keyword}`)
         this.dataService.search(keyword, page).subscribe(r => {
           this.error = r.error;
-          this.result = r.result;
+          this.result = r.entries;
         })
       }
     })
