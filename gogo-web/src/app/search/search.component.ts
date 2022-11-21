@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataService, ResultEntry } from '../data.service';
@@ -9,6 +10,10 @@ import { DataService, ResultEntry } from '../data.service';
   styleUrls: ['./search.component.css']
 })
 export class SearchComponent implements OnInit {
+
+  formGroup = new FormGroup({
+    keyword: new FormControl('')
+  });
 
   constructor(private route: ActivatedRoute,
     private dataService: DataService,
@@ -36,6 +41,15 @@ export class SearchComponent implements OnInit {
           this.error = r.error;
           this.result = r.entries;
         })
+      }
+    })
+  }
+
+  onSubmit() {
+    this.router.navigate(['search'],
+    {
+      queryParams: {
+        "q": this.formGroup.value.keyword
       }
     })
   }

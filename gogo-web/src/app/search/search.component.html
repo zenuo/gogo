@@ -1,9 +1,10 @@
 <div class="search">
     <a href="/"><span class="logo"><b>勾勾</b></span></a>
     <datalist id="lints"></datalist>
-    <form action="/search" method="GET" onsubmit="return q.value!=''">
-        <input id="input" name="q" autocomplete="off" list="lints" type="search" value="udp" onkeyup="requestLints()">
-        <button type="submit">Go</button>
+    <form [formGroup]="formGroup" action="/search" method="GET" (ngSubmit)="onSubmit()">
+        <input id="input" name="q" formControlName="keyword" autocomplete="off" autofocus="autofocus" list="lints"
+            type="search">
+        <button [disabled]="!formGroup.valid" type="submit">Go</button>
     </form>
 </div>
 <div *ngIf="error">
