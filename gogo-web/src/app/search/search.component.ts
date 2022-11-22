@@ -39,7 +39,7 @@ export class SearchComponent implements OnInit {
         this.title.setTitle(`Gogo | ${keyword}`)
         this.dataService.search(keyword, page).subscribe(r => {
           this.error = r.error;
-          this.result = r.result;
+          this.result = r.entries;
         })
       }
     })
