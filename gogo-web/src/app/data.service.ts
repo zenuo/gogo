@@ -28,5 +28,5 @@ export interface ResultEntry extends GogoResult {
 
 export interface GogoReponse<GogoResult> {
   error?: string,
-  entries?: GogoResult,//todo result
+  result?: GogoResult,
 }
