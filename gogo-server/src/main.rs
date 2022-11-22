@@ -30,7 +30,7 @@ struct ResultEntry {
 #[derive(Deserialize, Serialize)]
 struct SearchResponse {
     error: Option<String>,
-    result: Option<VecDeque<ResultEntry>>,
+    entries: Option<VecDeque<ResultEntry>>, // todo result
 }
 
 #[derive(Serialize, Deserialize)]
@@ -120,7 +120,7 @@ async fn render_response(request: SearchRequest) -> Result<impl warp::Reply, war
             let result_enteries = kuchiki(body);
             let response = SearchResponse {
                 error: None,
-                result: Some(result_enteries),
+                entries: Some(result_enteries),
             };
             Ok(warp::reply::json(&response))
         }
