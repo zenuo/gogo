@@ -4,6 +4,7 @@ use once_cell::sync::Lazy;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
+use std::sync::atomic::AtomicU8;
 use std::{
     collections::{HashMap, VecDeque},
     fs::File,
@@ -37,7 +38,9 @@ struct Config {
     listen_address: String,
     google_base_url: String,
     static_path: String,
-    substitution: Option<HashMap<String, String>>,
+    http_client_pool_max_idle_per_host: usize,
+    http_client_connect_timeout_millis: u64,
+    user_agents: Vec<String>,
 }
 
 #[derive(Parser)]
@@ -49,18 +52,23 @@ static CONFIG: Lazy<Config> = Lazy::new(|| {
     let args = Args::parse();
     let config_file = File::open(args.config).expect("config file should open read only");
     let config: Config = serde_json::from_reader(config_file).expect("file should be proper JSON");
+    if config.user_agents.len() == 0 {
+        panic!("'user_agents' cannot be empty!");
+    }
     config
 });
 
 static HTTP_CLIENT: Lazy<Client> = Lazy::new(|| {
     reqwest::ClientBuilder::new()
-        .connect_timeout(Duration::from_secs(60))
+        .connect_timeout(Duration::from_millis(CONFIG.http_client_connect_timeout_millis))
         .danger_accept_invalid_certs(true)
         .connection_verbose(true)
-        .pool_max_idle_per_host(10)
+        .pool_max_idle_per_host(CONFIG.http_client_pool_max_idle_per_host)
         .build()
         .expect("build client")
 });
+
+static USER_AGENT_INDEX: AtomicU8 = AtomicU8::new(0);
 
 #[tokio::main]
 async fn main() {
@@ -83,13 +91,21 @@ async fn fetch(request: SearchRequest) -> Result<String, reqwest::Error> {
     } else {
         0
     };
+    let index_value = USER_AGENT_INDEX.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+    if index_value > 199 {
+        USER_AGENT_INDEX.store(0, std::sync::atomic::Ordering::SeqCst);
+    }
+    let user_agent = match CONFIG
+        .user_agents
+        .get(usize::from(index_value) % CONFIG.user_agents.len())
+    {
+        Some(m) => m,
+        None => "Lynx/2.8.5rel.2 libwww-FM",
+    };
     let res = HTTP_CLIENT
         .get(format!("{}/search", CONFIG.google_base_url))
         .query(&[("q", request.q), ("start", start.to_string())])
-        .header(
-            "user-agent",
-            "Lynx/2.8.5rel.1 libwww-FM/2.14 SSL-MM/1.4.1 GNUTLS/0.8.12",
-        )
+        .header("user-agent", user_agent)
         .send()
         .await?
         .text()
@@ -178,7 +194,6 @@ mod tests {
     fn kuchiki_works() {
         for page in std::fs::read_dir("test/webpage").unwrap() {
             let path = page.unwrap().path();
-            println!("{}", path.display());
             let body = read_file(path.as_path());
             let result = kuchiki(body);
             println!("{},len:{}", path.display(), result.len())
