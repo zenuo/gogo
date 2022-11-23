@@ -80,7 +80,7 @@ async fn main() {
         .and(warp::query::<SearchRequest>())
         .and_then(render_response);
     let static_path = warp::fs::dir(&CONFIG.static_path);
-    warp::serve(search.or(static_path))
+        warp::serve(search.or(static_path))
         .run(listen_address)
         .await;
 }
@@ -187,7 +187,9 @@ fn kuchiki(body: String) -> VecDeque<ResultEntry> {
 
 #[cfg(test)]
 mod tests {
+    use crate::SearchRequest;
     use crate::kuchiki;
+    use crate::fetch;
     use std::{fs::File, io::Read, path::Path};
 
     #[test]
@@ -198,6 +200,16 @@ mod tests {
             let result = kuchiki(body);
             println!("{},len:{}", path.display(), result.len())
         }
+    }
+
+    #[tokio::test]
+    async fn fetch_works() {
+        let search_request = SearchRequest{
+            q: "udp".to_string(),
+            p: 1,
+        };
+        let result = fetch(search_request).await;
+        assert!(result.is_ok());
     }
 
     fn read_file(path: &Path) -> String {
