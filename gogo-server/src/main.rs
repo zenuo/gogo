@@ -1,6 +1,6 @@
 use clap::Parser;
 use html5ever::tendril::TendrilSink;
-use once_cell::sync::Lazy;
+use once_cell::sync::{Lazy, OnceCell};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
@@ -40,6 +40,7 @@ struct Config {
     static_path: String,
     http_client_pool_max_idle_per_host: usize,
     http_client_connect_timeout_millis: u64,
+    danger_accept_invalid_certs: bool,
     user_agents: Vec<String>,
 }
 
@@ -48,22 +49,15 @@ struct Args {
     config: String,
 }
 
-static CONFIG: Lazy<Config> = Lazy::new(|| {
-    let args = Args::parse();
-    let config_file = File::open(args.config).expect("config file should open read only");
-    let config: Config = serde_json::from_reader(config_file).expect("file should be proper JSON");
-    if config.user_agents.len() == 0 {
-        panic!("'user_agents' cannot be empty!");
-    }
-    config
-});
+static CONFIG: OnceCell<Config> = OnceCell::new();
 
 static HTTP_CLIENT: Lazy<Client> = Lazy::new(|| {
+    let config = CONFIG.get().expect("config is not initialized");
     reqwest::ClientBuilder::new()
-        .connect_timeout(Duration::from_millis(CONFIG.http_client_connect_timeout_millis))
+        .connect_timeout(Duration::from_millis(config.http_client_connect_timeout_millis))
         .danger_accept_invalid_certs(true)
         .connection_verbose(true)
-        .pool_max_idle_per_host(CONFIG.http_client_pool_max_idle_per_host)
+        .pool_max_idle_per_host(config.http_client_pool_max_idle_per_host)
         .build()
         .expect("build client")
 });
@@ -72,17 +66,28 @@ static USER_AGENT_INDEX: AtomicU8 = AtomicU8::new(0);
 
 #[tokio::main]
 async fn main() {
+    let args = Args::parse();
+    let config_file = File::open(args.config).expect("config file should open read only");
+    init_config(config_file);
+    let static_path = warp::fs::dir(&CONFIG.get().expect("").static_path);
     let listen_address: SocketAddr =
-        SocketAddr::from_str(&CONFIG.listen_address).expect("Invalid listen address");
+        SocketAddr::from_str(&CONFIG.get().expect("msg").listen_address).expect("Invalid listen address");
     let api = warp::path("api");
     let search = api
         .and(warp::path("search"))
         .and(warp::query::<SearchRequest>())
         .and_then(render_response);
-    let static_path = warp::fs::dir(&CONFIG.static_path);
-        warp::serve(search.or(static_path))
+    warp::serve(search.or(static_path))
         .run(listen_address)
         .await;
+}
+
+fn init_config(config_file: File) {
+    let config: Config = serde_json::from_reader(config_file).expect("file should be proper JSON");
+    if config.user_agents.len() == 0 {
+        panic!("user_agents cannot be empty!");
+    }
+    CONFIG.set(config);
 }
 
 async fn fetch(request: SearchRequest) -> Result<String, reqwest::Error> {
@@ -95,15 +100,16 @@ async fn fetch(request: SearchRequest) -> Result<String, reqwest::Error> {
     if index_value > 199 {
         USER_AGENT_INDEX.store(0, std::sync::atomic::Ordering::SeqCst);
     }
-    let user_agent = match CONFIG
+    let config = CONFIG.get().expect("config is not initialized");
+    let user_agent = match config
         .user_agents
-        .get(usize::from(index_value) % CONFIG.user_agents.len())
+        .get(usize::from(index_value) % config.user_agents.len())
     {
         Some(m) => m,
         None => "Lynx/2.8.5rel.2 libwww-FM",
     };
     let res = HTTP_CLIENT
-        .get(format!("{}/search", CONFIG.google_base_url))
+        .get(format!("{}/search", config.google_base_url))
         .query(&[("q", request.q), ("start", start.to_string())])
         .header("user-agent", user_agent)
         .send()
@@ -187,9 +193,10 @@ fn kuchiki(body: String) -> VecDeque<ResultEntry> {
 
 #[cfg(test)]
 mod tests {
-    use crate::SearchRequest;
-    use crate::kuchiki;
     use crate::fetch;
+    use crate::kuchiki;
+    use crate::init_config;
+    use crate::SearchRequest;
     use std::{fs::File, io::Read, path::Path};
 
     #[test]
@@ -204,7 +211,8 @@ mod tests {
 
     #[tokio::test]
     async fn fetch_works() {
-        let search_request = SearchRequest{
+        init_config(File::open("config.json").expect("Unable to open file: config.json"));
+        let search_request = SearchRequest {
             q: "udp".to_string(),
             p: 1,
         };

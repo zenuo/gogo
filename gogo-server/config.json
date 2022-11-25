@@ -4,6 +4,7 @@
     "static_path": "gogo-web/",
     "http_client_pool_max_idle_per_host": 20,
     "http_client_connect_timeout_millis": 6000,
+    "danger_accept_invalid_certs": false,
     "user_agents": [
         "Lynx/2.8.5rel.2 libwww-FM",
         "Lynx/2.7.5rel.1 libwww-FM",
