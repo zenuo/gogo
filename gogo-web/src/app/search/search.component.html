@@ -13,7 +13,8 @@
       class="form-wrapper"
       (ngSubmit)="onSubmit()"
     >
-      <input
+      <div style="position: relative; flex: 1;">
+        <input
         class="input"
         id="input"
         name="q"
@@ -23,7 +24,17 @@
         autofocus="autofocus"
         list="lints"
         type="search"
+        (input)="onChange($event)"
+        (focus)="onFocus()"
+        (blur)="onBlur()"
       />
+      <ul *ngIf="suggestionsVisible" class="suggestion-list">
+        <li  *ngFor="let suggestion of showedSuggestions" [ngClass]="suggestion.isHistory ? 'suggestion-item is-history' : 'suggestion-item'" (click)="onSelectSuggestions(suggestion.value)">
+          <span >{{ suggestion.value }}</span>
+        </li>
+      </ul>
+      </div>
+      
       <button
         class="button"
         [disabled]="!formGroup.valid"
@@ -43,11 +54,11 @@
   </div>
   <ng-template #elseBlock> </ng-template>
   <ul class="entry-list">
-    <div *ngFor="let entry of result" class="entry">
+    <li *ngFor="let entry of result" class="entry">
       <span class="url">{{ entry.url }}</span>
       <a class="name" href="{{ entry.url }}">{{ entry.name }}</a>
       <span class="desc">{{ entry.desc }}</span>
-    </div>
+    </li>
   </ul>
 
   <div class="next">

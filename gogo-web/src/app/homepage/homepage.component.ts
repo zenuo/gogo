@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
+import { addHistory } from 'src/services/history';
+import { SearchService } from 'src/services/search';
 
 @Component({
   selector: 'app-homepage',
@@ -15,19 +17,15 @@ export class HomepageComponent implements OnInit {
   });
 
   constructor(
-    private router: Router
+    private searchService: SearchService
   ) { }
 
   ngOnInit(): void {
   }
 
   onSubmit() {
-    this.router.navigate(['search'],
-    {
-      queryParams: {
-        "q": this.formGroup.value.keyword
-      }
-    })
+    const keyword = this.formGroup.value.keyword
+    this.searchService.search(keyword as any)
   }
 
 }
