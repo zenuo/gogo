@@ -70,7 +70,7 @@ export class SearchComponent implements OnInit {
   }
   getSuggestion(keyword: string) {
     this.dataService.getSuggestion(keyword).subscribe(r => {
-      this.suggestions = r.lints || []
+      this.suggestions = (r.lints || []).map(s => s.replace(/<[^>]+>/g, ''))
       this.refreshShowedSuggestions()
     })
   }
