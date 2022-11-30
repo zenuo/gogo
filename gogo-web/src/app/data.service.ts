@@ -11,8 +11,13 @@ export class DataService {
     private http: HttpClient,
   ) { }
 
-  public search(keyword: string, page: number=1): Observable<GogoReponse<ResultEntry[]>> {
-    return this.http.get<GogoReponse<ResultEntry[]>>(`/api/search?q=${keyword}&p=${page}`)
+  public search(keyword: string, page: number=1): Observable<GogoResponse<ResultEntry[]>> {
+    return this.http.get<GogoResponse<ResultEntry[]>>(`/api/search?q=${keyword}&p=${page}`)
+  }
+  getSuggestion(keyword: string) {
+    return this.http.get<{
+      lints: string[]
+    }>(`/api/lint?q=${keyword}`)
   }
 }
 
@@ -26,7 +31,7 @@ export interface ResultEntry extends GogoResult {
   name: string,
 }
 
-export interface GogoReponse<GogoResult> {
+export interface GogoResponse<GogoResult> {
   error?: string,
   entries?: GogoResult,
 }

@@ -8,6 +8,7 @@
     }
 
     .form-wrapper {
+        display: flex;
         padding: 0 16px;
         .button {
             display: none;
@@ -53,6 +54,26 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
             -webkit-line-clamp: 4;
+        }
+    }
+
+    .suggestion-list {
+        position: absolute;
+        top: calc(100% + 4px);
+        width: 100%;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 3px 4px 0 rgba(0,0,0,0.1);
+        cursor: pointer;
+        .suggestion-item {
+            padding: 8px 16px;
+            &:hover {
+                background-color: #f5f5f5;
+            }
+
+            &.is-history {
+                color: #52188c;
+            }
         }
     }
 
