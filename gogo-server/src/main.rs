@@ -3,6 +3,7 @@ use html5ever::tendril::TendrilSink;
 use once_cell::sync::{Lazy, OnceCell};
 use reqwest::{Client, RequestBuilder};
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use std::net::SocketAddr;
 use std::sync::atomic::AtomicU8;
 use std::{
@@ -17,7 +18,7 @@ use warp::Filter;
 #[derive(Deserialize, Serialize)]
 struct SearchRequest {
     q: String,
-    p: u16,
+    p: Option<u16>,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -80,7 +81,11 @@ async fn main() {
         .and(warp::path("search"))
         .and(warp::query::<SearchRequest>())
         .and_then(render_response_search);
-    warp::serve(search.or(static_path))
+    let suggest = api
+        .and(warp::path("lint"))
+        .and(warp::query::<SearchRequest>())
+        .and_then(render_response_suggest);
+    warp::serve(static_path.or(search).or(suggest))
         .run(listen_address)
         .await;
 }
@@ -119,14 +124,42 @@ async fn fetch(request: RequestBuilder) -> Result<String, reqwest::Error> {
     Ok(res)
 }
 
+async fn render_response_suggest(
+    request: SearchRequest,
+) -> Result<impl warp::Reply, warp::Rejection> {
+    let config = CONFIG.get().expect("config is not initialized");
+    let http_request = HTTP_CLIENT
+        .get(format!("{}/complete/search", config.google_base_url))
+        .query(&[("q", request.q), ("client", "psy-ab".to_string())]);
+    match fetch(http_request).await {
+        Ok(body) => {
+            let json_value: Value = serde_json::from_str(&body).expect("invalid complete json");
+            let array: &Vec<Value> = json_value[1].as_array().expect("without second item");
+            let suggestions: Vec<&str> = array
+                .iter()
+                .map(|i| {
+                    i.as_array().expect("without first item")[0]
+                        .as_str()
+                        .expect("msg")
+                })
+                .collect();
+            let response = GogoResponse {
+                error: None,
+                result: Some(suggestions),
+            };
+            Ok(warp::reply::json(&response))
+        }
+        Err(_) => Err(warp::reject()),
+    }
+}
+
 async fn render_response_search(
     request: SearchRequest,
 ) -> Result<impl warp::Reply, warp::Rejection> {
     let config = CONFIG.get().expect("config is not initialized");
-    let start = if request.p > 1 {
-        (request.p - 1) * 10
-    } else {
-        0
+    let start = match request.p {
+        Some(v) => (v - 1) * 10,
+        None => 0,
     };
     let http_request = HTTP_CLIENT
         .get(format!("{}/search", config.google_base_url))
@@ -134,7 +167,7 @@ async fn render_response_search(
     let resp = fetch(http_request).await;
     match resp {
         Ok(body) => {
-            let result_enteries = kuchiki(body);
+            let result_enteries = parse_result_entry(body);
             let response = GogoResponse {
                 error: None,
                 result: Some(result_enteries),
@@ -145,7 +178,7 @@ async fn render_response_search(
     }
 }
 
-fn kuchiki(body: String) -> VecDeque<ResultEntry> {
+fn parse_result_entry(body: String) -> VecDeque<ResultEntry> {
     let mut result_enteries: VecDeque<ResultEntry> = VecDeque::new();
 
     let document = kuchiki::parse_html().one(body);
@@ -208,17 +241,17 @@ mod tests {
 
     use crate::fetch;
     use crate::init_config;
-    use crate::kuchiki;
+    use crate::parse_result_entry;
     use crate::CONFIG;
     use crate::HTTP_CLIENT;
     use std::{fs::File, io::Read, path::Path};
 
     #[test]
-    fn kuchiki_works() {
+    fn parse_result_entry_works() {
         for page in std::fs::read_dir("test/webpage").unwrap() {
             let path = page.unwrap().path();
             let body = read_file(path.as_path());
-            let result = kuchiki(body);
+            let result = parse_result_entry(body);
             println!("{},len:{}", path.display(), result.len())
         }
     }
@@ -241,7 +274,14 @@ mod tests {
             let body = read_file(path.as_path());
             let json_value: Value = serde_json::from_str(&body).expect("invalid complete json");
             let array: &Vec<Value> = json_value[1].as_array().expect("without second item");
-            let suggestions: Vec<&str> = array.iter().map(|i| i.as_array().expect("without first item")[0].as_str().expect("msg")).collect();
+            let suggestions: Vec<&str> = array
+                .iter()
+                .map(|i| {
+                    i.as_array().expect("without first item")[0]
+                        .as_str()
+                        .expect("msg")
+                })
+                .collect();
             assert!(suggestions.len() != 0);
         }
     }
