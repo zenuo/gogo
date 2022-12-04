@@ -30,7 +30,7 @@ struct ResultEntry {
 #[derive(Deserialize, Serialize)]
 struct SearchResponse {
     error: Option<String>,
-    entries: Option<VecDeque<ResultEntry>>, // todo result
+    result: Option<VecDeque<ResultEntry>>, // todo result
 }
 
 #[derive(Serialize, Deserialize)]
@@ -126,7 +126,7 @@ async fn render_response(request: SearchRequest) -> Result<impl warp::Reply, war
             let result_enteries = kuchiki(body);
             let response = SearchResponse {
                 error: None,
-                entries: Some(result_enteries),
+                result: Some(result_enteries),
             };
             Ok(warp::reply::json(&response))
         }
@@ -218,6 +218,15 @@ mod tests {
         };
         let result = fetch(search_request).await;
         assert!(result.is_ok());
+    }
+
+    #[test]
+    fn complete_works() {
+        for page in std::fs::read_dir("test/complete").unwrap() {
+            let path = page.unwrap().path();
+            let body = read_file(path.as_path());
+            // todo
+        }
     }
 
     fn read_file(path: &Path) -> String {
