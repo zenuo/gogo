@@ -242,8 +242,10 @@ mod tests {
     use crate::fetch;
     use crate::init_config;
     use crate::parse_result_entry;
+    use crate::user_agent;
     use crate::CONFIG;
     use crate::HTTP_CLIENT;
+    use std::thread;
     use std::{fs::File, io::Read, path::Path};
 
     #[test]
@@ -283,6 +285,24 @@ mod tests {
                 })
                 .collect();
             assert!(suggestions.len() != 0);
+        }
+    }
+
+    #[test]
+    fn user_agent_works() {
+        let nthreads = 12;
+        let mut children = vec![];
+        for _ in 0..nthreads {
+            children.push(thread::spawn(move || {
+                for _ in 1..1000 {
+                    let _ = user_agent();
+                }
+            }));
+        }
+
+        for child in children {
+            // Wait for the thread to finish. Returns a result.
+            let _ = child.join();
         }
     }
 
