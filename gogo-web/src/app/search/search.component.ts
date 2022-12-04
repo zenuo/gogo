@@ -76,6 +76,7 @@ export class SearchComponent implements OnInit {
   }
   onChange(event: any) {
     const keyword = event.target.value
+    this.suggestionsVisible = true
     this.refreshShowedSuggestions()
     if (keyword) {
       if (this.fetchTimer) {
@@ -93,5 +94,6 @@ export class SearchComponent implements OnInit {
   onSubmit() {
     const keyword = this.formGroup.value.keyword
     this.searchService.search(keyword as any)
+    this.suggestionsVisible = false
   }
 }
