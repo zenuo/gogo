@@ -50,7 +50,7 @@ export class SearchComponent implements OnInit {
         this.title.setTitle(`Gogo | ${keyword}`)
         this.dataService.search(keyword, page).subscribe(r => {
           this.error = r.error;
-          this.result = r.entries;
+          this.result = r.result;
         })
       }
       this.getSuggestion(keyword as any)
@@ -70,7 +70,7 @@ export class SearchComponent implements OnInit {
   }
   getSuggestion(keyword: string) {
     this.dataService.getSuggestion(keyword).subscribe(r => {
-      this.suggestions = (r.lints || []).map(s => s.replace(/<[^>]+>/g, ''))
+      this.suggestions = (r.result || []).map(s => s.replace(/<[^>]+>/g, ''))
       this.refreshShowedSuggestions()
     })
   }

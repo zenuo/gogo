@@ -16,7 +16,7 @@ export class DataService {
   }
   getSuggestion(keyword: string) {
     return this.http.get<{
-      lints: string[]
+      result: string[]
     }>(`/api/lint?q=${keyword}`)
   }
 }
@@ -33,5 +33,5 @@ export interface ResultEntry extends GogoResult {
 
 export interface GogoResponse<GogoResult> {
   error?: string,
-  entries?: GogoResult,
+  result?: GogoResult,
 }
