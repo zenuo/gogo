@@ -2,8 +2,9 @@
 
 ### 实例列表
 
-- [https://gogo.gleeze.com/](https://gogo.gleeze.com/)
-- [https://176.122.157.231:5000](https://176.122.157.231:5000)
+> 强烈感谢[webbillion](https://github.com/webbillion)同学的域名服务🤗🎉
+
+- [gogo.webbillion.cn](https://gogo.webbillion.cn/)
 
 ## 如何使用
 

@@ -1,0 +1,68 @@
+<div class="search-page">
+  <div class="header">
+    <div class="logo-wrapper">
+      <a href="/" class="logo">
+        <img src="../../assets/logo.svg" />
+      </a>
+    </div>
+    <datalist id="lints"></datalist>
+    <form
+      [formGroup]="formGroup"
+      action="/search"
+      method="GET"
+      class="form-wrapper"
+      (ngSubmit)="onSubmit()"
+    >
+      <div style="position: relative; flex: 1;">
+        <input
+        class="input"
+        id="input"
+        name="q"
+        placeholder="输入你想搜索的内容"
+        formControlName="keyword"
+        autocomplete="off"
+        list="lints"
+        type="search"
+        (input)="onChange($event)"
+        (focus)="onFocus()"
+        (blur)="onBlur()"
+      />
+      <ul *ngIf="suggestionsVisible" class="suggestion-list">
+        <li  *ngFor="let suggestion of showedSuggestions" [ngClass]="suggestion.isHistory ? 'suggestion-item is-history' : 'suggestion-item'" (click)="onSelectSuggestions(suggestion.value)">
+          <span >{{ suggestion.value }}</span>
+        </li>
+      </ul>
+      </div>
+      
+      <button
+        class="button"
+        [disabled]="!formGroup.valid"
+        type="submit"
+      >
+        GOGO
+      </button>
+    </form>
+  </div>
+  <div *ngIf="error">
+    <h2>
+      抱歉🥺，网络错误，请暂时使用<a
+        href="https://cn.bing.com/search?q={{ keyword }}"
+        >Bing Search</a
+      >
+    </h2>
+  </div>
+  <ng-template #elseBlock> </ng-template>
+  <ul class="entry-list">
+    <li *ngFor="let entry of result" class="entry">
+      <span class="url">{{ entry.url }}</span>
+      <a class="name" href="{{ entry.url }}">{{ entry.name }}</a>
+      <span class="desc">{{ entry.desc }}</span>
+    </li>
+  </ul>
+
+  <div class="next">
+    <a href="/search?q={{ keyword }}&p={{ page! + 1 }}"
+      ><button class="button">下一页</button></a
+    >
+  </div>
+</div>
