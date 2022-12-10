@@ -14,6 +14,7 @@ use std::{
 };
 use url::Url;
 use warp::Filter;
+use log::{info, trace, warn};
 
 #[derive(Deserialize, Serialize)]
 struct SearchRequest {
@@ -69,6 +70,8 @@ static USER_AGENT_INDEX: AtomicU8 = AtomicU8::new(0);
 
 #[tokio::main]
 async fn main() {
+    let _ = pretty_env_logger::try_init();
+
     let args = Args::parse();
     let config_file = File::open(args.config).expect("config file should open read only");
     init_config(config_file);
@@ -117,6 +120,10 @@ fn user_agent() -> &'static str {
 async fn fetch(request: RequestBuilder) -> Result<String, reqwest::Error> {
     let res = request
         .header("user-agent", user_agent())
+        .header("cache-control", "no-cache")
+        .header("upgrade-insecure-requests", "1")
+        .header("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
+        .header("accept-language", "zh-CN,zh;q=0.9")
         .send()
         .await?
         .text()
@@ -167,6 +174,7 @@ async fn render_response_search(
     let resp = fetch(http_request).await;
     match resp {
         Ok(body) => {
+            info!("search response: {}", body);
             let result_enteries = parse_result_entry(body);
             let response = GogoResponse {
                 error: None,
