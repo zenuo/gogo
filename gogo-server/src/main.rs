@@ -123,7 +123,7 @@ async fn fetch(request: RequestBuilder) -> Result<String, reqwest::Error> {
         .header("cache-control", "no-cache")
         .header("upgrade-insecure-requests", "1")
         .header("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-        .header("accept-language", "zh-CN,zh;q=0.9")
+        .header("accept-language", "en-US,en;q=0.9")
         .send()
         .await?
         .text()
