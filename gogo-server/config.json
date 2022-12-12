@@ -15,5 +15,5 @@
         "accept-language": "en-US,en;q=0.9",
         "cache-control": "no-cache"
     },
-    "proxy": "socks://localhost:9050"
+    "proxy": "socks5://localhost:9050"
 }
