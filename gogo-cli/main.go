@@ -14,9 +14,9 @@ import (
 )
 
 const executableName string = "gogo-cli"
-const version string = "0.21"
+const version string = "2.0.0"
 const host string = "176.122.157.231"
-const port int = 5000
+const port int = 5002
 
 // Entry 条目
 type Entry struct {
@@ -27,11 +27,7 @@ type Entry struct {
 
 // SearchResponse 搜索响应
 type SearchResponse struct {
-	Key     string  `json:"key"`
-	Page    uint64  `json:"page"`
-	Amount  uint64  `json:"amount"`
-	Elapsed float64 `json:"elapsed"`
-	Entries []Entry `json:"entries"`
+	Entries []Entry `json:"result"`
 	Error   string  `json:"error"`
 }
 
