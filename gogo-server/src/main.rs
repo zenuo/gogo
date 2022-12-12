@@ -1,6 +1,8 @@
 use clap::Parser;
 use html5ever::tendril::TendrilSink;
+use log::{info, trace};
 use once_cell::sync::{Lazy, OnceCell};
+use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use reqwest::{Client, RequestBuilder};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -14,7 +16,6 @@ use std::{
 };
 use url::Url;
 use warp::Filter;
-use log::{info, trace, warn};
 
 #[derive(Deserialize, Serialize)]
 struct SearchRequest {
@@ -44,6 +45,8 @@ struct Config {
     http_client_connect_timeout_millis: u64,
     danger_accept_invalid_certs: bool,
     user_agents: Vec<String>,
+    headers: Option<HashMap<String, String>>,
+    proxy: Option<String>,
 }
 
 #[derive(Parser)]
@@ -55,15 +58,44 @@ static CONFIG: OnceCell<Config> = OnceCell::new();
 
 static HTTP_CLIENT: Lazy<Client> = Lazy::new(|| {
     let config = CONFIG.get().expect("config is not initialized");
-    reqwest::ClientBuilder::new()
+    let mut client_builder = reqwest::ClientBuilder::new()
         .connect_timeout(Duration::from_millis(
             config.http_client_connect_timeout_millis,
         ))
         .danger_accept_invalid_certs(true)
         .connection_verbose(true)
-        .pool_max_idle_per_host(config.http_client_pool_max_idle_per_host)
-        .build()
-        .expect("build client")
+        .pool_max_idle_per_host(config.http_client_pool_max_idle_per_host);
+    match &config.proxy {
+        Some(proxy_scheme) => {
+            info!("proxy config detected: {}", proxy_scheme);
+            client_builder = client_builder.proxy(reqwest::Proxy::http(proxy_scheme).expect("proxy config failed"));
+        }
+        None => {}
+    }
+    client_builder.build().expect("build client")
+});
+
+static HEADERS: Lazy<HeaderMap<HeaderValue>> = Lazy::new(|| {
+    let config = CONFIG.get().expect("config is not initialized");
+    match &config.headers {
+        Some(m) => {
+            let mut header_map: HeaderMap<HeaderValue> = HeaderMap::with_capacity(m.len() + 1);
+            for (k, v) in m.into_iter() {
+                match HeaderName::from_str(k) {
+                    Ok(h) => match HeaderValue::from_str(v) {
+                        Ok(header_value) => {
+                            header_map.append(h, header_value);
+                        }
+                        Err(_) => {}
+                    },
+                    Err(_) => {}
+                };
+            }
+            trace!("header_map:{:?}", header_map);
+            header_map
+        }
+        None => HeaderMap::new(),
+    }
 });
 
 static USER_AGENT_INDEX: AtomicU8 = AtomicU8::new(0);
@@ -119,11 +151,8 @@ fn user_agent() -> &'static str {
 
 async fn fetch(request: RequestBuilder) -> Result<String, reqwest::Error> {
     let res = request
+        .headers(HEADERS.clone())
         .header("user-agent", user_agent())
-        .header("cache-control", "no-cache")
-        .header("upgrade-insecure-requests", "1")
-        .header("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-        .header("accept-language", "en-US,en;q=0.9")
         .send()
         .await?
         .text()
