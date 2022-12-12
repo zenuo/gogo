@@ -1,4 +1,0 @@
-port: 4999
-httpTimeout: 30000
-substitute:
-  - https://zh.wikipedia.org#https://176.122.157.73:3457

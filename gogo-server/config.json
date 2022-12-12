@@ -1,0 +1,19 @@
+{
+    "listen_address": "127.0.0.1:4998",
+    "google_base_url": "https://google.com",
+    "static_path": "gogo-web/",
+    "http_client_pool_max_idle_per_host": 20,
+    "http_client_connect_timeout_millis": 60000,
+    "danger_accept_invalid_certs": false,
+    "user_agents": [
+        "Lynx/2.8.5rel.2 libwww-FM",
+        "Lynx/2.7.5rel.1 libwww-FM",
+        "Lynx/1.9.5rel.9 libwww-FM",
+        "Lynx/1.8.1rel.3 libwww-FM"
+    ],
+    "headers": {
+        "accept-language": "en-US,en;q=0.9",
+        "cache-control": "no-cache"
+    },
+    "proxy": "socks5://localhost:9050"
+}

@@ -5,6 +5,7 @@
 > 强烈感谢[webbillion](https://github.com/webbillion)同学的域名服务🤗🎉
 
 - [gogo.webbillion.cn](https://gogo.webbillion.cn/)
+- [176.122.157.231:5002](https://176.122.157.231:5002)
 
 ## 如何使用
 
@@ -14,11 +15,11 @@
 
 首页截图：
 
-![6c44f17c7e035221816e7530.png](image/6c44f17c7e035221816e7530.png)
+![home.png](image/home.png)
 
 搜索页面截图：
 
-![e5c1b9df30645ffb8059ca72.png](image/e5c1b9df30645ffb8059ca72.png)
+![search.png](image/search.png)
 
 ### 2 命令行
 
@@ -30,20 +31,16 @@ $ gogo-cli github 1
 
 截图如下：
 
-![639ad4d3863e52f90a16cbe5.png](image/639ad4d3863e52f90a16cbe5.png)
+![cli.png](image/cli.png)
 
 ### 3 API
 
 #### 搜索
 
 ```bash
-$ curl -X GET -k "https://176.122.157.231:5000/api/search?q=github&p=1"
+$ curl -X GET -k "http://localhost:4998/api/search?q=github&p=1"
 {
-  "key": "github",
-  "page": 1,
-  "amount": 223000000,
-  "elapsed": 0.43,
-  "entries": [
+  "result": [
     {
       "name": "The world's leading software development platform · GitHub",
       "url": "https://github.com/",
@@ -57,10 +54,9 @@ $ curl -X GET -k "https://176.122.157.231:5000/api/search?q=github&p=1"
 #### 关键词提示
 
 ```bash
-$ curl -X GET -k "https://176.122.157.231:5000/api/lint?q=github"
+$ curl -X GET -k "http://localhost:4998/api/lint?q=github"
 {
-  "key": "github",
-  "lints": [
+  "result": [
     "github",
     "github<b> desktop</b>",
     "github<b> stock</b>",
@@ -86,7 +82,7 @@ $ docker pull zenuo/gogo
 # 创建容器
 $ docker create -p 4999:4999 --name gogo zenuo/gogo
 # 复制配置文件到容器（可选）
-$ docker cp application.yml gogo:/opt/gogo/application.yml
+$ docker cp config.json gogo:/opt/gogo/application.json
 # 运行镜像
 $ docker start gogo
 # 查看日志（可选）
@@ -98,7 +94,6 @@ $ docker logs -f gogo
 ```
 $ git clone https://github.com/zenuo/gogo.git
 $ cd gogo/gogo-server
-$ mvn -DskipTests=true clean package
-$ mv target/gogo.jar .
-$ sh ./gogo-server.sh
+$ cargo build -rv
+$ ./target/release/gogo-server config
 ```
