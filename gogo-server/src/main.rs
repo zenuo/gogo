@@ -1,6 +1,6 @@
 use clap::Parser;
 use html5ever::tendril::TendrilSink;
-use log::{info, trace};
+use log::{info, trace, error};
 use once_cell::sync::{Lazy, OnceCell};
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use reqwest::{Client, RequestBuilder};
@@ -36,7 +36,7 @@ struct GogoResponse<T> {
     result: Option<T>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct Config {
     listen_address: String,
     google_base_url: String,
@@ -91,7 +91,7 @@ static HEADERS: Lazy<HeaderMap<HeaderValue>> = Lazy::new(|| {
                     Err(_) => {}
                 };
             }
-            trace!("header_map:{:?}", header_map);
+            info!("header_map:{:?}", header_map);
             header_map
         }
         None => HeaderMap::new(),
@@ -130,7 +130,14 @@ fn init_config(config_file: File) {
     if config.user_agents.len() == 0 {
         panic!("user_agents cannot be empty!");
     }
-    CONFIG.set(config);
+    match CONFIG.set(config) {
+        Ok(_) => {
+            info!("config succeed: {:?}", CONFIG)
+        },
+        Err(_) => {
+            error!("config already initialized")
+        },
+    };
 }
 
 fn user_agent() -> &'static str {
@@ -141,7 +148,7 @@ fn user_agent() -> &'static str {
     let config = CONFIG.get().expect("config is not initialized");
     let user_agent = match config
         .user_agents
-        .get(usize::from(index_value) % config.user_agents.len())
+        .get((index_value as usize) % config.user_agents.len())
     {
         Some(m) => m,
         None => "Lynx/2.8.5rel.2 libwww-FM",
@@ -176,7 +183,7 @@ async fn render_response_suggest(
                 .map(|i| {
                     i.as_array().expect("without first item")[0]
                         .as_str()
-                        .expect("msg")
+                        .expect("failed grt string value")
                 })
                 .collect();
             let response = GogoResponse {
@@ -203,7 +210,7 @@ async fn render_response_search(
     let resp = fetch(http_request).await;
     match resp {
         Ok(body) => {
-            info!("search response: {}", body);
+            trace!("search response: {}", body);
             let result_enteries = parse_result_entry(body);
             let response = GogoResponse {
                 error: None,
