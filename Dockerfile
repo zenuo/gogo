@@ -6,7 +6,7 @@ RUN apk add --no-cache musl-dev openssl-dev && cargo build -rv
 FROM node:18-alpine as web_builder
 WORKDIR /opt/
 COPY gogo-web .
-RUN npm install && npm run build --prod
+RUN npm install && npm run build --omit=dev
 
 FROM alpine:3.16
 WORKDIR /opt/
