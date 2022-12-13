@@ -10,7 +10,8 @@ RUN npm install && npm run build --omit=dev
 
 FROM alpine:3.16
 WORKDIR /opt/
-COPY --from=server_builder /opt/target/release/gogo-server gogo-server \
-    /opt/config.json config.json 
-COPY --from=web_builder /opt/dist/gogo-web gogo-web
-ENTRYPOINT ["gogo-server","config.json"]
+RUN apk upgrade --no-cache && apk add --no-cache openssl libgcc
+COPY --from=server_builder /opt/target/release/gogo-server .
+COPY --from=server_builder /opt/config.json .
+COPY --from=web_builder /opt/dist/gogo-web .
+ENTRYPOINT ["/opt/gogo-server","config.json"]
