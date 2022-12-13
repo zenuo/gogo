@@ -1,11 +1,12 @@
 use clap::Parser;
 use html5ever::tendril::TendrilSink;
-use log::{info, trace, error};
+use log::{error, info, trace};
 use once_cell::sync::{Lazy, OnceCell};
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use reqwest::{Client, RequestBuilder};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use std::convert::Infallible;
 use std::net::SocketAddr;
 use std::sync::atomic::AtomicU8;
 use std::{
@@ -15,7 +16,7 @@ use std::{
     time::Duration,
 };
 use url::Url;
-use warp::Filter;
+use warp::{Filter, Rejection, Reply};
 
 #[derive(Deserialize, Serialize)]
 struct SearchRequest {
@@ -68,7 +69,8 @@ static HTTP_CLIENT: Lazy<Client> = Lazy::new(|| {
     match &config.proxy {
         Some(proxy_scheme) => {
             info!("proxy config detected: {}", proxy_scheme);
-            client_builder = client_builder.proxy(reqwest::Proxy::http(proxy_scheme).expect("proxy config failed"));
+            client_builder = client_builder
+                .proxy(reqwest::Proxy::http(proxy_scheme).expect("proxy config failed"));
         }
         None => {}
     }
@@ -107,22 +109,23 @@ async fn main() {
     let args = Args::parse();
     let config_file = File::open(args.config).expect("config file should open read only");
     init_config(config_file);
-    let static_path = warp::fs::dir(&CONFIG.get().expect("").static_path);
+    let config = CONFIG.get().expect("config is not initialized");
     let listen_address: SocketAddr =
-        SocketAddr::from_str(&CONFIG.get().expect("msg").listen_address)
-            .expect("Invalid listen address");
-    let api = warp::path("api");
-    let search = api
-        .and(warp::path("search"))
+        SocketAddr::from_str(&config.listen_address).expect("Invalid listen address");
+    let search = warp::path("search")
         .and(warp::query::<SearchRequest>())
         .and_then(render_response_search);
-    let suggest = api
-        .and(warp::path("lint"))
+    let suggest = warp::path("lint")
         .and(warp::query::<SearchRequest>())
         .and_then(render_response_suggest);
-    warp::serve(static_path.or(search).or(suggest))
-        .run(listen_address)
-        .await;
+    let routes = warp::path("api")
+        .and(search.or(suggest).recover(recover_api))
+        .or(warp::fs::dir(&config.static_path));
+    warp::serve(routes).run(listen_address).await;
+}
+
+async fn recover_api(_: Rejection) -> Result<impl Reply, Infallible> {
+    Ok(warp::http::StatusCode::NOT_FOUND)
 }
 
 fn init_config(config_file: File) {
@@ -133,10 +136,10 @@ fn init_config(config_file: File) {
     match CONFIG.set(config) {
         Ok(_) => {
             info!("config succeed: {:?}", CONFIG)
-        },
+        }
         Err(_) => {
             error!("config already initialized")
-        },
+        }
     };
 }
 
