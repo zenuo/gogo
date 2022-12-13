@@ -97,3 +97,7 @@ $ cd gogo/gogo-server
 $ cargo build -rv
 $ ./target/release/gogo-server config
 ```
+
+## 参考
+
+- [Hosting SPA with warp in rust](https://ethanfrei.com/posts/hosting-spa-with-warp.html)
