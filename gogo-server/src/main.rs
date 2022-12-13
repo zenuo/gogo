@@ -120,7 +120,12 @@ async fn main() {
         .and_then(render_response_suggest);
     let routes = warp::path("api")
         .and(search.or(suggest).recover(recover_api))
-        .or(warp::fs::dir(&config.static_path));
+        .or(
+            warp::fs::dir(&config.static_path).or(warp::fs::file(format!(
+                "{}/index.html",
+                &config.static_path
+            ))),
+        );
     warp::serve(routes).run(listen_address).await;
 }
 
