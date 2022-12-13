@@ -12,5 +12,5 @@ FROM alpine
 WORKDIR /opt/
 COPY --from=server_builder /opt/target/release/gogo-server gogo-server \
     /opt/config.json config.json 
-COPY --from web_builder /opt/dist/gogo-web gogo-web
+COPY --from=web_builder /opt/dist/gogo-web gogo-web
 ENTRYPOINT ["gogo-server","config.json"]
