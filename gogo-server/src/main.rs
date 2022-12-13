@@ -48,6 +48,7 @@ struct Config {
     user_agents: Vec<String>,
     headers: Option<HashMap<String, String>>,
     proxy: Option<String>,
+    suggest_user_agent: String,
 }
 
 #[derive(Parser)]
@@ -167,7 +168,6 @@ fn user_agent() -> &'static str {
 async fn fetch(request: RequestBuilder) -> Result<String, reqwest::Error> {
     let res = request
         .headers(HEADERS.clone())
-        .header("user-agent", user_agent())
         .send()
         .await?
         .text()
@@ -181,7 +181,8 @@ async fn render_response_suggest(
     let config = CONFIG.get().expect("config is not initialized");
     let http_request = HTTP_CLIENT
         .get(format!("{}/complete/search", config.google_base_url))
-        .query(&[("q", request.q), ("client", "psy-ab".to_string())]);
+        .query(&[("q", request.q), ("client", "psy-ab".to_string())])
+        .header("user-agent", config.suggest_user_agent.clone());
     match fetch(http_request).await {
         Ok(body) => {
             let json_value: Value = serde_json::from_str(&body).expect("invalid complete json");
@@ -214,9 +215,9 @@ async fn render_response_search(
     };
     let http_request = HTTP_CLIENT
         .get(format!("{}/search", config.google_base_url))
-        .query(&[("q", request.q), ("start", start.to_string())]);
-    let resp = fetch(http_request).await;
-    match resp {
+        .query(&[("q", request.q), ("start", start.to_string())])
+        .header("user-agent", user_agent());
+    match fetch(http_request).await {
         Ok(body) => {
             trace!("search response: {}", body);
             let result_enteries = parse_result_entry(body);
@@ -316,7 +317,8 @@ mod tests {
         let config = CONFIG.get().expect("config is not initialized");
         let http_request = HTTP_CLIENT
             .get(format!("{}/search", config.google_base_url))
-            .query(&[("q", "udp"), ("start", "0")]);
+            .query(&[("q", "udp"), ("start", "0")])
+            .header("user-agent", user_agent());
         let result = fetch(http_request).await;
         assert!(result.is_ok());
     }
