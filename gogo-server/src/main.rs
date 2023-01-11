@@ -71,7 +71,7 @@ static HTTP_CLIENT: Lazy<Client> = Lazy::new(|| {
         Some(proxy_scheme) => {
             info!("proxy config detected: {}", proxy_scheme);
             client_builder = client_builder
-                .proxy(reqwest::Proxy::http(proxy_scheme).expect("proxy config failed"));
+                .proxy(reqwest::Proxy::all(proxy_scheme).expect("proxy config failed"));
         }
         None => {}
     }
@@ -365,5 +365,22 @@ mod tests {
         let mut buf = vec![];
         file.read_to_end(&mut buf).expect("read file");
         String::from_utf8_lossy(&buf).to_string()
+    }
+    
+    #[tokio::test]
+    async fn proxy_works() {
+        init_config(File::open("config.json").expect("Unable to open file: config.json"));
+        let config = CONFIG.get().expect("config is not initialized");
+        assert!(config.proxy.is_some());
+        let http_request = HTTP_CLIENT
+            .get("https://icanhazip.com/");
+        let result = http_request
+        .send()
+        .await
+        .expect("request failed")
+        .text()
+        .await;
+        assert!(result.is_ok());
+        println!("{}", result.unwrap());
     }
 }
