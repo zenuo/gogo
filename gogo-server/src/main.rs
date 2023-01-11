@@ -249,6 +249,10 @@ async fn fetch_search_context(user_agent: &'static str) {
     }
 }
 
+const google_search_query_keys: Lazy<Vec<&str>> = Lazy::new(|| {
+    vec!["ie", "hl", "source", "btnG", "iflsig", "gbv"]
+});
+
 fn parse_search_context(body: String) -> GoogleSearchContext {
     let mut query: Vec<(String, String)> = Vec::new();
     let document = kuchiki::parse_html().one(body);
@@ -269,7 +273,7 @@ fn parse_search_context(body: String) -> GoogleSearchContext {
                                 continue;
                             }
                             let name = name_opt.unwrap();
-                            if name_opt.unwrap().eq("q") {
+                            if google_search_query_keys.contains(&name) {
                                 continue;
                             }
                             match input_ndr_attr.get("value") {
