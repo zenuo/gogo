@@ -37,6 +37,10 @@ struct GogoResponse<T> {
     result: Option<T>,
 }
 
+struct GoogleSearchContext {
+    query_kv_list: Vec<(String, String)>,
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 struct Config {
     listen_address: String,
@@ -231,12 +235,66 @@ async fn render_response_search(
     }
 }
 
+async fn fetch_search_context(user_agent: &'static str) {
+    let config = CONFIG.get().expect("config is not initialized");
+    let http_request = HTTP_CLIENT
+        .get(format!("{}", config.google_base_url))
+        .header("user-agent", user_agent);
+    match fetch(http_request).await {
+        Ok(body) => {
+            let gsc = parse_search_context(body);
+            println!("{:?}",gsc.query_kv_list);
+        },
+        Err(_) => {}
+    }
+}
+
+fn parse_search_context(body: String) -> GoogleSearchContext {
+    let mut query: Vec<(String, String)> = Vec::new();
+    let document = kuchiki::parse_html().one(body);
+    match document.select("form") {
+        Ok(form_select) => {
+            for form_ndr in form_select {
+                let attr = form_ndr.attributes.borrow();
+                let action = attr.get("action");
+                if action.is_none() || action.unwrap().ne("/search") {
+                    continue;
+                }
+                match form_ndr.as_node().select("input") {
+                    Ok(input_select) => {
+                        for input_ndr in input_select {
+                            let input_ndr_attr = input_ndr.attributes.borrow();
+                            let name_opt = input_ndr_attr.get("name");
+                            if name_opt.is_none() {
+                                continue;
+                            }
+                            let name = name_opt.unwrap();
+                            if name_opt.unwrap().eq("q") {
+                                continue;
+                            }
+                            match input_ndr_attr.get("value") {
+                                Some(value) => {
+                                    query.push((name.to_string(), value.to_string()));
+                                }
+                                None => {}
+                            }
+                        }
+                    }
+                    Err(_) => {}
+                }
+            }
+        }
+        Err(_) => {}
+    }
+    GoogleSearchContext { query_kv_list: query }
+}
+
+const FAKE_BASE_URL: Lazy<Url> = Lazy::new(|| Url::parse("http://a").unwrap());
+
 fn parse_result_entry(body: String) -> VecDeque<ResultEntry> {
     let mut result_enteries: VecDeque<ResultEntry> = VecDeque::new();
 
     let document = kuchiki::parse_html().one(body);
-
-    let base_url: Url = Url::parse("http://a").unwrap();
 
     for nd in document.select("a").unwrap() {
         let attr = nd.attributes.borrow();
@@ -253,7 +311,7 @@ fn parse_result_entry(body: String) -> VecDeque<ResultEntry> {
             continue;
         }
         let fc = node.first_child().unwrap();
-        let hash_query: HashMap<_, _> = base_url
+        let hash_query: HashMap<_, _> = FAKE_BASE_URL
             .join(url)
             .unwrap()
             .query_pairs()
@@ -295,6 +353,7 @@ mod tests {
     use crate::fetch;
     use crate::init_config;
     use crate::parse_result_entry;
+    use crate::fetch_search_context;
     use crate::user_agent;
     use crate::CONFIG;
     use crate::HTTP_CLIENT;
@@ -321,6 +380,12 @@ mod tests {
             .header("user-agent", user_agent());
         let result = fetch(http_request).await;
         assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn fetch_search_context_works() {
+        init_config(File::open("config.json").expect("Unable to open file: config.json"));
+        fetch_search_context(user_agent()).await;
     }
 
     #[test]
