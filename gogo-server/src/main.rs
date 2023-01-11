@@ -273,7 +273,7 @@ fn parse_search_context(body: String) -> GoogleSearchContext {
                                 continue;
                             }
                             let name = name_opt.unwrap();
-                            if google_search_query_keys.contains(&name) {
+                            if !google_search_query_keys.contains(&name) {
                                 continue;
                             }
                             match input_ndr_attr.get("value") {
