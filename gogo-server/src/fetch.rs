@@ -2,6 +2,7 @@ use crate::config::{
     GogoResponse, GoogleSearchContext, ResultEntry, SearchRequest, CONFIG, HTTP_CLIENT,
     USER_AGENT_INDEX,
 };
+use crate::metric::APP_STATE;
 use html5ever::tendril::TendrilSink;
 use log::{error, info, trace};
 use once_cell::sync::{Lazy};
@@ -52,7 +53,10 @@ pub async fn fetch_search_context(user_agent: &'static str) -> Option<GoogleSear
             trace!("ua:{}, query_kv_list:{:?}", user_agent, gsc.query_kv_list);
             Some(gsc)
         }
-        Err(_) => None,
+        Err(e) => {
+            error!("unable to fetch search context: {}", e);
+            None
+        },
     }
 }
 
@@ -129,13 +133,22 @@ pub async fn render_response_suggest(
                         .expect("failed grt string value")
                 })
                 .collect();
+            if suggestions.is_empty() {
+                APP_STATE.suggest_error_counter.inc();
+            } else {
+                APP_STATE.suggest_success_counter.inc();
+            }
             let response = GogoResponse {
                 error: None,
                 result: Some(suggestions),
             };
             Ok(warp::reply::json(&response))
         }
-        Err(_) => Err(warp::reject()),
+        Err(e) => {
+            error!("unable to fetch suggest: {}", e);
+            APP_STATE.suggest_error_counter.inc();
+            Err(warp::reject())
+        },
     }
 }
 
@@ -155,13 +168,22 @@ pub async fn render_response_search(
         Ok(body) => {
             trace!("search response: {}", body);
             let result_enteries = parse_result_entry(body);
+            if result_enteries.is_empty() {
+                APP_STATE.search_error_counter.inc();
+            } else {
+                APP_STATE.search_success_counter.inc();
+            }
             let response = GogoResponse {
                 error: None,
                 result: Some(result_enteries),
             };
             Ok(warp::reply::json(&response))
         }
-        Err(_err) => Err(warp::reject()),
+        Err(e) => {
+            error!("unable to fetch search: {}", e);
+            APP_STATE.search_error_counter.inc();
+            Err(warp::reject())
+        },
     }
 }
 

@@ -3,7 +3,13 @@ name = "gogo-server"
 version = "2.0.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+name = "gogo-server"
+path = "src/main.rs"
+
+#[features]
+# Defines a feature named `webp` that does not enable any other features.
+#observability = ["dep:prometheus"]
 
 [dependencies]
 pretty_env_logger = "0.4"
@@ -19,6 +25,7 @@ kuchiki = "0.8.1"
 once_cell = "1.16.0"
 clap = { version = "4.0", features = ["derive"] }
 thread_local = "1.1.4"
+prometheus = {version = "0.13.3"}
 
 [profile.dev]
 opt-level = 0
