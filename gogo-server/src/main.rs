@@ -1,6 +1,5 @@
 mod config;
 mod fetch;
-// #[cfg(feature = "observability")]
 mod metric;
 
 use clap::Parser;
@@ -19,12 +18,8 @@ struct Args {
     config: String,
 }
 
-#[tokio::main]
-async fn main() {
+fn main() {
     let _ = pretty_env_logger::try_init();
-
-    // #[cfg(not(feature = "observability"))]
-    // info!("feature observability not enabled");
 
     let args = Args::parse();
     let config_file = File::open(args.config).expect("config file should open read only");
@@ -48,7 +43,19 @@ async fn main() {
                 &config.static_path
             ))),
         );
-    warp::serve(routes).run(listen_address).await;
+    let available_parallelism = std::thread::available_parallelism()
+        .expect("error available_parallelism")
+        .get();
+    info!("available_parallelism:{}", available_parallelism);
+    tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .thread_name("warp-work")
+        .worker_threads(available_parallelism)
+        .build()
+        .unwrap()
+        .block_on(async {
+            warp::serve(routes).run(listen_address).await;
+        });
 }
 
 async fn recover_api(_: Rejection) -> Result<impl Reply, Infallible> {

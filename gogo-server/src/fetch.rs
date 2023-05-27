@@ -1,15 +1,11 @@
-use crate::config::{
-    GogoResponse, GoogleSearchContext, ResultEntry, SearchRequest, CONFIG, HTTP_CLIENT,
-    USER_AGENT_INDEX,
-};
+use crate::config::{GogoResponse, ResultEntry, SearchRequest, CONFIG, HTTP_CLIENT, SEARCH_CTX};
 use crate::metric::APP_STATE;
 use html5ever::tendril::TendrilSink;
 use log::{error, info, trace};
-use once_cell::sync::{Lazy};
+use once_cell::sync::Lazy;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
-use reqwest::{ RequestBuilder};
+use reqwest::RequestBuilder;
 use serde_json::Value;
-use std::time::SystemTime;
 use std::{
     collections::{HashMap, VecDeque},
     str::FromStr,
@@ -38,70 +34,6 @@ pub static HEADERS: Lazy<HeaderMap<HeaderValue>> = Lazy::new(|| {
         None => HeaderMap::new(),
     }
 });
-
-pub const GOOGLE_SEARCH_QUERY_KEYS: Lazy<Vec<&str>> =
-    Lazy::new(|| vec!["ie", "hl", "source", "btnG", "iflsig", "gbv"]);
-
-pub async fn fetch_search_context(user_agent: &'static str) -> Option<GoogleSearchContext> {
-    let config = CONFIG.get().expect("config is not initialized");
-    let http_request = HTTP_CLIENT
-        .get(format!("{}", config.google_base_url))
-        .header("user-agent", user_agent);
-    match fetch(http_request).await {
-        Ok(body) => {
-            let gsc: GoogleSearchContext = parse_search_context(body);
-            trace!("ua:{}, query_kv_list:{:?}", user_agent, gsc.query_kv_list);
-            Some(gsc)
-        }
-        Err(e) => {
-            error!("unable to fetch search context: {}", e);
-            None
-        },
-    }
-}
-
-fn parse_search_context(body: String) -> GoogleSearchContext {
-    let mut query: Vec<(String, String)> = Vec::new();
-    let document = kuchiki::parse_html().one(body);
-    match document.select("form") {
-        Ok(form_select) => {
-            for form_ndr in form_select {
-                let attr = form_ndr.attributes.borrow();
-                let action = attr.get("action");
-                if action.is_none() || action.unwrap().ne("/search") {
-                    continue;
-                }
-                match form_ndr.as_node().select("input") {
-                    Ok(input_select) => {
-                        for input_ndr in input_select {
-                            let input_ndr_attr = input_ndr.attributes.borrow();
-                            let name_opt = input_ndr_attr.get("name");
-                            if name_opt.is_none() {
-                                continue;
-                            }
-                            let name = name_opt.unwrap();
-                            if !GOOGLE_SEARCH_QUERY_KEYS.contains(&name) {
-                                continue;
-                            }
-                            match input_ndr_attr.get("value") {
-                                Some(value) => {
-                                    query.push((name.to_string(), value.to_string()));
-                                }
-                                None => {}
-                            }
-                        }
-                    }
-                    Err(_) => {}
-                }
-            }
-        }
-        Err(_) => {}
-    }
-    GoogleSearchContext {
-        query_kv_list: query,
-        created: SystemTime::now(),
-    }
-}
 
 pub async fn fetch(request: RequestBuilder) -> Result<String, reqwest::Error> {
     let res = request
@@ -148,7 +80,7 @@ pub async fn render_response_suggest(
             error!("unable to fetch suggest: {}", e);
             APP_STATE.suggest_error_counter.inc();
             Err(warp::reject())
-        },
+        }
     }
 }
 
@@ -183,7 +115,7 @@ pub async fn render_response_search(
             error!("unable to fetch search: {}", e);
             APP_STATE.search_error_counter.inc();
             Err(warp::reject())
-        },
+        }
     }
 }
 
@@ -245,17 +177,5 @@ pub fn parse_result_entry(body: String) -> VecDeque<ResultEntry> {
 }
 
 pub fn user_agent() -> &'static str {
-    let index_value = USER_AGENT_INDEX.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-    if index_value > 199 {
-        USER_AGENT_INDEX.store(0, std::sync::atomic::Ordering::SeqCst);
-    }
-    let config = CONFIG.get().expect("config is not initialized");
-    let user_agent = match config
-        .user_agents
-        .get((index_value as usize) % config.user_agents.len())
-    {
-        Some(m) => m,
-        None => "Lynx/2.8.5rel.2 libwww-FM",
-    };
-    return user_agent;
+    return SEARCH_CTX.with(|sc| sc.borrow_mut().user_agent());
 }

@@ -6,9 +6,8 @@ use crate::config::{
 };
 use crate::fetch::{
     parse_result_entry,
-    user_agent,
     fetch,
-    fetch_search_context
+    user_agent
 };
 use std::thread;
 use std::{fs::File, io::Read, path::Path};
@@ -33,12 +32,6 @@ async fn fetch_works() {
         .header("user-agent", user_agent());
     let result = fetch(http_request).await;
     assert!(result.is_ok());
-}
-
-#[tokio::test]
-async fn fetch_search_context_works() {
-    init_config(File::open("config.json").expect("Unable to open file: config.json"));
-    fetch_search_context(user_agent()).await;
 }
 
 #[test]
