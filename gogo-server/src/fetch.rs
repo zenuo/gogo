@@ -92,10 +92,12 @@ pub async fn render_response_search(
         Some(v) => (v - 1) * 10,
         None => 0,
     };
+    let ua = user_agent();
+    info!("user agent:{}", ua);
     let http_request = HTTP_CLIENT
         .get(format!("{}/search", config.google_base_url))
         .query(&[("q", request.q), ("start", start.to_string())])
-        .header("user-agent", user_agent());
+        .header("user-agent", ua);
     match fetch(http_request).await {
         Ok(body) => {
             trace!("search response: {}", body);
