@@ -1,7 +1,7 @@
 use crate::config::{GogoResponse, ResultEntry, SearchRequest, CONFIG, HTTP_CLIENT, SEARCH_CTX};
 use crate::metric::APP_STATE;
 use html5ever::tendril::TendrilSink;
-use log::{error, info, trace};
+use log::{error, info, trace, debug};
 use once_cell::sync::Lazy;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use reqwest::RequestBuilder;
@@ -93,14 +93,14 @@ pub async fn render_response_search(
         None => 0,
     };
     let ua = user_agent();
-    info!("user agent:{}", ua);
+    debug!("user agent:{}", ua);
     let http_request = HTTP_CLIENT
         .get(format!("{}/search", config.google_base_url))
         .query(&[("q", request.q), ("start", start.to_string())])
         .header("user-agent", ua);
     match fetch(http_request).await {
         Ok(body) => {
-            trace!("search response: {}", body);
+            debug!("search response: {}", body);
             let result_enteries = parse_result_entry(body);
             if result_enteries.is_empty() {
                 APP_STATE.search_error_counter.inc();

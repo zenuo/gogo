@@ -98,7 +98,7 @@ pub static HTTP_CLIENT: Lazy<Client> = Lazy::new(|| {
         Some(proxy_scheme) => {
             info!("proxy config detected: {}", proxy_scheme);
             client_builder = client_builder
-                .proxy(reqwest::Proxy::http(proxy_scheme).expect("proxy config failed"));
+                .proxy(reqwest::Proxy::all(proxy_scheme).expect("proxy config failed"));
         }
         None => {}
     }
