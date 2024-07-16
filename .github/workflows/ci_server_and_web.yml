@@ -17,6 +17,13 @@ jobs:
           - build_name: linux-x86_64
             os: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
+          - build_name: windows-x86_64
+            os: windows-latest
+            target: x86_64-pc-windows-msvc
+
+    env:
+      PACKAGE_FILE: gogo-server-and-web-${{ matrix.build_name }}.${{ startsWith(matrix.build_name, 'win') && 'zip' || 'tar.gz' }}
+      CARGO_BUILD_DIR: target/${{ matrix.target }}/release
 
     steps:
     - uses: actions/checkout@v4
@@ -28,7 +35,37 @@ jobs:
     - name: Cargo build
       working-directory: ./gogo-server
       run: cargo build --release ${{ matrix.target && '--target' }} ${{ matrix.target }}
-      env:
-        RUSTFLAGS: ${{ matrix.RUSTFLAGS }}
-        MACOSX_DEPLOYMENT_TARGET: ${{ matrix.MACOSX_DEPLOYMENT_TARGET }}
+
+    - name: Package common
+      run: |
+        mkdir package
+        cp README.md package/README.md
+        cp ./gogo-server/config.json package/config.json
+
+    - name: Package Windows
+      if: runner.os == 'Windows'
+      run: |
+        cp ${{ env.CARGO_BUILD_DIR }}/gogo-server.exe package/gogo-server.exe
+        7z a ${{ env.PACKAGE_FILE }} ./package/*
+
+    - name: Package Linux
+      if: runner.os == 'Linux'
+      run: |
+        cp
+        cp ${{ env.CARGO_BUILD_DIR }}/gogo-server package/gogo-server
+        # We must enter the package/ directory in order to create a flat tarball (i.e. without a directory in it).
+        cd package
+        tar -czvf ../${{ env.PACKAGE_FILE }} *
     
+    - name: Archive artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: server-and-web-${{ matrix.os }}
+        path: ${{ env.PACKAGE_FILE }}
+        retention-days: 1
+
+    # - name: Upload package
+    #   if: runner.os != 'macOS'
+    #   run: gh release upload "${{ needs.create-nightly-release.outputs.tag_name }}" "${{ env.PACKAGE_FILE }}"
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
