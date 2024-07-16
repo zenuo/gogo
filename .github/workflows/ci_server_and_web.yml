@@ -26,6 +26,7 @@ jobs:
         toolchain: stable
         targets: ${{ matrix.target }}
     - name: Cargo build
+      working-directory: ./gogo-server
       run: cargo build --release ${{ matrix.target && '--target' }} ${{ matrix.target }}
       env:
         RUSTFLAGS: ${{ matrix.RUSTFLAGS }}
