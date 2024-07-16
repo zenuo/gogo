@@ -46,6 +46,7 @@ jobs:
 
     - name: Npm build
       uses: actions/setup-node@v4
+      working-directory: ./gogo-web
       with:
         node-version: 20
     - run: |
