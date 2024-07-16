@@ -44,12 +44,14 @@ jobs:
       working-directory: ./gogo-server
       run: cargo build --release ${{ matrix.target && '--target' }} ${{ matrix.target }}
 
-    - name: Npm build
+    - name: Install Npm
       uses: actions/setup-node@v4
-      working-directory: ./gogo-web
       with:
         node-version: 20
-    - run: |
+
+    - name: Npm Build
+      working-directory: ./gogo-web
+      run: |
         npm install
         npm run build --omit=dev
 
