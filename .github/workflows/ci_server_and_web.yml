@@ -51,10 +51,10 @@ jobs:
     - name: Package Linux
       if: runner.os == 'Linux'
       run: |
-        cp
         cp ${{ env.CARGO_BUILD_DIR }}/gogo-server package/gogo-server
         # We must enter the package/ directory in order to create a flat tarball (i.e. without a directory in it).
         cd package
+        ls -lh .
         tar -czvf ../${{ env.PACKAGE_FILE }} *
     
     - name: Archive artifacts
