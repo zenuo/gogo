@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "gogo-cli/**"
+      - ".github/workflows/ci_cli.yml"
 
 jobs:
   build-cli:
@@ -11,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ubuntu-latest
+        os: [ubuntu-latest]
 
     env:
       VERSION: 0.0.1
