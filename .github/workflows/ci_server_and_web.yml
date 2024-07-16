@@ -58,22 +58,21 @@ jobs:
     - name: Package common
       run: |
         mkdir package
-        cp README.md package/README.md
         cp ./gogo-server/config.json package/config.json
-        cp -r ./gogo-web/dist package/
+        cp -r ./gogo-web/dist/gogo-web package/
 
     - name: Package Windows
       if: runner.os == 'Windows'
       run: |
         dir ./gogo-server/target/${{ matrix.target }}/
-        cp ${{ env.CARGO_BUILD_DIR }}/gogo-server.exe package/gogo-server.exe
+        cp ${{ env.CARGO_BUILD_DIR }}/gogo-server.exe package/
         7z a ${{ env.PACKAGE_FILE }} ./package/*
 
     - name: Package Linux or macOS
       if: runner.os == 'Linux' || runner.os == 'macOS'
       run: |
         ls -lh ./gogo-server/target/${{ matrix.target }}/
-        cp ${{ env.CARGO_BUILD_DIR }}/gogo-server package/gogo-server
+        cp ${{ env.CARGO_BUILD_DIR }}/gogo-server package/
         cd package
         tar -czvf ../${{ env.PACKAGE_FILE }} *
     
@@ -82,7 +81,7 @@ jobs:
       with:
         name: server-web-${{ matrix.target }}
         path: ${{ env.PACKAGE_FILE }}
-        retention-days: 1
+        retention-days: 7
 
     # - name: Upload package
     #   if: runner.os != 'macOS'
