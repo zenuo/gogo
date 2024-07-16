@@ -60,7 +60,7 @@ jobs:
         mkdir package
         cp README.md package/README.md
         cp ./gogo-server/config.json package/config.json
-        cp -r ./gogo-web/dist package/gogo-web
+        cp -r ./gogo-web/dist package/
 
     - name: Package Windows
       if: runner.os == 'Windows'
@@ -69,16 +69,8 @@ jobs:
         cp ${{ env.CARGO_BUILD_DIR }}/gogo-server.exe package/gogo-server.exe
         7z a ${{ env.PACKAGE_FILE }} ./package/*
 
-    - name: Package macOS
-      if: runner.os == 'macOS'
-      run: |
-        ls -lh ./gogo-server/target/${{ matrix.target }}/
-        lipo -create -output package/gogo-server target/x86_64-apple-darwin/release/gogo-server target/aarch64-apple-darwin/release/gogo-server
-        cd package
-        tar -czvf ../${{ env.PACKAGE_FILE }} *
-
-    - name: Package Linux
-      if: runner.os == 'Linux'
+    - name: Package Linux or macOS
+      if: runner.os == 'Linux' || runner.os == 'macOS'
       run: |
         ls -lh ./gogo-server/target/${{ matrix.target }}/
         cp ${{ env.CARGO_BUILD_DIR }}/gogo-server package/gogo-server
