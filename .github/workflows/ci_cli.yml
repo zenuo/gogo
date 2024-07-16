@@ -22,11 +22,13 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: '1.22.5'
-      - run: |
-          sh ./gogo-cli/release.sh ${{ env.VERSION }}
+      - name: Go build
+        working-directory: ./gogo-cli
+        run: |
+          bash ./gogo-cli/release.sh ${{ env.VERSION }}
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
         with:
           name: cli
-          path: release_${{ env.VERSION }}
+          path: ./gogo-cli/release_${{ env.VERSION }}
           retention-days: 7
