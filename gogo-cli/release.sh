@@ -24,11 +24,11 @@ mkdir $WORKDIR
 cd $WORKDIR
 
 # 操作系统数组
-OS=("linux" "linux" "linux" "linux" "darwin" "darwin" "windows" "windows")
+OS=("linux" "linux" "darwin" "darwin" "windows" "windows")
 # 架构数组
-ARCH=("386" "amd64" "arm" "arm64" "386" "amd64" "386" "amd64")
+ARCH=("amd64" "arm64" "arm64" "amd64" "arm64" "amd64")
 # 可执行文件后缀
-EXECUTABLE_POSTFIX=("Linux-32bit" "Linux-64bit" "Linux-ARM" "Linux-ARM64" "macOS-32bit" "macOS-64bit" "Windows-32bit.exe" "Windows-64bit.exe")
+EXECUTABLE_POSTFIX=("Linux_x64" "Linux_arm64" "macOS_arm64" "macOS_x64" "Windows_arm64.exe" "Windows_x64.exe")
 
 # 最大的索引
 MAX_INDEX=$(expr ${#OS[@]} - 1)

@@ -1,0 +1,90 @@
+name: ci for server and web
+
+on:
+  push:
+    paths:
+      - "gogo-server/**"
+      - "gogo-web/**"
+      - ".github/workflows/ci_server_and_web.yml"
+  workflow_dispatch:
+
+jobs:
+  build-server-web:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include: 
+          - build_name: linux-x86_64
+            os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+          - build_name: windows-x86_64
+            os: windows-latest
+            target: x86_64-pc-windows-msvc
+          - build_name: macos-x86_64
+            os: macos-14
+            target: x86_64-apple-darwin
+          - build_name: macos-aarch64
+            os: macos-14
+            target: aarch64-apple-darwin
+
+    env:
+      PACKAGE_FILE: gogo-server-web-${{ matrix.target }}.${{ startsWith(matrix.build_name, 'win') && 'zip' || 'tar.gz' }}
+      CARGO_BUILD_DIR: ./gogo-server/target/${{ matrix.target }}/release
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: stable
+        targets: ${{ matrix.target }}
+    
+    - name: Cargo build
+      working-directory: ./gogo-server
+      run: cargo build --release ${{ matrix.target && '--target' }} ${{ matrix.target }}
+
+    - name: Install Npm
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Npm Build
+      working-directory: ./gogo-web
+      run: |
+        npm install
+        npm run build --omit=dev
+
+    - name: Package common
+      run: |
+        mkdir package
+        cp ./gogo-server/config.json package/config.json
+        cp -r ./gogo-web/dist/gogo-web package/
+
+    - name: Package Windows
+      if: runner.os == 'Windows'
+      run: |
+        dir ./gogo-server/target/${{ matrix.target }}/
+        cp ${{ env.CARGO_BUILD_DIR }}/gogo-server.exe package/
+        7z a ${{ env.PACKAGE_FILE }} ./package/*
+
+    - name: Package Linux or macOS
+      if: runner.os == 'Linux' || runner.os == 'macOS'
+      run: |
+        ls -lh ./gogo-server/target/${{ matrix.target }}/
+        cp ${{ env.CARGO_BUILD_DIR }}/gogo-server package/
+        cd package
+        tar -czvf ../${{ env.PACKAGE_FILE }} *
+    
+    - name: Archive artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: server-web-${{ matrix.target }}
+        path: ${{ env.PACKAGE_FILE }}
+        retention-days: 7
+
+    # - name: Upload package
+    #   if: runner.os != 'macOS'
+    #   run: gh release upload "${{ needs.create-nightly-release.outputs.tag_name }}" "${{ env.PACKAGE_FILE }}"
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
