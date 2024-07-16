@@ -29,7 +29,7 @@ jobs:
             target: aarch64-apple-darwin
 
     env:
-      PACKAGE_FILE: gogo-server-and-web-${{ matrix.build_name }}.${{ startsWith(matrix.build_name, 'win') && 'zip' || 'tar.gz' }}
+      PACKAGE_FILE: gogo-server-web-${{ matrix.target }}.${{ startsWith(matrix.build_name, 'win') && 'zip' || 'tar.gz' }}
       CARGO_BUILD_DIR: ./gogo-server/target/${{ matrix.target }}/release
 
     steps:
@@ -80,7 +80,7 @@ jobs:
     - name: Archive artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: server-and-web-${{ matrix.os }}
+        name: server-web-${{ matrix.target }}
         path: ${{ env.PACKAGE_FILE }}
         retention-days: 1
 
