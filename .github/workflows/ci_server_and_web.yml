@@ -23,7 +23,7 @@ jobs:
 
     env:
       PACKAGE_FILE: gogo-server-and-web-${{ matrix.build_name }}.${{ startsWith(matrix.build_name, 'win') && 'zip' || 'tar.gz' }}
-      CARGO_BUILD_DIR: target/${{ matrix.target }}/release
+      CARGO_BUILD_DIR: ./gogo-server/target/${{ matrix.target }}/release
 
     steps:
     - uses: actions/checkout@v4
@@ -45,16 +45,18 @@ jobs:
     - name: Package Windows
       if: runner.os == 'Windows'
       run: |
+        dir ./gogo-server/target
         cp ${{ env.CARGO_BUILD_DIR }}/gogo-server.exe package/gogo-server.exe
         7z a ${{ env.PACKAGE_FILE }} ./package/*
 
     - name: Package Linux
       if: runner.os == 'Linux'
       run: |
+        ls -lh ./gogo-server/target
         cp ${{ env.CARGO_BUILD_DIR }}/gogo-server package/gogo-server
         # We must enter the package/ directory in order to create a flat tarball (i.e. without a directory in it).
         cd package
-        ls -lh .
+        
         tar -czvf ../${{ env.PACKAGE_FILE }} *
     
     - name: Archive artifacts
