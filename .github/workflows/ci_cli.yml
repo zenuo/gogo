@@ -25,7 +25,7 @@ jobs:
       - name: Go build
         working-directory: ./gogo-cli
         run: |
-          bash ./release.sh ${{ env.VERSION }}
+          bash -x ./release.sh ${{ env.VERSION }}
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
         with:
