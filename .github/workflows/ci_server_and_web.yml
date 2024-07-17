@@ -128,18 +128,17 @@ jobs:
           ls -lh
           cd gogo-server
           cargo build --release --target ${{ env.RUST_TARGET }}
+      - name: Package
+        run: |
+          ls -lh
+          mkdir package
+          cp ./gogo-server/config.json package/
+          cp ./gogo-server/target/x86_64-unknown-linux-musl/release/gogo-server package/
       - name: Download web package
         uses: actions/download-artifact@v4
         with:
           name: gogo-web
           path: package/
-      - name: Package common
-        run: |
-          ls -lh
-          mkdir package
-          cp ./gogo-server/config.json package/
-          cp -r ./gogo-web package/
-          cp ./gogo-server/target/x86_64-unknown-linux-musl/release/gogo-erver package/
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
         with:
