@@ -129,9 +129,9 @@ jobs:
       - name: Install Rust toolchain
         run: apk add --no-cache musl-dev openssl-dev
       - name: Cargo build
-        run: 
+        run: |
           ls -lh
-          cd gogo/gogo-erver
+          cd gogo-erver
           cargo build --release --target ${{ env.RUST_TARGET }}
       - name: Download web package
         uses: actions/download-artifact@v4
