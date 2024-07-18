@@ -158,6 +158,8 @@ jobs:
       attestations: write
       id-token: write
     steps:
+      - name: Clone repo
+        uses: actions/checkout@v4
       - name: Download package
         uses: actions/download-artifact@v4
         with:
@@ -166,8 +168,7 @@ jobs:
       - name: List file
         run: |
           ls -lh
-      - name: Clone repo
-        uses: actions/checkout@v4
+          ls -lh package/
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
