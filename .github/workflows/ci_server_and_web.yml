@@ -150,6 +150,7 @@ jobs:
           retention-days: 7
 
   build-docker:
+    needs: [build-server-for-alpine]
     runs-on: ubuntu-latest
     permissions:
       contents: read
