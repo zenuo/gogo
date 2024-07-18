@@ -162,6 +162,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: server-web-${{ env.ALPINE_RUST_TARGET }}
+      - name: List file
+        run: |
+          ls -lh
       - name: Clone repo
         uses: actions/checkout@v4
       - name: Log in to the Container registry

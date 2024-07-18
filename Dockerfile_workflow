@@ -1,6 +1,6 @@
 FROM amd64/alpine:3.16
 WORKDIR /opt/
-RUN apk upgrade --no-cache && apk add --no-cache openssl libgcc
+RUN apk upgrade --no-cache && apk add --no-cache openssl
 COPY gogo-server .
 COPY config.json .
 COPY gogo-web .
