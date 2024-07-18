@@ -9,8 +9,33 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-server-web:
+  build-web:
+    if: ${{!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]')}}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Npm
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Npm Build
+      working-directory: ./gogo-web
+      run: |
+        npm install
+        npm run build --omit=dev
+
+    - name: Archive artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: gogo-web
+        path: ./gogo-web/dist/
+        retention-days: 1
+
+  build-server:
+    needs: [build-web]
     runs-on: ${{ matrix.os }}
+    if: ${{!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]')}}
     strategy:
       fail-fast: false
       matrix:
@@ -44,23 +69,17 @@ jobs:
       working-directory: ./gogo-server
       run: cargo build --release ${{ matrix.target && '--target' }} ${{ matrix.target }}
 
-    - name: Install Npm
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-
-    - name: Npm Build
-      working-directory: ./gogo-web
-      run: |
-        npm install
-        npm run build --omit=dev
-
     - name: Package common
       run: |
         mkdir package
-        cp ./gogo-server/config.json package/config.json
-        cp -r ./gogo-web/dist/gogo-web package/
-
+        cp ./gogo-server/config.json package/
+    
+    - name: Download web package
+      uses: actions/download-artifact@v4
+      with:
+        name: gogo-web
+        path: package/
+    
     - name: Package Windows
       if: runner.os == 'Windows'
       run: |
@@ -80,7 +99,8 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: server-web-${{ matrix.target }}
-        path: ${{ env.PACKAGE_FILE }}
+        # path: ${{ env.PACKAGE_FILE }}
+        path: package/
         retention-days: 7
 
     # - name: Upload package
@@ -88,3 +108,40 @@ jobs:
     #   run: gh release upload "${{ needs.create-nightly-release.outputs.tag_name }}" "${{ env.PACKAGE_FILE }}"
     #   env:
     #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  build-server-for-alpine:
+    needs: [build-web]
+    if: ${{!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]')}}
+    runs-on: ubuntu-latest
+    container:
+      image: rust:alpine
+      volumes:
+        - ./gogo-server:/gogo-server
+    env:
+      RUST_TARGET: x86_64-unknown-linux-musl
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        run: apk add --no-cache musl-dev openssl-dev
+      - name: Cargo build
+        run: |
+          ls -lh
+          cd gogo-server
+          cargo build --release --target ${{ env.RUST_TARGET }}
+      - name: Package
+        run: |
+          ls -lh
+          mkdir package
+          cp ./gogo-server/config.json package/
+          cp ./gogo-server/target/x86_64-unknown-linux-musl/release/gogo-server package/
+      - name: Download web package
+        uses: actions/download-artifact@v4
+        with:
+          name: gogo-web
+          path: package/
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-web-${{ env.RUST_TARGET }}
+          path: package/
+          retention-days: 7
