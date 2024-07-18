@@ -1,8 +1,7 @@
 FROM alpine:3.16
 WORKDIR /opt/
 RUN apk upgrade --no-cache && apk add --no-cache openssl libgcc
-COPY package/gogo-server .
-COPY package/config.json .
-COPY package/gogo-web .
-EXPOSE 4998
+COPY gogo-server .
+COPY config.json .
+COPY gogo-web .
 ENTRYPOINT ["/opt/gogo-server","config.json"]

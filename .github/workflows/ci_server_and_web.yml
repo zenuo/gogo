@@ -8,6 +8,11 @@ on:
       - ".github/workflows/ci_server_and_web.yml"
   workflow_dispatch:
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  ALPINE_RUST_TARGET: x86_64-unknown-linux-musl
+
 jobs:
   build-web:
     if: ${{!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]')}}
@@ -112,19 +117,10 @@ jobs:
     needs: [build-web]
     if: ${{!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]')}}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      attestations: write
-      id-token: write
     container:
       image: rust:alpine
       volumes:
         - ./gogo-server:/gogo-server
-    env:
-      RUST_TARGET: x86_64-unknown-linux-musl
-      REGISTRY: ghcr.io
-      IMAGE_NAME: ${{ github.repository }}
     steps:
       - name: Clone repo
         uses: actions/checkout@v4
@@ -134,7 +130,7 @@ jobs:
         run: |
           ls -lh
           cd gogo-server
-          cargo build --release --target ${{ env.RUST_TARGET }}
+          cargo build --release --target ${{ env.ALPINE_RUST_TARGET }}
       - name: Package
         run: |
           ls -lh
@@ -149,9 +145,18 @@ jobs:
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: server-web-${{ env.RUST_TARGET }}
+          name: server-web-${{ env.ALPINE_RUST_TARGET }}
           path: package/
           retention-days: 7
+
+  build-docker:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    steps:
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
@@ -163,6 +168,10 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Download web package
+        uses: actions/download-artifact@v4
+        with:
+          name: server-web-${{ env.ALPINE_RUST_TARGET }}
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v6
