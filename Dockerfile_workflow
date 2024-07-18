@@ -1,6 +1,6 @@
 FROM amd64/alpine:3.16
 RUN apk upgrade --no-cache && apk add --no-cache openssl
-COPY gogo-server .
-COPY config.json .
-COPY gogo-web .
+ADD gogo-server /
+ADD config.json /
+ADD gogo-web /
 ENTRYPOINT ["/gogo-server","config.json"]
