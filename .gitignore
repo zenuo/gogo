@@ -11,3 +11,4 @@ dependency-reduced-pom.xml
 build-gogo-cli-Desktop-Default
 .vscode
 gogo-cli*
+.DS_Store
