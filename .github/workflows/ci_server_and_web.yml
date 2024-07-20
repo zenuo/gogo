@@ -7,6 +7,8 @@ on:
       - "gogo-web/**"
       - ".github/workflows/ci_server_and_web.yml"
       - "Dockerfile_workflow"
+    branches: 
+      - 'release'
   workflow_dispatch:
 
 env:
