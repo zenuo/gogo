@@ -3,8 +3,10 @@ RUN apk upgrade --no-cache && apk add --no-cache openssl
 # Create a group and user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 # Tell docker that all future commands should run as the appuser user
-USER appuser
-COPY --chown=appgroup:appuser ./package /app
-RUN ls -lh /app && chmod +x /app/gogo-server
+COPY ./package /app
+RUN chown -R appgroup:appuser /app \
+    && chmod 0755 /app/gogo-server
+    && ls -lh /app
 WORKDIR /app
+USER appuser
 ENTRYPOINT ["gogo-server","config.json"]
