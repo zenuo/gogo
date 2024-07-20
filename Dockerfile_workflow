@@ -5,4 +5,5 @@ COPY ./package /app
 RUN chown -R appuser:appgroup /app && chmod 0755 /app/gogo-server
 WORKDIR /app
 USER appuser
-ENTRYPOINT ["RUST_LOG=info","./gogo-server","config.json"]
+ENV RUST_LOG=info
+ENTRYPOINT ["./gogo-server","config.json"]
