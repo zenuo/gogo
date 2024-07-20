@@ -6,6 +6,7 @@ on:
       - "gogo-server/**"
       - "gogo-web/**"
       - ".github/workflows/ci_server_and_web.yml"
+      - "Dockerfile_workflow"
   workflow_dispatch:
 
 env:
