@@ -6,7 +6,15 @@ on:
       - "gogo-server/**"
       - "gogo-web/**"
       - ".github/workflows/ci_server_and_web.yml"
+      - "Dockerfile_workflow"
+    branches: 
+      - 'release'
   workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  ALPINE_RUST_TARGET: x86_64-unknown-linux-musl
 
 jobs:
   build-web:
@@ -116,8 +124,6 @@ jobs:
       image: rust:alpine
       volumes:
         - ./gogo-server:/gogo-server
-    env:
-      RUST_TARGET: x86_64-unknown-linux-musl
     steps:
       - name: Clone repo
         uses: actions/checkout@v4
@@ -127,7 +133,7 @@ jobs:
         run: |
           ls -lh
           cd gogo-server
-          cargo build --release --target ${{ env.RUST_TARGET }}
+          cargo build --release --target ${{ env.ALPINE_RUST_TARGET }}
       - name: Package
         run: |
           ls -lh
@@ -142,6 +148,53 @@ jobs:
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: server-web-${{ env.RUST_TARGET }}
+          name: server-web-${{ env.ALPINE_RUST_TARGET }}
           path: package/
           retention-days: 7
+
+  build-docker:
+    needs: [build-server-for-alpine]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v4
+      - name: Download package
+        uses: actions/download-artifact@v4
+        with:
+          name: server-web-${{ env.ALPINE_RUST_TARGET }}
+          path: package/
+      - name: List file
+        run: |
+          ls -lh
+          ls -lh package/
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile_workflow
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ github.repository }}:latest
+          labels: ${{ steps.meta.outputs.labels }}
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true

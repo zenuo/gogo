@@ -1,0 +1,9 @@
+FROM amd64/alpine:3.20
+RUN apk upgrade --no-cache && apk add --no-cache openssl libgcc
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+COPY ./package /app
+RUN chown -R appuser:appgroup /app && chmod 0755 /app/gogo-server
+WORKDIR /app
+USER appuser
+ENV RUST_LOG=info
+ENTRYPOINT ["./gogo-server","config.json"]

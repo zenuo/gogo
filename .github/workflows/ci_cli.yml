@@ -5,6 +5,8 @@ on:
     paths:
       - "gogo-cli/**"
       - ".github/workflows/ci_cli.yml"
+    branches: 
+      - 'release'
 
 jobs:
   build-cli:
