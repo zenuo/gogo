@@ -7,6 +7,26 @@
 - [gogo.webbillion.cn](https://gogo.webbillion.cn/)
 - [176.122.157.231:5002](https://176.122.157.231:5002)
 
+## 上手
+
+```
+# 拉取镜像
+docker pull ghcr.io/zenuo/gogo:lastest
+# 运行
+docker run -p 4998:4998 --name gogo ghcr.io/zenuo/gogo
+# 查看日志（可选）
+docker logs -f gogo
+```
+
+### 从源代码构建
+
+```
+$ git clone https://github.com/zenuo/gogo.git
+$ cd gogo/gogo-server
+$ cargo build -rv
+$ ./target/release/gogo-server config.json
+```
+
 ## 如何使用
 
 > 本程序通过`网页`、`命令行`和`Web API`三种方式提供服务。
@@ -70,32 +90,6 @@ $ curl -X GET -k "http://localhost:4998/api/lint?q=github"
   ],
   "error": null
 }
-```
-
-## 上手
-
-### 1 Docker
-
-```
-# 拉取镜像
-$ docker pull zenuo/gogo
-# 创建容器
-$ docker create -p 4999:4999 --name gogo zenuo/gogo
-# 复制配置文件到容器（可选）
-$ docker cp config.json gogo:/opt/gogo/application.json
-# 运行镜像
-$ docker start gogo
-# 查看日志（可选）
-$ docker logs -f gogo
-```
-
-### 2 从源代码构建
-
-```
-$ git clone https://github.com/zenuo/gogo.git
-$ cd gogo/gogo-server
-$ cargo build -rv
-$ ./target/release/gogo-server config
 ```
 
 ## 参考

@@ -1,10 +1,8 @@
-FROM amd64/alpine:3.16
+FROM amd64/alpine:3.20
 RUN apk upgrade --no-cache && apk add --no-cache openssl
-# Create a group and user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-# Tell docker that all future commands should run as the appuser user
 COPY ./package /app
 RUN chown -R appuser:appgroup /app && chmod 0755 /app/gogo-server
 WORKDIR /app
 USER appuser
-ENTRYPOINT ["gogo-server","config.json"]
+ENTRYPOINT ["RUST_LOG=info","./gogo-server","config.json"]
