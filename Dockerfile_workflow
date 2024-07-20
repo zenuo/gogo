@@ -5,6 +5,6 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 # Tell docker that all future commands should run as the appuser user
 USER appuser
 COPY --chown=appgroup:appuser ./package /app
-RUN chmod +x /app/gogo-server
+RUN ls -lh /app && chmod +x /app/gogo-server
 WORKDIR /app
 ENTRYPOINT ["gogo-server","config.json"]
